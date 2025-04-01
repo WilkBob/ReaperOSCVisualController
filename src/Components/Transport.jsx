@@ -7,7 +7,17 @@ import React from "react";
 
 const Transport = ({ play, stop, record, toggleMetronome, disabled }) => {
   return (
-    <Box sx={{ display: "flex", gap: 1, justifyContent: "center", p: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        width: "fit-content",
+        gap: 1,
+        justifyContent: "center",
+        p: 2,
+        background: "#ffffff55",
+        borderRadius: "10px",
+      }}
+    >
       <IconButton color="primary" disabled={disabled} onClick={play}>
         <PlayArrow fontSize="large" />
       </IconButton>

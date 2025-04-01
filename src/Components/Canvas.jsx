@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
-import { Box, Typography, Paper } from "@mui/material";
+import { Box } from "@mui/material";
 
-const Canvas = () => {
+const Canvas = ({ params }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Canvas = () => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      draw(0, 0); // Redraw with default values
+      draw(canvas.width / 2, canvas.height / 2); // Start with neutral center
     };
 
     const draw = (x, y) => {
@@ -30,13 +30,25 @@ const Canvas = () => {
       // Clear the canvas
       context.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Change color based on mouse position
-      const red = Math.floor((x / canvas.width) * 255);
-      const green = Math.floor((y / canvas.height) * 255);
-      const blue = 150; // Fixed blue value for contrast
+      // Calculate ratios relative to the center
+      const xratio = ((x - canvas.width / 2) / (canvas.width / 2)).toFixed(2);
+      const yratio = ((y - canvas.height / 2) / (canvas.height / 2)).toFixed(2);
+
+      // Base color is neutral gray (128,128,128)
+      let red = 128 + Math.floor(xratio * 127); // Red increases right, decreases left
+      let green = 128 - Math.floor(yratio * 127); // Green increases upward, decreases downward
+      let blue = 128 - Math.floor(xratio * 127); // Blue increases left, decreases right
+
+      // Clamp values to valid 0-255 range
+      red = Math.max(0, Math.min(255, red));
+      green = Math.max(0, Math.min(255, green));
+      blue = Math.max(0, Math.min(255, blue));
 
       context.fillStyle = `rgb(${red}, ${green}, ${blue})`;
       context.fillRect(0, 0, canvas.width, canvas.height);
+
+      context.fillStyle = "black";
+      context.fillText(`x: ${xratio}, y: ${yratio}`, 80, 80);
     };
 
     const handleMouseMove = (event) => {
@@ -64,35 +76,24 @@ const Canvas = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden", // Prevent scrolling
+        position: "fixed", // Fix to viewport
+        top: 0,
+        left: 0,
+        zIndex: -1,
       }}
     >
       <canvas
         ref={canvasRef}
         style={{
-          position: "fixed",
+          position: "absolute",
           top: 0,
           left: 0,
           width: "100%",
           height: "100%",
-          zIndex: -1,
+          zIndex: -2,
         }}
       />
-      <Paper
-        elevation={3}
-        sx={{
-          padding: 2,
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          color: "white",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Interactive Color Canvas
-        </Typography>
-        <Typography variant="body1">
-          Move your mouse around to change the background color!
-        </Typography>
-      </Paper>
     </Box>
   );
 };
