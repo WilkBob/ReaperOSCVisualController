@@ -24,6 +24,7 @@ const OSCController = () => {
       fxNum: 1,
       paramNum: 2,
       controlType: "mouse-x",
+      range: { min: 0, max: 1 },
     },
   ]);
 
