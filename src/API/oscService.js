@@ -83,7 +83,8 @@ export function toggleMetronome() {
 export function sendValue(param, value) {
   try {
     const address = createOSCAddress(param);
-    sendMessage(address, value);
+    console.log(address, value);
+    sendMessage(address, parseFloat(value));
   } catch (error) {
     console.error("Send parameter error:", error);
   }
