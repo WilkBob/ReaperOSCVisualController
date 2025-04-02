@@ -105,15 +105,21 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           <TextField
             type="number"
             label="Min Range"
-            value={param.range?.min || 0}
-            onChange={(e) => updateRange("min", Number(e.target.value))}
+            value={param.range?.min ?? ""} // Allow empty input
+            onChange={(e) => {
+              const value = e.target.value === "" ? "" : Number(e.target.value); // Handle empty input
+              updateRange("min", value);
+            }}
             fullWidth
           />
           <TextField
             type="number"
             label="Max Range"
-            value={param.range?.max || 1}
-            onChange={(e) => updateRange("max", Number(e.target.value))}
+            value={param.range?.max ?? ""} // Allow empty input
+            onChange={(e) => {
+              const value = e.target.value === "" ? "" : Number(e.target.value); // Handle empty input
+              updateRange("max", value);
+            }}
             fullWidth
           />
         </Box>
