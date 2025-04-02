@@ -21,6 +21,11 @@ const CanvasController = ({ params, broadcasting }) => {
   const mouseYRef = useRef(0);
   const ballRef = useRef(0);
 
+  // Refs to store the last broadcasted values
+  const lastMouseXRef = useRef(null);
+  const lastMouseYRef = useRef(null);
+  const lastBallRef = useRef(null);
+
   // Update control states and addresses when params change
   useEffect(() => {
     setUseX(params.some((param) => param.controlType === "mouse-x"));
@@ -52,9 +57,8 @@ const CanvasController = ({ params, broadcasting }) => {
 
     if (broadcasting) {
       interval = setInterval(() => {
-        // Send all mouse-x values
+        // Send all mouse-x values if changed
         controlAddresses["mouse-x"].forEach(({ address, range }) => {
-          // Scale the mouseX value to the parameter's range
           const scaledValue = scaleValue(
             mouseXRef.current,
             0,
@@ -62,10 +66,13 @@ const CanvasController = ({ params, broadcasting }) => {
             range.min,
             range.max
           );
-          sendMessage(address, scaledValue);
+          if (scaledValue !== lastMouseXRef.current) {
+            sendMessage(address, scaledValue);
+            lastMouseXRef.current = scaledValue; // Update last broadcasted value
+          }
         });
 
-        // Send all mouse-y values
+        // Send all mouse-y values if changed
         controlAddresses["mouse-y"].forEach(({ address, range }) => {
           const scaledValue = scaleValue(
             mouseYRef.current,
@@ -74,10 +81,13 @@ const CanvasController = ({ params, broadcasting }) => {
             range.min,
             range.max
           );
-          sendMessage(address, scaledValue);
+          if (scaledValue !== lastMouseYRef.current) {
+            sendMessage(address, scaledValue);
+            lastMouseYRef.current = scaledValue; // Update last broadcasted value
+          }
         });
 
-        // Send all ball values
+        // Send all ball values if changed
         controlAddresses["ball"].forEach(({ address, range }) => {
           const scaledValue = scaleValue(
             ballRef.current,
@@ -86,9 +96,12 @@ const CanvasController = ({ params, broadcasting }) => {
             range.min,
             range.max
           );
-          sendMessage(address, scaledValue);
+          if (scaledValue !== lastBallRef.current) {
+            sendMessage(address, scaledValue);
+            lastBallRef.current = scaledValue; // Update last broadcasted value
+          }
         });
-      }, 100); // Update rate - 50ms for responsive controls
+      }, 50); // Update rate - 100ms
     }
 
     return () => {
@@ -121,7 +134,7 @@ const CanvasController = ({ params, broadcasting }) => {
       {useBall && <BallControl onUpdate={(val) => (ballRef.current = val)} />}
 
       {/* Debug information */}
-      {true && ( // Set to true for debugging
+      {false && ( // Set to true for debugging
         <div className="debug-info">
           <h3>Control Types</h3>
           <ul>

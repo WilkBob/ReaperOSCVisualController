@@ -3,9 +3,15 @@ import PlayArrow from "@mui/icons-material/PlayArrow";
 import FiberManualRecord from "@mui/icons-material/FiberManualRecord";
 import StopCircle from "@mui/icons-material/StopCircle";
 import AvTimer from "@mui/icons-material/AvTimer";
+import FastRewind from "@mui/icons-material/FastRewind"; // Import rewind icon
 import React from "react";
+import { sendMessage } from "../API/oscService";
 
 const Transport = ({ play, stop, record, toggleMetronome, disabled }) => {
+  const rewind = () => {
+    sendMessage("/samples/str", "0"); // Example OSC message for rewind
+  };
+
   return (
     <Box
       sx={{
@@ -29,6 +35,9 @@ const Transport = ({ play, stop, record, toggleMetronome, disabled }) => {
       </IconButton>
       <IconButton color="success" disabled={disabled} onClick={toggleMetronome}>
         <AvTimer fontSize="large" />
+      </IconButton>
+      <IconButton color="info" disabled={disabled} onClick={rewind}>
+        <FastRewind fontSize="large" />
       </IconButton>
     </Box>
   );
