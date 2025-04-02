@@ -57,6 +57,7 @@ const CanvasController = ({ params, broadcasting }) => {
     });
 
     setControlAddresses(newControlAddresses);
+    console.log("controls adresses", newControlAddresses);
   }, [params]);
 
   // Set up OSC broadcast interval when broadcasting is enabled

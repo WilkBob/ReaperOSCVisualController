@@ -31,8 +31,14 @@ const useMouseControl = ({
     const handleMouseWheel = (e) => {
       const ball = ballRef.current;
       const delta = e.deltaY * 0.00001;
-      ball.vx = Math.max(-0.02, Math.min(0.02, ball.vx + delta));
-      ball.vy = Math.max(-0.02, Math.min(0.02, ball.vy + delta));
+
+      // Update velocities and round to 3 decimal places
+      ball.vx = parseFloat(
+        Math.max(-0.02, Math.min(0.02, ball.vx + delta)).toFixed(3)
+      );
+      ball.vy = parseFloat(
+        Math.max(-0.02, Math.min(0.02, ball.vy + delta)).toFixed(3)
+      );
     };
 
     const handleMouseDown = () => {

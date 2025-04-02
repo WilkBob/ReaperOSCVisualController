@@ -52,6 +52,10 @@ const MouseControlCanvas = ({
       if (ball.x <= 0 || ball.x >= 1) ball.vx *= -1;
       if (ball.y <= 0 || ball.y >= 1) ball.vy *= -1;
 
+      // Call onUpdateBallX and onUpdateBallY if tracking is enabled
+      if (trackBallX) onUpdateBallX(ball.x);
+      if (trackBallY) onUpdateBallY(ball.y);
+
       ctx.fillStyle = `rgb(${255 - r}, ${255 - g}, 150)`;
       ctx.beginPath();
       ctx.arc(
@@ -63,7 +67,6 @@ const MouseControlCanvas = ({
       );
       ctx.fill();
     }
-
     // Draw click indicator
     if (clicked && trackClick) {
       ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
