@@ -45,7 +45,7 @@ const ParameterList = ({ parameters, setParameters }) => {
       </IconButton>
 
       <Drawer
-        anchor="left"
+        anchor="top"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         sx={{
@@ -53,7 +53,7 @@ const ParameterList = ({ parameters, setParameters }) => {
             backdropFilter: "blur(10px)",
             backgroundColor: "rgba(255, 255, 255, 0.1)",
             padding: 2,
-            width: 300,
+            width: "100%",
           },
         }}
       >

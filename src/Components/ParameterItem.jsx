@@ -6,6 +6,8 @@ import {
   TextField,
   IconButton,
   Card,
+  Typography,
+  Box,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -19,14 +21,41 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
   };
 
   return (
-    <Grid item xs={6}>
+    <Grid item xs={12} sm={6}>
       <Card
-        sx={{ padding: 1, display: "flex", flexDirection: "column", gap: 1 }}
+        sx={{
+          padding: 2,
+          display: "flex",
+
+          gap: 2,
+          backgroundColor: "#ffffff11",
+          borderRadius: 2,
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+        }}
       >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="subtitle1" color="white">
+            Parameter {index + 1}
+          </Typography>
+          <IconButton onClick={() => removeParameter(index)} color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
         <Select
           value={param.type}
           onChange={(e) => updateParameter("type", e.target.value)}
           fullWidth
+          sx={{
+            backgroundColor: "#2e2e2e",
+            color: "white",
+            "& .MuiSelect-icon": { color: "white" },
+          }}
         >
           {["inst", "fx", "vol", "sendvol", "pan"].map((option) => (
             <MenuItem key={option} value={option}>
@@ -40,6 +69,13 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           value={param.trackNum}
           onChange={(e) => updateParameter("trackNum", Number(e.target.value))}
           fullWidth
+          InputProps={{
+            style: { color: "white" },
+          }}
+          InputLabelProps={{
+            style: { color: "gray" },
+          }}
+          sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
         />
         <TextField
           type="number"
@@ -47,6 +83,13 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           value={param.fxNum}
           onChange={(e) => updateParameter("fxNum", Number(e.target.value))}
           fullWidth
+          InputProps={{
+            style: { color: "white" },
+          }}
+          InputLabelProps={{
+            style: { color: "gray" },
+          }}
+          sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
         />
         <TextField
           type="number"
@@ -54,21 +97,30 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           value={param.paramNum}
           onChange={(e) => updateParameter("paramNum", Number(e.target.value))}
           fullWidth
+          InputProps={{
+            style: { color: "white" },
+          }}
+          InputLabelProps={{
+            style: { color: "gray" },
+          }}
+          sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
         />
         <Select
           value={param.controlType}
           onChange={(e) => updateParameter("controlType", e.target.value)}
           fullWidth
+          sx={{
+            backgroundColor: "#2e2e2e",
+            color: "white",
+            "& .MuiSelect-icon": { color: "white" },
+          }}
         >
-          {["mouse-x", "mouse-y"].map((option) => (
+          {["mouse-x", "mouse-y", "distance"].map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
           ))}
         </Select>
-        <IconButton onClick={() => removeParameter(index)} color="error">
-          <DeleteIcon />
-        </IconButton>
       </Card>
     </Grid>
   );
