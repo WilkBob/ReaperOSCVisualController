@@ -11,7 +11,7 @@ import {
 } from "../API/oscService";
 import Transport from "./Transport";
 import ConnectionStatus from "./ConnectionStatus";
-import Canvas from "./Canvas";
+import CanvasController from "./CanvasController";
 import ParameterList from "./ParameterList";
 
 const OSCController = () => {
@@ -57,7 +57,7 @@ const OSCController = () => {
         disabled={!connected}
       />
       <ParameterList setParameters={setParameters} parameters={parameters} />
-      <Canvas params={parameters} />
+      <CanvasController params={parameters} broadcasting={broadcasting} />
     </Box>
   );
 };

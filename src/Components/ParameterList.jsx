@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Drawer,
   IconButton,
@@ -6,12 +6,14 @@ import {
   Typography,
   Button,
   Grid,
+  Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ParameterItem from "./ParameterItem";
+import ProfileMenu from "./ProfileMenu";
 
 const ParameterList = ({ parameters, setParameters }) => {
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const addParameter = () => {
     if (parameters.length < 4) {
@@ -31,8 +33,7 @@ const ParameterList = ({ parameters, setParameters }) => {
 
   const removeParameter = (index) => {
     if (parameters.length > 1) {
-      const newParams = parameters.filter((_, i) => i !== index);
-      setParameters(newParams);
+      setParameters(parameters.filter((_, i) => i !== index));
     }
   };
 
@@ -58,9 +59,13 @@ const ParameterList = ({ parameters, setParameters }) => {
           },
         }}
       >
-        <Typography variant="h6" sx={{ color: "white" }}>
-          Parameters
-        </Typography>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Typography variant="h6" sx={{ color: "white", flexGrow: 1 }}>
+            Parameters
+          </Typography>
+          <ProfileMenu parameters={parameters} setParameters={setParameters} />
+        </Box>
+
         <List>
           <Grid container spacing={1}>
             {parameters.map((param, index) => (
@@ -74,6 +79,7 @@ const ParameterList = ({ parameters, setParameters }) => {
             ))}
           </Grid>
         </List>
+
         <Button
           onClick={addParameter}
           disabled={parameters.length >= 4}

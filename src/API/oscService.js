@@ -35,7 +35,7 @@ ws.onmessage = (event) => {
   }
 };
 
-function createOSCAddress(param) {
+export function createOSCAddress(param) {
   const { type, trackNum, fxNum, paramNum } = param;
   switch (type) {
     case "vol":

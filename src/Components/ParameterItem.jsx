@@ -37,7 +37,7 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
         sx={{
           padding: 2,
           display: "flex",
-          flexDirection: "column",
+
           gap: 2,
           backgroundColor: "#ffffff11",
           borderRadius: 2,
@@ -61,12 +61,6 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
         <Select
           value={param.type}
           onChange={(e) => updateParameter("type", e.target.value)}
-          fullWidth
-          sx={{
-            backgroundColor: "#2e2e2e",
-            color: "white",
-            "& .MuiSelect-icon": { color: "white" },
-          }}
         >
           {["inst", "fx", "vol", "sendvol", "pan"].map((option) => (
             <MenuItem key={option} value={option}>
@@ -79,52 +73,22 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           label="Track #"
           value={param.trackNum}
           onChange={(e) => updateParameter("trackNum", Number(e.target.value))}
-          fullWidth
-          InputProps={{
-            style: { color: "white" },
-          }}
-          InputLabelProps={{
-            style: { color: "gray" },
-          }}
-          sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
         />
         <TextField
           type="number"
           label="FX #"
           value={param.fxNum}
           onChange={(e) => updateParameter("fxNum", Number(e.target.value))}
-          fullWidth
-          InputProps={{
-            style: { color: "white" },
-          }}
-          InputLabelProps={{
-            style: { color: "gray" },
-          }}
-          sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
         />
         <TextField
           type="number"
           label="Param #"
           value={param.paramNum}
           onChange={(e) => updateParameter("paramNum", Number(e.target.value))}
-          fullWidth
-          InputProps={{
-            style: { color: "white" },
-          }}
-          InputLabelProps={{
-            style: { color: "gray" },
-          }}
-          sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
         />
         <Select
           value={param.controlType}
           onChange={(e) => updateParameter("controlType", e.target.value)}
-          fullWidth
-          sx={{
-            backgroundColor: "#2e2e2e",
-            color: "white",
-            "& .MuiSelect-icon": { color: "white" },
-          }}
         >
           {["mouse-x", "mouse-y", "ball"].map((option) => (
             <MenuItem key={option} value={option}>
@@ -144,13 +108,6 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
             value={param.range?.min || 0}
             onChange={(e) => updateRange("min", Number(e.target.value))}
             fullWidth
-            InputProps={{
-              style: { color: "white" },
-            }}
-            InputLabelProps={{
-              style: { color: "gray" },
-            }}
-            sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
           />
           <TextField
             type="number"
@@ -158,13 +115,6 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
             value={param.range?.max || 1}
             onChange={(e) => updateRange("max", Number(e.target.value))}
             fullWidth
-            InputProps={{
-              style: { color: "white" },
-            }}
-            InputLabelProps={{
-              style: { color: "gray" },
-            }}
-            sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
           />
         </Box>
       </Card>
