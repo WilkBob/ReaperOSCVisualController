@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
-import MouseTracker from "./controls/MouseTracker";
+
+import MouseControlCanvas from "./controls/MouseTracker";
 
 const CanvasController = ({ params, broadcasting }) => {
   // Object to store addresses for each control type
@@ -103,7 +104,7 @@ const CanvasController = ({ params, broadcasting }) => {
   return (
     <div className="canvas-controller">
       {/* Render controls based on what's needed */}
-      <MouseTracker
+      <MouseControlCanvas
         trackX={!!controlAddresses["mouse-x"]}
         trackY={!!controlAddresses["mouse-y"]}
         trackBallX={!!controlAddresses["ball-x"]}
