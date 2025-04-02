@@ -1,14 +1,27 @@
 import { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 
-const MouseControlCanvas = ({ trackX, trackY, onUpdateX, onUpdateY }) => {
+const MouseControlCanvas = ({
+  trackX,
+  trackY,
+  trackBallX,
+  trackBallY,
+  onUpdateX,
+  onUpdateY,
+  onUpdateBallX,
+  onUpdateBallY,
+  trackClick,
+  onUpdateClick,
+}) => {
   const canvasRef = useRef(null);
+  const ballRef = useRef({ x: 0.5, y: 0.5, vx: 0.004, vy: 0.001 });
+  const animationRef = useRef(null);
+  const mousePosRef = useRef({ x: 0.5, y: 0.5 }); // Store mouse position
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // Set canvas to fullscreen
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -18,31 +31,99 @@ const MouseControlCanvas = ({ trackX, trackY, onUpdateX, onUpdateY }) => {
 
     const handleMouseMove = (e) => {
       const { innerWidth: width, innerHeight: height } = window;
-      const x = trackX ? e.clientX / width : 0;
-      const y = trackY ? e.clientY / height : 0;
+      const x = trackX ? e.clientX / width : 0.5; // Normalize mouse X
+      const y = trackY ? e.clientY / height : 0.5; // Normalize mouse Y
+
+      mousePosRef.current = { x, y }; // Update mouse position
 
       if (trackX) onUpdateX(x);
       if (trackY) onUpdateY(y);
-
-      // Clear the canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw a background color based on mouse position
-      const color = `rgba(${Math.floor(x * 255)}, ${Math.floor(
-        y * 255
-      )}, 150, 0.2)`;
-      ctx.fillStyle = color;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
-    // Add mousemove listener
+    const handleMouseWheel = (e) => {
+      // Adjust ball velocity based on scroll direction and intensity
+      const ball = ballRef.current;
+      const delta = e.deltaY * 0.00001; // Scale the scroll intensity
+      ball.vx += delta; // Increase or decrease horizontal velocity
+      ball.vy += delta; // Increase or decrease vertical velocity
+
+      // Clamp the velocity to prevent it from becoming too fast or reversing
+      ball.vx = Math.max(-0.02, Math.min(0.02, ball.vx));
+      ball.vy = Math.max(-0.02, Math.min(0.02, ball.vy));
+    };
+
+    const handleMouseDown = () => {
+      if (trackClick) onUpdateClick(1); // Send 1 when clicked
+    };
+
+    const handleMouseUp = () => {
+      if (trackClick) onUpdateClick(0); // Send 0 when released
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("wheel", handleMouseWheel);
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Mouse interaction background - Bright and punchy colors
+      const { x: mouseX, y: mouseY } = mousePosRef.current;
+      const r = Math.floor(mouseX * 255); // Red based on mouse X
+      const g = Math.floor(mouseY * 255); // Green based on mouse Y
+      const b = 255 - Math.abs(r - g); // Blue for contrast
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.8)`; // Background color
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Ball physics
+      if (trackBallX || trackBallY) {
+        let ball = ballRef.current;
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        if (ball.x <= 0 || ball.x >= 1) ball.vx *= -1;
+        if (ball.y <= 0 || ball.y >= 1) ball.vy *= -1;
+
+        trackBallY && onUpdateBallY(ball.y);
+        trackBallX && onUpdateBallX(ball.x);
+
+        ctx.fillStyle = `rgb(${255 - r}, ${255 - g}, 150)`; // Complementary color for the ball
+        ctx.beginPath();
+        ctx.arc(
+          ball.x * canvas.width,
+          ball.y * canvas.height,
+          20,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("wheel", handleMouseWheel);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
+      cancelAnimationFrame(animationRef.current);
     };
-  }, [trackX, trackY, onUpdateX, onUpdateY]);
+  }, [
+    trackX,
+    trackY,
+    trackBallX,
+    trackBallY,
+    trackClick,
+    onUpdateX,
+    onUpdateY,
+    onUpdateBallX,
+    onUpdateBallY,
+    onUpdateClick,
+  ]);
 
   return (
     <Box
@@ -52,7 +133,7 @@ const MouseControlCanvas = ({ trackX, trackY, onUpdateX, onUpdateY }) => {
         left: 0,
         width: "100vw",
         height: "100vh",
-        zIndex: -1, // Ensure it stays in the background
+        zIndex: -1,
       }}
     >
       <canvas ref={canvasRef} />

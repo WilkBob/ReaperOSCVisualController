@@ -90,7 +90,7 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           value={param.controlType}
           onChange={(e) => updateParameter("controlType", e.target.value)}
         >
-          {["mouse-x", "mouse-y", "ball"].map((option) => (
+          {["mouse-x", "mouse-y", "ball-x", "ball-y", "click"].map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
