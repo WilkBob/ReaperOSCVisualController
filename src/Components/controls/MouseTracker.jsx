@@ -31,15 +31,14 @@ const MouseControlCanvas = ({
 
     const handleMouseMove = (e) => {
       const { innerWidth: width, innerHeight: height } = window;
-      const x = trackX ? e.clientX / width : 0.5; // Normalize mouse X
-      const y = trackY ? e.clientY / height : 0.5; // Normalize mouse Y
+      const x = e.clientX / width; // Always normalize mouse X
+      const y = e.clientY / height; // Always normalize mouse Y
 
-      mousePosRef.current = { x, y }; // Update mouse position
+      mousePosRef.current = { x, y }; // Always update mouse position
 
-      if (trackX) onUpdateX(x);
-      if (trackY) onUpdateY(y);
+      if (trackX) onUpdateX(x); // Only call onUpdateX if trackX is true
+      if (trackY) onUpdateY(y); // Only call onUpdateY if trackY is true
     };
-
     const handleMouseWheel = (e) => {
       // Adjust ball velocity based on scroll direction and intensity
       const ball = ballRef.current;
@@ -51,13 +50,15 @@ const MouseControlCanvas = ({
       ball.vx = Math.max(-0.02, Math.min(0.02, ball.vx));
       ball.vy = Math.max(-0.02, Math.min(0.02, ball.vy));
     };
-
+    let clicked = false;
     const handleMouseDown = () => {
       if (trackClick) onUpdateClick(1); // Send 1 when clicked
+      clicked = true;
     };
 
     const handleMouseUp = () => {
       if (trackClick) onUpdateClick(0); // Send 0 when released
+      clicked = false;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -94,6 +95,19 @@ const MouseControlCanvas = ({
           ball.x * canvas.width,
           ball.y * canvas.height,
           20,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+      if (clicked && trackClick) {
+        // Draw a circle at the current mouse position
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Set a color for the circle
+        ctx.beginPath();
+        ctx.arc(
+          mouseX * canvas.width, // Scale mouseX to canvas width
+          mouseY * canvas.height, // Scale mouseY to canvas height
+          20, // Radius of the circle
           0,
           Math.PI * 2
         );
