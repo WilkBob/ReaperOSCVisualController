@@ -20,13 +20,24 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
     });
   };
 
+  const updateRange = (key, value) => {
+    setParameters((prev) => {
+      const newParams = [...prev];
+      newParams[index] = {
+        ...newParams[index],
+        range: { ...newParams[index].range, [key]: value },
+      };
+      return newParams;
+    });
+  };
+
   return (
     <Grid item xs={12} sm={6}>
       <Card
         sx={{
           padding: 2,
           display: "flex",
-
+          flexDirection: "column",
           gap: 2,
           backgroundColor: "#ffffff11",
           borderRadius: 2,
@@ -115,12 +126,47 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
             "& .MuiSelect-icon": { color: "white" },
           }}
         >
-          {["mouse-x", "mouse-y", "distance"].map((option) => (
+          {["mouse-x", "mouse-y", "ball"].map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
           ))}
         </Select>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+          }}
+        >
+          <TextField
+            type="number"
+            label="Min Range"
+            value={param.range?.min || 0}
+            onChange={(e) => updateRange("min", Number(e.target.value))}
+            fullWidth
+            InputProps={{
+              style: { color: "white" },
+            }}
+            InputLabelProps={{
+              style: { color: "gray" },
+            }}
+            sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
+          />
+          <TextField
+            type="number"
+            label="Max Range"
+            value={param.range?.max || 1}
+            onChange={(e) => updateRange("max", Number(e.target.value))}
+            fullWidth
+            InputProps={{
+              style: { color: "white" },
+            }}
+            InputLabelProps={{
+              style: { color: "gray" },
+            }}
+            sx={{ backgroundColor: "#2e2e2e", borderRadius: 1 }}
+          />
+        </Box>
       </Card>
     </Grid>
   );

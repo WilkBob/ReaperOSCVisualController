@@ -16,6 +16,7 @@ import ParameterList from "./ParameterList";
 
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
+  const [broadcasting, setBroadcasting] = useState(false);
   const [parameters, setParameters] = useState([
     {
       type: "inst",
@@ -43,7 +44,11 @@ const OSCController = () => {
         alignItems: "center",
       }}
     >
-      <ConnectionStatus connected={connected} />
+      <ConnectionStatus
+        connected={connected}
+        broadcasting={broadcasting}
+        setBroadcasting={setBroadcasting}
+      />
       <Transport
         play={play}
         record={record}
