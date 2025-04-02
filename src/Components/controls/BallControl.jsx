@@ -12,7 +12,7 @@ const BallControl = ({ onUpdate }) => {
         const newPos = prev + direction * speed;
 
         // Change direction when hitting edges
-        if (newPos >= 1 || newPos <= 0) {
+        if (newPos >= 0.98 || newPos <= 0.02) {
           setDirection((d) => -d);
         }
 

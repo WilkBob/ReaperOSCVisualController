@@ -1,3 +1,4 @@
+import { Debug } from "./Debug";
 import { useEffect, useState, useRef } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
 import MouseTracker from "./controls/MouseTracker";
@@ -8,6 +9,7 @@ const CanvasController = ({ params, broadcasting }) => {
   const [useX, setUseX] = useState(false);
   const [useY, setUseY] = useState(false);
   const [useBall, setUseBall] = useState(false);
+  const [debug, setDebug] = useState(false);
 
   // Object to store addresses for each control type
   const [controlAddresses, setControlAddresses] = useState({
@@ -133,35 +135,14 @@ const CanvasController = ({ params, broadcasting }) => {
 
       {useBall && <BallControl onUpdate={(val) => (ballRef.current = val)} />}
 
-      {/* Debug information */}
-      {false && ( // Set to true for debugging
-        <div className="debug-info">
-          <h3>Control Types</h3>
-          <ul>
-            {params.map((param, index) => (
-              <li key={index}>{param.controlType}</li>
-            ))}
-          </ul>
-          <h3>Control States</h3>
-          <p>Use X: {useX ? "True" : "False"}</p>
-          <p>Use Y: {useY ? "True" : "False"}</p>
-          <p>Use Ball: {useBall ? "True" : "False"}</p>
-          <h3>Control Addresses</h3>
-          <ul>
-            <li>
-              <strong>Mouse X:</strong>{" "}
-              {controlAddresses["mouse-x"].map((a) => a.address).join(", ")}
-            </li>
-            <li>
-              <strong>Mouse Y:</strong>{" "}
-              {controlAddresses["mouse-y"].map((a) => a.address).join(", ")}
-            </li>
-            <li>
-              <strong>Ball:</strong>{" "}
-              {controlAddresses["ball"].map((a) => a.address).join(", ")}
-            </li>
-          </ul>
-        </div>
+      {debug && (
+        <Debug
+          params={params}
+          useX={useX}
+          useY={useY}
+          useBall={useBall}
+          controlAddresses={controlAddresses}
+        />
       )}
     </div>
   );

@@ -29,10 +29,15 @@ const OSCController = () => {
   ]);
 
   useEffect(() => {
-    const handleConnectionChange = (status) => setConnected(status);
+    const handleConnectionChange = (status) => {
+      console.log("Connection status changed:", status);
+      setConnected(status);
+    };
 
     addConnectionListener(handleConnectionChange);
-    return () => removeConnectionListener(handleConnectionChange);
+    return () => {
+      removeConnectionListener(handleConnectionChange);
+    };
   }, []);
 
   return (

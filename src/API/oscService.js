@@ -4,6 +4,8 @@ export const isConnected = () => ws.readyState === WebSocket.OPEN;
 
 export const addConnectionListener = (listener) => {
   connectionListeners.add(listener);
+  // Notify the listener of the current connection state
+  listener(ws.readyState === WebSocket.OPEN);
 };
 
 export const removeConnectionListener = (listener) => {

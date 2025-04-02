@@ -1,55 +1,63 @@
 import { useEffect, useRef } from "react";
+import { Box } from "@mui/material";
 
-const MouseTracker = ({ trackX, trackY, onUpdateX, onUpdateY }) => {
-  const containerRef = useRef(null);
+const MouseControlCanvas = ({ trackX, trackY, onUpdateX, onUpdateY }) => {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas to fullscreen
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     const handleMouseMove = (e) => {
-      const rect = container.getBoundingClientRect();
+      const { innerWidth: width, innerHeight: height } = window;
+      const x = trackX ? e.clientX / width : 0;
+      const y = trackY ? e.clientY / height : 0;
 
-      // Calculate normalized values (0-1)
-      if (trackX) {
-        const x = (e.clientX - rect.left) / rect.width;
-        onUpdateX(Math.max(0, Math.min(1, x))); // Clamp between 0-1
-      }
+      if (trackX) onUpdateX(x);
+      if (trackY) onUpdateY(y);
 
-      if (trackY) {
-        const y = (e.clientY - rect.top) / rect.height;
-        onUpdateY(Math.max(0, Math.min(1, y))); // Clamp between 0-1
-      }
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw a background color based on mouse position
+      const color = `rgba(${Math.floor(x * 255)}, ${Math.floor(
+        y * 255
+      )}, 150, 0.2)`;
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
-    container.addEventListener("mousemove", handleMouseMove);
+    // Add mousemove listener
+    window.addEventListener("mousemove", handleMouseMove);
+
     return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, [trackX, trackY, onUpdateX, onUpdateY]);
 
   return (
-    <div
-      ref={containerRef}
-      className="mouse-tracker"
-      style={{
-        width: "100%",
-        height: "300px",
-        backgroundColor: "rgba(0,0,0,0.1)",
-        border: "1px solid #333",
-        borderRadius: "4px",
-        position: "relative",
+    <Box
+      sx={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: -1, // Ensure it stays in the background
       }}
     >
-      <div className="tracker-label" style={{ padding: "10px", color: "#fff" }}>
-        {trackX && trackY
-          ? "Move mouse to control X/Y"
-          : trackX
-          ? "Move mouse horizontally to control X"
-          : "Move mouse vertically to control Y"}
-      </div>
-    </div>
+      <canvas ref={canvasRef} />
+    </Box>
   );
 };
 
-export default MouseTracker;
+export default MouseControlCanvas;
