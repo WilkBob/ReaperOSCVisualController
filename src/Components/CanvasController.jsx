@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
 
 import MouseControlCanvas from "./controls/MouseTracker";
@@ -17,28 +17,30 @@ const CanvasController = ({ params, broadcasting }) => {
   });
 
   // Configuration for control types
-  const controlConfig = {
-    "mouse-x": {
-      ref: controlRefs.current["mouse-x"],
-      updateFunction: (val) => (controlRefs.current["mouse-x"].current = val),
-    },
-    "mouse-y": {
-      ref: controlRefs.current["mouse-y"],
-      updateFunction: (val) => (controlRefs.current["mouse-y"].current = val),
-    },
-    "ball-x": {
-      ref: controlRefs.current["ball-x"],
-      updateFunction: (val) => (controlRefs.current["ball-x"].current = val),
-    },
-    "ball-y": {
-      ref: controlRefs.current["ball-y"],
-      updateFunction: (val) => (controlRefs.current["ball-y"].current = val),
-    },
-    click: {
-      ref: controlRefs.current["click"],
-      updateFunction: (val) => (controlRefs.current["click"].current = val),
-    },
-  };
+  const controlConfig = useMemo(() => {
+    return {
+      "mouse-x": {
+        ref: controlRefs.current["mouse-x"],
+        updateFunction: (val) => (controlRefs.current["mouse-x"].current = val),
+      },
+      "mouse-y": {
+        ref: controlRefs.current["mouse-y"],
+        updateFunction: (val) => (controlRefs.current["mouse-y"].current = val),
+      },
+      "ball-x": {
+        ref: controlRefs.current["ball-x"],
+        updateFunction: (val) => (controlRefs.current["ball-x"].current = val),
+      },
+      "ball-y": {
+        ref: controlRefs.current["ball-y"],
+        updateFunction: (val) => (controlRefs.current["ball-y"].current = val),
+      },
+      click: {
+        ref: controlRefs.current["click"],
+        updateFunction: (val) => (controlRefs.current["click"].current = val),
+      },
+    };
+  }, []);
 
   // Update control states and addresses when params change
   useEffect(() => {

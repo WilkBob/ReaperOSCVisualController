@@ -66,7 +66,7 @@ const MouseControlCanvas = ({
         ...p,
         x: p.x + p.speedX,
         y: p.y + p.speedY,
-        life: p.life - 0.1,
+        life: p.life - 1,
         size: p.size * 0.99,
       }))
       .filter((p) => p.life > 0);
@@ -245,7 +245,7 @@ const MouseControlCanvas = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
+    let animationFrameId = null;
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -276,13 +276,14 @@ const MouseControlCanvas = ({
         trackClick,
       });
 
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     };
     animate();
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("click", handleClick);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, [
     trackBallX,

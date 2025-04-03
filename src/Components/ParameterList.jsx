@@ -16,7 +16,7 @@ const ParameterList = ({ parameters, setParameters }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const addParameter = () => {
-    if (parameters.length < 4) {
+    if (parameters.length < 5) {
       setParameters([
         ...parameters,
         {
