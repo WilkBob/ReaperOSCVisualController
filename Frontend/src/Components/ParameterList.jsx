@@ -82,7 +82,7 @@ const ParameterList = ({ parameters, setParameters }) => {
 
         <Button
           onClick={addParameter}
-          disabled={parameters.length >= 4}
+          disabled={parameters.length >= 5}
           fullWidth
         >
           Add Parameter
