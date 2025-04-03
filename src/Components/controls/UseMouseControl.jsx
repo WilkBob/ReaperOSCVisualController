@@ -37,7 +37,7 @@ const useMouseControl = ({
         Math.max(-0.02, Math.min(0.02, ball.vx + delta)).toFixed(3)
       );
       ball.vy = parseFloat(
-        Math.max(-0.02, Math.min(0.02, ball.vy + delta)).toFixed(3)
+        Math.max(-0.021, Math.min(0.021, ball.vy + delta)).toFixed(3)
       );
     };
 

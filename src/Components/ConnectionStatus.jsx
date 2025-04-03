@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, FormControlLabel, Typography, Switch } from "@mui/material";
 
 const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key.toLowerCase() === "b") {
+        setBroadcasting((prev) => !prev); // Toggle broadcasting
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [setBroadcasting]);
+
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <FormControlLabel

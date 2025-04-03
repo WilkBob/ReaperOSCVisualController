@@ -62,7 +62,9 @@ const OSCController = () => {
         toggleMetronome={toggleMetronome}
         disabled={!connected}
       />
-      <ParameterList setParameters={setParameters} parameters={parameters} />
+      {!broadcasting && (
+        <ParameterList setParameters={setParameters} parameters={parameters} />
+      )}
       <CanvasController params={parameters} broadcasting={broadcasting} />
     </Box>
   );
