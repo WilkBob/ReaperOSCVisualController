@@ -27,37 +27,8 @@ const MouseControlCanvas = ({
     trackClick,
     onUpdateX,
     onUpdateY,
-    onUpdateBallX,
-    onUpdateBallY,
     onUpdateClick,
   });
-  const prevTrackBallX = useRef(trackBallX);
-  const prevTrackBallY = useRef(trackBallY);
-  const drawTrackingInfo = useCallback(
-    (ctx) => {
-      // Draw stats in upper left corner
-      ctx.fillStyle = "white";
-      ctx.font = "16px Arial";
-      ctx.textAlign = "left";
-      ctx.shadowColor = "black";
-      ctx.shadowBlur = 3;
-
-      const textLines = [
-        `Mouse X: ${mousePosRef.current.x.toFixed(2)}`,
-        `Mouse Y: ${mousePosRef.current.y.toFixed(2)}`,
-        `Ball X: ${ballRef.current.x.toFixed(2)}`,
-        `Ball Y: ${ballRef.current.y.toFixed(2)}`,
-        `BallVel: x-${ballRef.current.vx} y-${ballRef.current.vy}`,
-        `Clicked: ${clickedRef.current ? "Yes" : "No"}`,
-        `Particles: ${particles.current.length}`,
-      ];
-
-      textLines.forEach((line, index) => {
-        ctx.fillText(line, 20, 80 + index * 25);
-      });
-    },
-    [ballRef, clickedRef, mousePosRef]
-  );
 
   // Update particle positions and properties
   const updateParticles = () => {
@@ -152,8 +123,8 @@ const MouseControlCanvas = ({
 
       // Draw ball
       if (trackBallX || trackBallY) {
-        ball.x += ball.vx;
-        ball.y += ball.vy;
+        ball.x += ball.vx * ball.fac;
+        ball.y += ball.vy * ball.fac * 1.2;
 
         if (ball.x <= 0 || ball.x >= 1) ball.vx *= -1;
         if (ball.y <= 0 || ball.y >= 1) ball.vy *= -1;
@@ -232,16 +203,10 @@ const MouseControlCanvas = ({
         );
         ctx.fill();
       }
-
-      //Draw all values being tracked on screen in a nice way (e.g. mouseX: 0.9)
-      drawTrackingInfo(ctx);
     },
-    [trackX, trackY, onUpdateBallX, onUpdateBallY, drawTrackingInfo]
+    [trackX, trackY, onUpdateBallX, onUpdateBallY]
   );
-  useEffect(() => {
-    prevTrackBallX.current = trackBallX;
-    prevTrackBallY.current = trackBallY;
-  }, [trackBallX, trackBallY]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");

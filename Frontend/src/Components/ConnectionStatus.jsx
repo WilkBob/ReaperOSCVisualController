@@ -25,7 +25,7 @@ const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
             name="broadcastingSwitch"
           />
         }
-        label="Broadcasting"
+        label="Broadcasting (b)"
       />
       <Typography variant="body2" sx={{ mr: 1 }}>
         {connected ? "Connected" : "Disconnected"}

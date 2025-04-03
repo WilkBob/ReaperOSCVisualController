@@ -8,12 +8,10 @@ const useMouseControl = ({
   trackClick,
   onUpdateX,
   onUpdateY,
-  onUpdateBallX,
-  onUpdateBallY,
   onUpdateClick,
 }) => {
   const mousePosRef = useRef({ x: 0.5, y: 0.5 });
-  const ballRef = useRef({ x: 0.5, y: 0.5, vx: 0.004, vy: 0.001 });
+  const ballRef = useRef({ x: 0.5, y: 0.5, fac: 0.5, vx: 0.008, vy: 0.006 });
   const clickedRef = useRef(false);
 
   useEffect(() => {
@@ -30,15 +28,16 @@ const useMouseControl = ({
 
     const handleMouseWheel = (e) => {
       const ball = ballRef.current;
-      const delta = e.deltaY * 0.00001;
+      const delta = e.deltaY * 0.001; // Adjust sensitivity as needed
 
-      // Update velocities and round to 3 decimal places
-      ball.vx = parseFloat(
-        Math.max(-0.02, Math.min(0.02, ball.vx + delta)).toFixed(3)
-      );
-      ball.vy = parseFloat(
-        Math.max(-0.021, Math.min(0.021, ball.vy + delta)).toFixed(3)
-      );
+      // Update fac with clamping and smoothing
+      ball.fac = Math.min(1, Math.max(0.001, ball.fac - delta));
+
+      // Optionally, round to 3 decimals for precision
+      ball.fac = Math.round(ball.fac * 1000) / 1000;
+
+      if (trackBallX) onUpdateX(ball.fac); // Example: Update X if tracking ball
+      if (trackBallY) onUpdateY(ball.fac); // Example: Update Y if tracking ball
     };
 
     const handleMouseDown = () => {
@@ -70,8 +69,6 @@ const useMouseControl = ({
     trackClick,
     onUpdateX,
     onUpdateY,
-    onUpdateBallX,
-    onUpdateBallY,
     onUpdateClick,
   ]);
 
