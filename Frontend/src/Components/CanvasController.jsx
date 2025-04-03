@@ -105,21 +105,18 @@ const CanvasController = ({ params, broadcasting }) => {
   };
 
   return (
-    <div className="canvas-controller">
-      {/* Render controls based on what's needed */}
-      <MouseControlCanvas
-        trackX={!!controlAddresses["mouse-x"]}
-        trackY={!!controlAddresses["mouse-y"]}
-        trackBallX={!!controlAddresses["ball-x"]}
-        trackBallY={!!controlAddresses["ball-y"]}
-        onUpdateX={controlConfig["mouse-x"].updateFunction}
-        onUpdateY={controlConfig["mouse-y"].updateFunction}
-        onUpdateBallX={controlConfig["ball-x"].updateFunction}
-        onUpdateBallY={controlConfig["ball-y"].updateFunction}
-        trackClick={!!controlAddresses["click"]}
-        onUpdateClick={controlConfig["click"].updateFunction}
-      />
-    </div>
+    <MouseControlCanvas
+      trackX={!!controlAddresses["mouse-x"]}
+      trackY={!!controlAddresses["mouse-y"]}
+      trackBallX={!!controlAddresses["ball-x"]}
+      trackBallY={!!controlAddresses["ball-y"]}
+      onUpdateX={controlConfig["mouse-x"].updateFunction}
+      onUpdateY={controlConfig["mouse-y"].updateFunction}
+      onUpdateBallX={controlConfig["ball-x"].updateFunction}
+      onUpdateBallY={controlConfig["ball-y"].updateFunction}
+      trackClick={!!controlAddresses["click"]}
+      onUpdateClick={controlConfig["click"].updateFunction}
+    />
   );
 };
 
