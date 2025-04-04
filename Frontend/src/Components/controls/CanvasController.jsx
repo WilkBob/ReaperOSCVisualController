@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import useMouseControl from "./UseMouseControl";
 import ParticleControls from "./Particles/ParticleControls";
+import SpaceControls from "./SpaceControls/SpaceControls";
 
 const CanvasController = ({
   trackX,
@@ -59,33 +60,39 @@ const CanvasController = ({
     //     ctx.fillText(text, 10, 50 + index * 20); // Adjust vertical spacing (20px per line)
     //   });
     // };
-
-    // Initialize ParticleControls
-    const particleControls = new ParticleControls(
+    const controllerArgs = {
       canvas,
       ctx,
       mousePosRef,
       ballRef,
       clickedRef,
-      trackX || trackY,
-      trackBallX || trackBallY,
+      trackMouse: trackX || trackY,
+      trackBall: trackBallX || trackBallY,
       trackClick,
       onUpdateBallX,
-      onUpdateBallY
-    );
+      onUpdateBallY,
+    };
+
+    // Initialize ParticleControls or SpaceControls based on visualizer prop
+
+    const controller =
+      visualizer === "particle"
+        ? new ParticleControls(controllerArgs)
+        : new SpaceControls(controllerArgs);
 
     // Resize canvas to fit the window
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      controller.onResize(); // Call the resize method of the controller
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
     let animationFrameId = null;
     // Animation loop
     const animate = () => {
-      particleControls.update(); // Update particles and ball
-      particleControls.draw(); // Draw particles and ball
+      controller.update(); // Update particles and ball
+      controller.draw(); // Draw particles and ball
       // drawTrackingInfo(); // Draw tracking information
       animationFrameId = requestAnimationFrame(animate);
     };

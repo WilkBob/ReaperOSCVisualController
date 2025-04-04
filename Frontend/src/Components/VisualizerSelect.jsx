@@ -1,8 +1,15 @@
 import React from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart"; // Icon for ParticleControls
+import PublicIcon from "@mui/icons-material/Public"; // Icon for SpaceControls
 
 const VisualizerSelect = ({ visualizer, setVisualizer }) => {
+  // Array of visualizer options
+  const visualizerOptions = [
+    { id: "particle", label: "Particle Controls", icon: <BubbleChartIcon /> },
+    { id: "space", label: "Space Controls", icon: <PublicIcon /> },
+  ];
+
   return (
     <Box
       sx={{
@@ -28,18 +35,22 @@ const VisualizerSelect = ({ visualizer, setVisualizer }) => {
       >
         Select Visualizer:
       </Typography>
-      <IconButton
-        onClick={() => setVisualizer("ParticleControls")}
-        color={visualizer === "ParticleControls" ? "primary" : "default"}
-        sx={{
-          backgroundColor:
-            visualizer === "ParticleControls"
-              ? "rgba(255, 255, 255, 0.2)"
-              : "transparent",
-        }}
-      >
-        <BubbleChartIcon />
-      </IconButton>
+      {visualizerOptions.map((option) => (
+        <IconButton
+          key={option.id}
+          onClick={() => setVisualizer(option.id)}
+          color={visualizer === option.id ? "primary" : "default"}
+          sx={{
+            backgroundColor:
+              visualizer === option.id
+                ? "rgba(255, 255, 255, 0.2)"
+                : "transparent",
+          }}
+          title={option.label} // Tooltip for accessibility
+        >
+          {option.icon}
+        </IconButton>
+      ))}
     </Box>
   );
 };

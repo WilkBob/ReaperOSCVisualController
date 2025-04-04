@@ -18,6 +18,7 @@ import VisualizerSelect from "./VisualizerSelect";
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
+  const [visualizer, setVisualizer] = useState("particle");
   const [parameters, setParameters] = useState([
     {
       type: "inst",
@@ -28,7 +29,6 @@ const OSCController = () => {
       range: { min: 0, max: 1 },
     },
   ]);
-  const [visualizer, setVisualizer] = useState("ParticleControls");
 
   useEffect(() => {
     const handleConnectionChange = (status) => {

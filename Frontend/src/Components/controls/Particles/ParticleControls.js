@@ -2,18 +2,19 @@ import Ball from "./Ball";
 import Particle from "./Particle";
 
 class ParticleControls {
-  constructor(
-    canvas,
-    ctx,
-    mousePosRef,
-    ballRef,
-    clickedRef,
-    trackMouse,
-    trackBall,
-    trackClick,
-    onUpdateBallX,
-    onUpdateBallY
-  ) {
+  constructor(argsOBJ) {
+    const {
+      canvas,
+      ctx,
+      mousePosRef,
+      ballRef,
+      clickedRef,
+      trackMouse,
+      trackBall,
+      trackClick,
+      onUpdateBallX,
+      onUpdateBallY,
+    } = argsOBJ;
     this.canvas = canvas;
     this.ctx = ctx;
     this.lastMousePos = { x: 0, y: 0 };
@@ -121,6 +122,10 @@ class ParticleControls {
       default:
         ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
     }
+  }
+
+  onResize() {
+    return;
   }
 
   addParticle(x, y, burst = false) {
