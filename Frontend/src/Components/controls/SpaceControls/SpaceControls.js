@@ -32,10 +32,9 @@ class SpaceControls {
     this.ctx = ctx;
 
     // Mouse tracking
-    this.lastMousePos = { x: 0, y: 0 }; // Last recorded mouse position
+
     this.mousePosRef = mousePosRef; // Reference to the current mouse position
     this.clickedRef = clickedRef; // Reference to the current mouse click status
-    this.lastClicked = false; // Last recorded click state
 
     // Ball tracking
     this.ballRef = ballRef; // Reference to the ball's position and factor

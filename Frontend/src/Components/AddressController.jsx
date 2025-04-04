@@ -78,13 +78,7 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
           const { ref } = controlConfig[controlType];
 
           addresses.forEach(({ address, range }) => {
-            const scaledValue = scaleValue(
-              ref.current,
-              0,
-              1,
-              range.min,
-              range.max
-            );
+            const scaledValue = scaleValue(ref.val, 0, 1, range.min, range.max);
             if (scaledValue !== ref.last) {
               sendMessage(address, scaledValue);
               ref.last = scaledValue; // Update last broadcasted value
