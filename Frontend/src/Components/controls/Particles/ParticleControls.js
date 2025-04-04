@@ -4,30 +4,58 @@ import Particle from "./Particle";
 class ParticleControls {
   constructor(argsOBJ) {
     const {
-      canvas,
-      ctx,
-      mousePosRef,
-      ballRef,
-      clickedRef,
-      trackMouse,
-      trackBall,
-      trackClick,
-      onUpdateBallX,
-      onUpdateBallY,
+      // Canvas and rendering context
+      canvas, // The canvas element
+      ctx, // The 2D rendering context for the canvas
+
+      // Mouse tracking
+      mousePosRef, // Reference to the current mouse position
+      clickedRef, // Reference to the current mouse click status
+
+      // Ball tracking
+      ballRef, // Reference to the ball's position and factor
+
+      // Chaos tracking
+      chaosRef, // Reference to the chaos value
+
+      // Tracking flags
+      trackMouse, // Whether to track mouse movement
+      trackBall, // Whether to track ball movement
+      trackClick, // Whether to track mouse clicks
+      trackChaos, // Whether to track chaos value
+
+      // Update callbacks
+      onUpdateBallX, // Callback to update the ball's X position
+      onUpdateBallY, // Callback to update the ball's Y position
+      onUpdateChaos, // Callback to update the chaos value
     } = argsOBJ;
+
+    // Canvas and rendering context
     this.canvas = canvas;
     this.ctx = ctx;
-    this.lastMousePos = { x: 0, y: 0 };
-    this.mousePosRef = mousePosRef;
-    this.ballRef = ballRef;
-    this.lastClicked = false;
-    this.clickedRef = clickedRef;
 
-    this.trackMouse = trackMouse;
-    this.trackBall = trackBall;
-    this.trackClick = trackClick;
-    this.onUpdateBallX = onUpdateBallX;
-    this.onUpdateBallY = onUpdateBallY;
+    // Mouse tracking
+    this.lastMousePos = { x: 0, y: 0 }; // Last recorded mouse position
+    this.mousePosRef = mousePosRef; // Reference to the current mouse position
+    this.clickedRef = clickedRef; // Reference to the current mouse click status
+    this.lastClicked = false; // Last recorded click state
+
+    // Ball tracking
+    this.ballRef = ballRef; // Reference to the ball's position and factor
+
+    // Chaos tracking
+    this.chaosRef = chaosRef; // Reference to the chaos value
+    this.trackChaos = trackChaos; // Whether chaos tracking is enabled
+
+    // Tracking flags
+    this.trackMouse = trackMouse; // Whether mouse tracking is enabled
+    this.trackBall = trackBall; // Whether ball tracking is enabled
+    this.trackClick = trackClick; // Whether click tracking is enabled
+
+    // Update callbacks
+    this.onUpdateBallX = onUpdateBallX; // Callback to update the ball's X position
+    this.onUpdateBallY = onUpdateBallY; // Callback to update the ball's Y position
+    this.onUpdateChaos = onUpdateChaos; // Callback to update the chaos value
 
     this.particles = [];
     this.ball = new Ball(ballRef);
@@ -304,6 +332,11 @@ class ParticleControls {
       // Call update callbacks if provided
       if (this.onUpdateBallX) this.onUpdateBallX(this.ballRef.current.x);
       if (this.onUpdateBallY) this.onUpdateBallY(this.ballRef.current.y);
+    }
+
+    if (this.trackChaos) {
+      this.chaosRef.current = this.particles.length / this.maxParticles;
+      this.onUpdateChaos(this.chaosRef.current);
     }
   }
 

@@ -9,11 +9,12 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
 
   // Refs to store current values and last broadcasted values
   const controlRefs = useRef({
-    "mouse-x": { current: 0, last: null },
-    "mouse-y": { current: 0, last: null },
-    "ball-x": { current: 0, last: null },
-    "ball-y": { current: 0, last: null },
-    click: { current: 0, last: null },
+    "mouse-x": { val: 0, last: null },
+    "mouse-y": { val: 0, last: null },
+    "ball-x": { val: 0, last: null },
+    "ball-y": { val: 0, last: null },
+    click: { val: 0, last: null },
+    chaos: { val: 0, last: null },
   });
 
   // Configuration for control types
@@ -21,23 +22,27 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
     return {
       "mouse-x": {
         ref: controlRefs.current["mouse-x"],
-        updateFunction: (val) => (controlRefs.current["mouse-x"].current = val),
+        updateFunction: (val) => (controlRefs.current["mouse-x"].val = val),
       },
       "mouse-y": {
         ref: controlRefs.current["mouse-y"],
-        updateFunction: (val) => (controlRefs.current["mouse-y"].current = val),
+        updateFunction: (val) => (controlRefs.current["mouse-y"].val = val),
       },
       "ball-x": {
         ref: controlRefs.current["ball-x"],
-        updateFunction: (val) => (controlRefs.current["ball-x"].current = val),
+        updateFunction: (val) => (controlRefs.current["ball-x"].val = val),
       },
       "ball-y": {
         ref: controlRefs.current["ball-y"],
-        updateFunction: (val) => (controlRefs.current["ball-y"].current = val),
+        updateFunction: (val) => (controlRefs.current["ball-y"].val = val),
       },
       click: {
         ref: controlRefs.current["click"],
-        updateFunction: (val) => (controlRefs.current["click"].current = val),
+        updateFunction: (val) => (controlRefs.current["click"].val = val),
+      },
+      chaos: {
+        ref: controlRefs.current["chaos"],
+        updateFunction: (val) => (controlRefs.current["chaos"].val = val),
       },
     };
   }, []);
@@ -110,12 +115,14 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
       trackY={!!controlAddresses["mouse-y"]}
       trackBallX={!!controlAddresses["ball-x"]}
       trackBallY={!!controlAddresses["ball-y"]}
+      trackClick={!!controlAddresses["click"]}
+      trackChaos={!!controlAddresses["chaos"]}
       onUpdateX={controlConfig["mouse-x"].updateFunction}
       onUpdateY={controlConfig["mouse-y"].updateFunction}
       onUpdateBallX={controlConfig["ball-x"].updateFunction}
       onUpdateBallY={controlConfig["ball-y"].updateFunction}
-      trackClick={!!controlAddresses["click"]}
       onUpdateClick={controlConfig["click"].updateFunction}
+      onUpdateChaos={controlConfig["chaos"].updateFunction}
       visualizer={visualizer}
     />
   );

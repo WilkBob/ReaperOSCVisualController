@@ -1,36 +1,58 @@
 class SpaceControls {
   constructor(argsOBJ) {
     const {
-      canvas,
-      ctx,
-      mousePosRef,
-      ballRef,
-      clickedRef,
-      trackMouse,
-      trackBall,
-      trackClick,
-      onUpdateBallX,
-      onUpdateBallY,
+      // Canvas and rendering context
+      canvas, // The canvas element
+      ctx, // The 2D rendering context for the canvas
+
+      // Mouse tracking
+      mousePosRef, // Reference to the current mouse position
+      clickedRef, // Reference to the current mouse click status
+
+      // Ball tracking
+      ballRef, // Reference to the ball's position and factor
+
+      // Chaos tracking
+      chaosRef, // Reference to the chaos value
+
+      // Tracking flags
+      trackMouse, // Whether to track mouse movement
+      trackBall, // Whether to track ball movement
+      trackClick, // Whether to track mouse clicks
+      trackChaos, // Whether to track chaos value
+
+      // Update callbacks
+      onUpdateBallX, // Callback to update the ball's X position
+      onUpdateBallY, // Callback to update the ball's Y position
+      onUpdateChaos, // Callback to update the chaos value
     } = argsOBJ;
+
+    // Canvas and rendering context
     this.canvas = canvas;
     this.ctx = ctx;
 
-    // Data to represent - trackables
-    this.lastMousePos = { x: 0, y: 0 };
-    this.mousePosRef = mousePosRef;
-    this.ballRef = ballRef;
-    this.lastClicked = false;
-    this.clickedRef = clickedRef;
+    // Mouse tracking
+    this.lastMousePos = { x: 0, y: 0 }; // Last recorded mouse position
+    this.mousePosRef = mousePosRef; // Reference to the current mouse position
+    this.clickedRef = clickedRef; // Reference to the current mouse click status
+    this.lastClicked = false; // Last recorded click state
 
-    // Active status of trackables
-    this.trackMouse = trackMouse;
-    this.trackBall = trackBall;
-    this.trackClick = trackClick;
+    // Ball tracking
+    this.ballRef = ballRef; // Reference to the ball's position and factor
 
-    // Callbacks for updating the ball position
-    this.onUpdateBallX = onUpdateBallX;
-    this.onUpdateBallY = onUpdateBallY;
+    // Chaos tracking
+    this.chaosRef = chaosRef; // Reference to the chaos value
+    this.trackChaos = trackChaos; // Whether chaos tracking is enabled
 
+    // Tracking flags
+    this.trackMouse = trackMouse; // Whether mouse tracking is enabled
+    this.trackBall = trackBall; // Whether ball tracking is enabled
+    this.trackClick = trackClick; // Whether click tracking is enabled
+
+    // Update callbacks
+    this.onUpdateBallX = onUpdateBallX; // Callback to update the ball's X position
+    this.onUpdateBallY = onUpdateBallY; // Callback to update the ball's Y position
+    this.onUpdateChaos = onUpdateChaos; // Callback to update the chaos value
     // Solar system properties
     this.sun = { x: canvas.width / 2, y: canvas.height / 2, radius: 50 };
     this.planets = [

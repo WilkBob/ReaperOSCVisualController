@@ -9,21 +9,21 @@ const CanvasController = ({
   trackY,
   trackBallX,
   trackBallY,
+  trackClick,
+  trackChaos,
   onUpdateX,
   onUpdateY,
   onUpdateBallX,
   onUpdateBallY,
-  trackClick,
   onUpdateClick,
+  onUpdateChaos,
   visualizer,
 }) => {
   const canvasRef = useRef(null);
 
-  const { mousePosRef, ballRef, clickedRef } = useMouseControl({
+  const { mousePosRef, ballRef, clickedRef, chaosRef } = useMouseControl({
     trackX,
     trackY,
-    trackBallX,
-    trackBallY,
     trackClick,
     onUpdateX,
     onUpdateY,
@@ -34,43 +34,51 @@ const CanvasController = ({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // const drawTrackingInfo = () => {
+    const drawTrackingInfo = () => {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "left";
 
-    //   ctx.font = "16px Arial";
-    //   ctx.fillStyle = "white";
-    //   ctx.textAlign = "left";
+      // Array of tracking information strings
+      const trackingInfo = [
+        `Mouse Position: x=${mousePosRef.current.x.toFixed(
+          2
+        )}, y=${mousePosRef.current.y.toFixed(2)}`,
+        `Ball Position: x=${ballRef.current.x.toFixed(
+          2
+        )}, y=${ballRef.current.y.toFixed(2)}`,
+        `Mouse Clicked: ${clickedRef.current ? "Yes" : "No"}`,
+        `Track Mouse: ${trackX || trackY ? "Yes" : "No"}`,
+        `Track Ball: ${trackBallX || trackBallY ? "Yes" : "No"}`,
+        `Ball Factor: ${ballRef.current.fac}`,
+        `Track Click: ${trackClick ? "Yes" : "No"}`,
+        `Track Chaos: ${trackChaos ? "Yes" : "No"}`,
+        `Chaos Value: ${chaosRef.current.toFixed(2)}`,
+        `Visualizer: ${visualizer}`,
+      ];
 
-    //   // Array of tracking information strings
-    //   const trackingInfo = [
-    //     `Mouse Position: x=${mousePosRef.current.x.toFixed(
-    //       2
-    //     )}, y=${mousePosRef.current.y.toFixed(2)}`,
-    //     `Ball Position: x=${ballRef.current.x.toFixed(
-    //       2
-    //     )}, y=${ballRef.current.y.toFixed(2)}`,
-    //     `Mouse Clicked: ${clickedRef.current ? "Yes" : "No"}`,
-    //     `Track Mouse: ${trackX || trackY ? "Yes" : "No"}`,
-    //     `Track Ball: ${trackBallX || trackBallY ? "Yes" : "No"}`,
-    //     `Ball Factor: ${ballRef.current.fac}`,
-    //     `Track Click: ${trackClick ? "Yes" : "No"}`,
-    //   ];
-
-    //   // Iterate over the array and draw each line
-    //   trackingInfo.forEach((text, index) => {
-    //     ctx.fillText(text, 10, 50 + index * 20); // Adjust vertical spacing (20px per line)
-    //   });
-    // };
+      // Iterate over the array and draw each line
+      trackingInfo.forEach((text, index) => {
+        ctx.fillText(text, 10, 50 + index * 20); // Adjust vertical spacing (20px per line)
+      });
+    };
     const controllerArgs = {
       canvas,
       ctx,
       mousePosRef,
-      ballRef,
-      clickedRef,
       trackMouse: trackX || trackY,
-      trackBall: trackBallX || trackBallY,
+
+      clickedRef,
       trackClick,
+
+      ballRef,
+      trackBall: trackBallX || trackBallY,
       onUpdateBallX,
       onUpdateBallY,
+
+      chaosRef,
+      trackChaos,
+      onUpdateChaos,
     };
 
     // Initialize ParticleControls or SpaceControls based on visualizer prop
@@ -93,7 +101,7 @@ const CanvasController = ({
     const animate = () => {
       controller.update(); // Update particles and ball
       controller.draw(); // Draw particles and ball
-      // drawTrackingInfo(); // Draw tracking information
+      drawTrackingInfo(); // Draw tracking information
       animationFrameId = requestAnimationFrame(animate);
     };
     animate();
@@ -115,6 +123,9 @@ const CanvasController = ({
     clickedRef,
     onUpdateBallX,
     onUpdateBallY,
+    onUpdateChaos,
+    chaosRef,
+    trackChaos,
     visualizer,
   ]);
 

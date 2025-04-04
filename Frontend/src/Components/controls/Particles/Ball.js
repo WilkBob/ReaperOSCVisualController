@@ -1,24 +1,26 @@
 class Ball {
   constructor(ballRef) {
-    this.ballRef = ballRef; // Reference to the ballRef object
+    this.ballRef = ballRef; // Reference to the ballRef object, this object must be manipulated to broadcast it's properties to the OSCController
     this.glowSize = 10; // Initial glow size
     this.glowDirection = 1; // Direction of glow size change (1 = increasing, -1 = decreasing)
     this.glowSpeed = 0.5; // Speed of the glow pulsing
+
+    // Velocity properties
+    this.vx = 0.01; // Initial horizontal velocity
+    this.vy = 0.01; // Initial vertical velocity
   }
 
   update() {
     // Update ball position based on velocity and factor
-    this.ballRef.current.x +=
-      this.ballRef.current.vx * this.ballRef.current.fac;
-    this.ballRef.current.y +=
-      this.ballRef.current.vy * this.ballRef.current.fac * 1.2;
+    this.ballRef.current.x += this.vx * this.ballRef.current.fac;
+    this.ballRef.current.y += this.vy * this.ballRef.current.fac * 1.2;
 
     // Bounce off edges
     if (this.ballRef.current.x <= 0 || this.ballRef.current.x >= 1) {
-      this.ballRef.current.vx *= -1;
+      this.vx *= -1; // Reverse horizontal velocity
     }
     if (this.ballRef.current.y <= 0 || this.ballRef.current.y >= 1) {
-      this.ballRef.current.vy *= -1;
+      this.vy *= -1; // Reverse vertical velocity
     }
 
     // Update glow size for pulsing effect

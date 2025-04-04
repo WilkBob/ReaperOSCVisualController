@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react";
-
 const useMouseControl = ({
   trackX,
   trackY,
-  trackBallX,
-  trackBallY,
+
   trackClick,
   onUpdateX,
   onUpdateY,
   onUpdateClick,
 }) => {
+  //THESE end up being the manipulated values in the OSCController - MousePos, clicked, and ballFac are manipulated here, all the rest will be manipulated in the OSCController depending on different visualizers; Ball Pos& Chaos
   const mousePosRef = useRef({ x: 0.5, y: 0.5 });
-  const ballRef = useRef({ x: 0.5, y: 0.5, fac: 0.5, vx: 0.008, vy: 0.006 });
+  const ballRef = useRef({ x: 0.5, y: 0.5, fac: 0.5 });
+  const chaosRef = useRef(0.2); // Assuming chaos is a float between 0 and 1
   const clickedRef = useRef(false);
 
   useEffect(() => {
@@ -58,18 +58,9 @@ const useMouseControl = ({
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [
-    trackX,
-    trackY,
-    trackBallX,
-    trackBallY,
-    trackClick,
-    onUpdateX,
-    onUpdateY,
-    onUpdateClick,
-  ]);
+  }, [trackX, trackY, trackClick, onUpdateX, onUpdateY, onUpdateClick]);
 
-  return { mousePosRef, ballRef, clickedRef };
+  return { mousePosRef, ballRef, clickedRef, chaosRef };
 };
 
 export default useMouseControl;

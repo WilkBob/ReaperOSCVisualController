@@ -19,6 +19,14 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
       return newParams;
     });
   };
+  // param = {
+  //   type: "inst",
+  //   trackNum: 1,
+  //   fxNum: 1,
+  //   paramNum: 2,
+  //   controlType: "mouse-x",
+  //   range: { min: 0, max: 1 },
+  // };
 
   const updateRange = (key, value) => {
     setParameters((prev) => {
@@ -90,11 +98,13 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
           value={param.controlType}
           onChange={(e) => updateParameter("controlType", e.target.value)}
         >
-          {["mouse-x", "mouse-y", "ball-x", "ball-y", "click"].map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
+          {["mouse-x", "mouse-y", "ball-x", "ball-y", "click", "chaos"].map(
+            (option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            )
+          )}
         </Select>
         <Box
           sx={{
