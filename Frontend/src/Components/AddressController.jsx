@@ -2,8 +2,8 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
 
 import CanvasController from "./controls/CanvasController";
-
-const AddressController = ({ params, broadcasting }) => {
+//Component creates OSC addresses for different control types and broadcasts their values at a specified interval. It uses React hooks to manage state and side effects, and it scales values between specified ranges for each control type. - adding new controls happens here and in paramlist, - also good place to invert values if added to paramlist - this is the main controller for the address creation and broadcasting.
+const AddressController = ({ params, broadcasting, visualizer }) => {
   // Object to store addresses for each control type
   const [controlAddresses, setControlAddresses] = useState({});
 
@@ -116,6 +116,7 @@ const AddressController = ({ params, broadcasting }) => {
       onUpdateBallY={controlConfig["ball-y"].updateFunction}
       trackClick={!!controlAddresses["click"]}
       onUpdateClick={controlConfig["click"].updateFunction}
+      visualizer={visualizer}
     />
   );
 };

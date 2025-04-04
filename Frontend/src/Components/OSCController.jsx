@@ -13,6 +13,7 @@ import Transport from "./Transport";
 import ConnectionStatus from "./ConnectionStatus";
 import ParameterList from "./ParameterList";
 import AddressController from "./AddressController";
+import VisualizerSelect from "./VisualizerSelect";
 
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
@@ -27,6 +28,7 @@ const OSCController = () => {
       range: { min: 0, max: 1 },
     },
   ]);
+  const [visualizer, setVisualizer] = useState("ParticleControls");
 
   useEffect(() => {
     const handleConnectionChange = (status) => {
@@ -62,10 +64,24 @@ const OSCController = () => {
         toggleMetronome={toggleMetronome}
         disabled={!connected}
       />
+
       {!broadcasting && (
-        <ParameterList setParameters={setParameters} parameters={parameters} />
+        <>
+          <ParameterList
+            setParameters={setParameters}
+            parameters={parameters}
+          />
+          <VisualizerSelect
+            setVisualizer={setVisualizer}
+            visualizer={visualizer}
+          />
+        </>
       )}
-      <AddressController params={parameters} broadcasting={broadcasting} />
+      <AddressController
+        params={parameters}
+        broadcasting={broadcasting}
+        visualizer={visualizer}
+      />
     </Box>
   );
 };
