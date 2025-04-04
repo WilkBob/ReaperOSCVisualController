@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import useMouseControl from "./UseMouseControl";
 
-const MouseControlCanvas = ({
+const CanvasController = ({
   trackX,
   trackY,
   trackBallX,
@@ -276,4 +276,4 @@ const MouseControlCanvas = ({
   );
 };
 
-export default MouseControlCanvas;
+export default CanvasController;

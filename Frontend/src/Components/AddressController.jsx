@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
 
-import MouseControlCanvas from "./controls/MouseTracker";
+import CanvasController from "./controls/CanvasController";
 
-const CanvasController = ({ params, broadcasting }) => {
+const AddressController = ({ params, broadcasting }) => {
   // Object to store addresses for each control type
   const [controlAddresses, setControlAddresses] = useState({});
 
@@ -105,7 +105,7 @@ const CanvasController = ({ params, broadcasting }) => {
   };
 
   return (
-    <MouseControlCanvas
+    <CanvasController
       trackX={!!controlAddresses["mouse-x"]}
       trackY={!!controlAddresses["mouse-y"]}
       trackBallX={!!controlAddresses["ball-x"]}
@@ -120,4 +120,4 @@ const CanvasController = ({ params, broadcasting }) => {
   );
 };
 
-export default CanvasController;
+export default AddressController;

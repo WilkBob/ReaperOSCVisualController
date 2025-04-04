@@ -35,9 +35,6 @@ const useMouseControl = ({
 
       // Optionally, round to 3 decimals for precision
       ball.fac = Math.round(ball.fac * 1000) / 1000;
-
-      if (trackBallX) onUpdateX(ball.fac); // Example: Update X if tracking ball
-      if (trackBallY) onUpdateY(ball.fac); // Example: Update Y if tracking ball
     };
 
     const handleMouseDown = () => {
