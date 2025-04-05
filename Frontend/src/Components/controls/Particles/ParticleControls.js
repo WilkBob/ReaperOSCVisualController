@@ -100,7 +100,23 @@ class ParticleControls {
       this.windEffect = Math.random() * 0.1 - 0.05;
     }, 5000);
   }
+  drawMouseClickedRing() {
+    const color = "#ffffff";
+    const { x, y } = this.mousePosRef.current;
+    const size = 20; // Size of the ring
+    const lineWidth = 2; // Width of the ring
+    const radius = size / 2; // Radius of the ring
+    const centerX = x * this.canvas.width; // Center X position
+    const centerY = y * this.canvas.height; // Center Y position
 
+    this.ctx.save();
+    this.ctx.beginPath();
+    this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2); // Draw the ring
+    this.ctx.lineWidth = lineWidth; // Set line width
+    this.ctx.strokeStyle = color; // Set stroke color
+    this.ctx.stroke(); // Draw the ring
+    this.ctx.restore();
+  }
   // Get random color from current scheme
   getRandomColor() {
     const colors = this.colorSchemes[this.activeColorScheme];
@@ -352,6 +368,10 @@ class ParticleControls {
     // Draw the ball
     if (this.trackBall) {
       this.ball.draw(this.ctx, this.canvas.width, this.canvas.height);
+    }
+
+    if (this.clickedRef.current) {
+      this.drawMouseClickedRing();
     }
   }
 }

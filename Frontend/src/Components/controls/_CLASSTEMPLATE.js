@@ -58,4 +58,5 @@ class Controls {
 
   draw() {}
   update() {} // Update particles and ball
+  onResize() {} // Resize canvas to fit the window
 }
