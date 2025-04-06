@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Drawer,
   IconButton,
@@ -14,14 +13,18 @@ import CloseIcon from "@mui/icons-material/Close";
 import ParameterItem from "./ParameterItem";
 import ProfileMenu from "./ProfileMenu";
 
-const ParameterList = ({ parameters, setParameters, isLearning, learn }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
+const ParameterList = ({
+  parameters,
+  setParameters,
+  drawerOpen,
+  setDrawerOpen,
+}) => {
   const addParameter = () => {
     if (parameters.length < 5) {
       setParameters([
         ...parameters,
         {
+          name: "New Parameter",
           type: "inst",
           trackNum: 1,
           fxNum: 1,
@@ -121,14 +124,12 @@ const ParameterList = ({ parameters, setParameters, isLearning, learn }) => {
         <Box sx={{ mb: 3 }}>
           <Grid container spacing={2}>
             {parameters.map((param, index) => (
-              <Grid item xs={12} key={index}>
+              <Grid key={index}>
                 <ParameterItem
                   param={param}
                   index={index}
                   setParameters={setParameters}
                   removeParameter={removeParameter}
-                  isLearning={isLearning}
-                  learn={learn}
                 />
               </Grid>
             ))}
@@ -140,21 +141,6 @@ const ParameterList = ({ parameters, setParameters, isLearning, learn }) => {
           disabled={parameters.length >= 5}
           variant="contained"
           startIcon={<AddCircleIcon />}
-          sx={{
-            backgroundColor:
-              parameters.length >= 5
-                ? "rgba(100,100,100,0.3)"
-                : "rgba(111, 158, 255, 0.8)",
-            color: parameters.length >= 5 ? "rgba(255,255,255,0.5)" : "white",
-            borderRadius: 2,
-            py: 1,
-            "&:hover": {
-              backgroundColor:
-                parameters.length >= 5
-                  ? "rgba(100,100,100,0.3)"
-                  : "rgba(111, 158, 255, 1)",
-            },
-          }}
         >
           Add Parameter {parameters.length}/5
         </Button>

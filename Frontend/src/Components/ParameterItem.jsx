@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   Typography,
@@ -11,15 +11,13 @@ import {
   Box,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import useLearnParam from "./useLearnParam";
 
-const ParameterItem = ({
-  param,
-  index,
-  setParameters,
-  removeParameter,
-  isLearning,
-  learn,
-}) => {
+const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
+  const [editName, setEditName] = useState(false);
+  const { isLearning, learn } = useLearnParam();
   const updateParameter = (key, value) => {
     setParameters((prev) =>
       prev.map((p, i) => (i === index ? { ...p, [key]: value } : p))
@@ -58,47 +56,54 @@ const ParameterItem = ({
         alignItems="center"
         mb={2.5}
       >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: 600, display: "flex", alignItems: "center" }}
-        >
-          <span style={{ marginRight: 8 }}>🎛</span> Parameter {index + 1}
-        </Typography>
-        <IconButton
-          onClick={() => removeParameter(index)}
-          sx={{
-            color: "rgba(255,80,80,0.8)",
-            "&:hover": {
-              color: "rgba(255,80,80,1)",
-              backgroundColor: "rgba(255,80,80,0.1)",
-            },
-          }}
-        >
+        {editName ? (
+          <Box display="flex" alignItems="center" gap={1}>
+            <TextField
+              value={param.name || ""}
+              onChange={(e) => updateParameter("name", e.target.value)}
+              variant="outlined"
+              size="small"
+            />
+            <IconButton
+              onClick={() => setEditName(false)}
+              sx={{
+                color: "rgba(111, 158, 255, 0.8)",
+                "&:hover": {
+                  color: "rgba(111, 158, 255, 1)",
+                  backgroundColor: "rgba(111, 158, 255, 0.1)",
+                },
+              }}
+            >
+              <SaveIcon />
+            </IconButton>
+          </Box>
+        ) : (
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, display: "flex", alignItems: "center" }}
+            >
+              <span style={{ marginRight: 8 }}>🎛</span>{" "}
+              {param.name || `Parameter ${index + 1}`}
+            </Typography>
+            <IconButton onClick={() => setEditName(true)}>
+              <EditIcon />
+            </IconButton>
+          </Box>
+        )}
+        <IconButton onClick={() => removeParameter(index)} color="error">
           <DeleteIcon />
         </IconButton>
       </Box>
 
       {/* Controls */}
       <Grid container spacing={2}>
-        <Grid item xs={6} sm={4} md={2}>
+        <Grid>
           <Select
             fullWidth
             variant="outlined"
             value={param.type}
             onChange={(e) => updateParameter("type", e.target.value)}
-            sx={{
-              backgroundColor: "rgba(0,0,0,0.2)",
-              color: "white",
-              ".MuiOutlinedInput-notchedOutline": {
-                borderColor: "rgba(255,255,255,0.2)",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "rgba(255,255,255,0.3)",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#6f9eff",
-              },
-            }}
           >
             {[
               ["inst", "Instrument"],
@@ -115,7 +120,7 @@ const ParameterItem = ({
           </Select>
         </Grid>
 
-        <Grid item xs={6} sm={4} md={2}>
+        <Grid>
           <TextField
             fullWidth
             type="number"
@@ -124,50 +129,24 @@ const ParameterItem = ({
             onChange={(e) =>
               updateParameter("trackNum", Number(e.target.value))
             }
-            InputLabelProps={{
-              shrink: true,
-              sx: { color: "rgba(255,255,255,0.7)" },
-            }}
-            InputProps={{ sx: { color: "white" } }}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(0,0,0,0.2)",
-                "& fieldset": { borderColor: "rgba(255,255,255,0.2)" },
-                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.3)" },
-                "&.Mui-focused fieldset": { borderColor: "#6f9eff" },
-              },
-            }}
           />
         </Grid>
 
         {param.type !== "vol" && param.type !== "pan" && (
-          <Grid item xs={6} sm={4} md={2}>
+          <Grid>
             <TextField
               fullWidth
               type="number"
               label={param.type === "sendvol" ? "Send #" : "FX #"}
               value={param.fxNum}
               onChange={(e) => updateParameter("fxNum", Number(e.target.value))}
-              InputLabelProps={{
-                shrink: true,
-                sx: { color: "rgba(255,255,255,0.7)" },
-              }}
-              InputProps={{ sx: { color: "white" } }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: "rgba(0,0,0,0.2)",
-                  "& fieldset": { borderColor: "rgba(255,255,255,0.2)" },
-                  "&:hover fieldset": { borderColor: "rgba(255,255,255,0.3)" },
-                  "&.Mui-focused fieldset": { borderColor: "#6f9eff" },
-                },
-              }}
             />
           </Grid>
         )}
 
         {(param.type === "inst" || param.type === "fx") && (
           <>
-            <Grid item xs={6} sm={4} md={2}>
+            <Grid>
               <TextField
                 fullWidth
                 type="number"
@@ -176,39 +155,15 @@ const ParameterItem = ({
                 onChange={(e) =>
                   updateParameter("paramNum", Number(e.target.value))
                 }
-                InputLabelProps={{
-                  shrink: true,
-                  sx: { color: "rgba(255,255,255,0.7)" },
-                }}
-                InputProps={{ sx: { color: "white" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "rgba(0,0,0,0.2)",
-                    "& fieldset": { borderColor: "rgba(255,255,255,0.2)" },
-                    "&:hover fieldset": {
-                      borderColor: "rgba(255,255,255,0.3)",
-                    },
-                    "&.Mui-focused fieldset": { borderColor: "#6f9eff" },
-                  },
-                }}
               />
             </Grid>
-            <Grid item xs={6} sm={4} md={2}>
+            <Grid>
               <Button
                 fullWidth
                 variant={isLearning ? "outlined" : "contained"}
+                color={isLearning ? "warning" : "secondary"}
                 sx={{
                   height: "100%",
-                  backgroundColor: isLearning
-                    ? "transparent"
-                    : "rgba(111, 158, 255, 0.8)",
-                  borderColor: "rgba(111, 158, 255, 0.8)",
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: isLearning
-                      ? "rgba(111, 158, 255, 0.1)"
-                      : "rgba(111, 158, 255, 1)",
-                  },
                 }}
                 onClick={async () => {
                   const result = await learn(param.trackNum, param.fxNum);
@@ -226,24 +181,11 @@ const ParameterItem = ({
           </>
         )}
 
-        <Grid item xs={6} sm={4} md={2}>
+        <Grid>
           <Select
             fullWidth
             value={param.controlType}
             onChange={(e) => updateParameter("controlType", e.target.value)}
-            sx={{
-              backgroundColor: "rgba(0,0,0,0.2)",
-              color: "white",
-              ".MuiOutlinedInput-notchedOutline": {
-                borderColor: "rgba(255,255,255,0.2)",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "rgba(255,255,255,0.3)",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#6f9eff",
-              },
-            }}
           >
             {[
               ["mouse-x", "Mouse X"],
@@ -272,19 +214,6 @@ const ParameterItem = ({
             const value = e.target.value === "" ? "" : Number(e.target.value);
             updateRange("min", value);
           }}
-          InputLabelProps={{
-            shrink: true,
-            sx: { color: "rgba(255,255,255,0.7)" },
-          }}
-          InputProps={{ sx: { color: "white" } }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: "rgba(0,0,0,0.2)",
-              "& fieldset": { borderColor: "rgba(255,255,255,0.2)" },
-              "&:hover fieldset": { borderColor: "rgba(255,255,255,0.3)" },
-              "&.Mui-focused fieldset": { borderColor: "#6f9eff" },
-            },
-          }}
         />
         <TextField
           fullWidth
@@ -294,19 +223,6 @@ const ParameterItem = ({
           onChange={(e) => {
             const value = e.target.value === "" ? "" : Number(e.target.value);
             updateRange("max", value);
-          }}
-          InputLabelProps={{
-            shrink: true,
-            sx: { color: "rgba(255,255,255,0.7)" },
-          }}
-          InputProps={{ sx: { color: "white" } }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: "rgba(0,0,0,0.2)",
-              "& fieldset": { borderColor: "rgba(255,255,255,0.2)" },
-              "&:hover fieldset": { borderColor: "rgba(255,255,255,0.3)" },
-              "&.Mui-focused fieldset": { borderColor: "#6f9eff" },
-            },
           }}
         />
       </Box>

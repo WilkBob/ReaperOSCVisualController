@@ -102,6 +102,4 @@ wss.on("connection", (ws) => {
 
   ws.on("close", () => console.log("Client disconnected"));
   ws.on("error", (error) => console.error("WebSocket error:", error));
-
-  ws.send("Welcome to the WebSocket server! You can send OSC messages.");
 });

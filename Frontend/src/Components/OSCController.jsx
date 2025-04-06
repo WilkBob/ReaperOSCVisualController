@@ -19,8 +19,10 @@ const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
   const [visualizer, setVisualizer] = useState("particle");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [parameters, setParameters] = useState([
     {
+      name: "Parameter 1",
       type: "inst",
       trackNum: 1,
       fxNum: 1,
@@ -70,6 +72,8 @@ const OSCController = () => {
           <ParameterList
             setParameters={setParameters}
             parameters={parameters}
+            drawerOpen={drawerOpen}
+            setDrawerOpen={setDrawerOpen}
           />
           <VisualizerSelect
             setVisualizer={setVisualizer}
@@ -81,6 +85,7 @@ const OSCController = () => {
         params={parameters}
         broadcasting={broadcasting}
         visualizer={visualizer}
+        editing={drawerOpen}
       />
     </Box>
   );

@@ -305,6 +305,7 @@ TRACK_SELECT b/track/select b/track/@/select
 #TRACK_VU n/track/vu n/track/@/vu
 #TRACK_VU_L n/track/vu/L n/track/@/vu/L
 #TRACK_VU_R n/track/vu/R n/track/@/vu/R
+
 TRACK_VOLUME n/track/volume n/track/@/volume
 TRACK_VOLUME s/track/volume/str s/track/@/volume/str
 TRACK_VOLUME f/track/volume/db f/track/@/volume/db
@@ -529,3 +530,4 @@ DEVICE_NEXT_MARKER_BANK t/device/marker/bank/+
 DEVICE_REGION_BANK_SELECT i/device/region/bank/select t/device/region/bank/select/@
 DEVICE_PREV_REGION_BANK t/device/region/bank/-
 DEVICE_NEXT_REGION_BANK t/device/region/bank/+
+
