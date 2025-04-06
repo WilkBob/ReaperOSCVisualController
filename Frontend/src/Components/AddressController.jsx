@@ -104,21 +104,23 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
   };
 
   return (
-    <CanvasController
-      trackX={!!controlAddresses["mouse-x"]}
-      trackY={!!controlAddresses["mouse-y"]}
-      trackBallX={!!controlAddresses["ball-x"]}
-      trackBallY={!!controlAddresses["ball-y"]}
-      trackClick={!!controlAddresses["click"]}
-      trackChaos={!!controlAddresses["chaos"]}
-      onUpdateX={controlConfig["mouse-x"].updateFunction}
-      onUpdateY={controlConfig["mouse-y"].updateFunction}
-      onUpdateBallX={controlConfig["ball-x"].updateFunction}
-      onUpdateBallY={controlConfig["ball-y"].updateFunction}
-      onUpdateClick={controlConfig["click"].updateFunction}
-      onUpdateChaos={controlConfig["chaos"].updateFunction}
-      visualizer={visualizer}
-    />
+    <>
+      <CanvasController
+        trackX={!!controlAddresses["mouse-x"]}
+        trackY={!!controlAddresses["mouse-y"]}
+        trackBallX={!!controlAddresses["ball-x"]}
+        trackBallY={!!controlAddresses["ball-y"]}
+        trackClick={!!controlAddresses["click"]}
+        trackChaos={!!controlAddresses["chaos"]}
+        onUpdateX={controlConfig["mouse-x"].updateFunction}
+        onUpdateY={controlConfig["mouse-y"].updateFunction}
+        onUpdateBallX={controlConfig["ball-x"].updateFunction}
+        onUpdateBallY={controlConfig["ball-y"].updateFunction}
+        onUpdateClick={controlConfig["click"].updateFunction}
+        onUpdateChaos={controlConfig["chaos"].updateFunction}
+        visualizer={visualizer}
+      />
+    </>
   );
 };
 

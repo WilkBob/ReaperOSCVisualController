@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import {
   Drawer,
   IconButton,
-  List,
   Typography,
   Button,
   Grid,
   Box,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CloseIcon from "@mui/icons-material/Close";
 import ParameterItem from "./ParameterItem";
 import ProfileMenu from "./ProfileMenu";
 
-const ParameterList = ({ parameters, setParameters }) => {
+const ParameterList = ({ parameters, setParameters, isLearning, learn }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const addParameter = () => {
@@ -41,7 +43,17 @@ const ParameterList = ({ parameters, setParameters }) => {
     <>
       <IconButton
         onClick={() => setDrawerOpen(true)}
-        sx={{ position: "absolute", top: 16, left: 16, color: "white" }}
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          color: "white",
+          backgroundColor: "rgba(0,0,0,0.3)",
+          backdropFilter: "blur(5px)",
+          "&:hover": {
+            backgroundColor: "rgba(0,0,0,0.5)",
+          },
+        }}
       >
         <MenuIcon />
       </IconButton>
@@ -52,40 +64,99 @@ const ParameterList = ({ parameters, setParameters }) => {
         onClose={() => setDrawerOpen(false)}
         sx={{
           "& .MuiDrawer-paper": {
-            backdropFilter: "blur(10px)",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            padding: 2,
+            backdropFilter: "blur(15px)",
+            backgroundColor: "rgba(20, 20, 20, 0.85)",
+            padding: 3,
+            paddingBottom: 4,
             width: "100%",
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 4px 30px rgba(0,0,0,0.5)",
           },
         }}
       >
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Typography variant="h6" sx={{ color: "white", flexGrow: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              color: "white",
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ marginRight: 10, fontSize: "1.4rem" }}>🎛</span>{" "}
             Parameters
           </Typography>
-          <ProfileMenu parameters={parameters} setParameters={setParameters} />
+
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <ProfileMenu
+              parameters={parameters}
+              setParameters={setParameters}
+            />
+
+            <IconButton
+              onClick={() => setDrawerOpen(false)}
+              sx={{
+                color: "rgba(255,255,255,0.7)",
+                "&:hover": {
+                  color: "white",
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </Box>
 
-        <List>
-          <Grid container spacing={1}>
+        <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 3 }} />
+
+        <Box sx={{ mb: 3 }}>
+          <Grid container spacing={2}>
             {parameters.map((param, index) => (
-              <ParameterItem
-                key={index}
-                param={param}
-                index={index}
-                setParameters={setParameters}
-                removeParameter={removeParameter}
-              />
+              <Grid item xs={12} key={index}>
+                <ParameterItem
+                  param={param}
+                  index={index}
+                  setParameters={setParameters}
+                  removeParameter={removeParameter}
+                  isLearning={isLearning}
+                  learn={learn}
+                />
+              </Grid>
             ))}
           </Grid>
-        </List>
+        </Box>
 
         <Button
           onClick={addParameter}
           disabled={parameters.length >= 5}
-          fullWidth
+          variant="contained"
+          startIcon={<AddCircleIcon />}
+          sx={{
+            backgroundColor:
+              parameters.length >= 5
+                ? "rgba(100,100,100,0.3)"
+                : "rgba(111, 158, 255, 0.8)",
+            color: parameters.length >= 5 ? "rgba(255,255,255,0.5)" : "white",
+            borderRadius: 2,
+            py: 1,
+            "&:hover": {
+              backgroundColor:
+                parameters.length >= 5
+                  ? "rgba(100,100,100,0.3)"
+                  : "rgba(111, 158, 255, 1)",
+            },
+          }}
         >
-          Add Parameter
+          Add Parameter {parameters.length}/5
         </Button>
       </Drawer>
     </>
