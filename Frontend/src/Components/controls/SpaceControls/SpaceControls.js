@@ -61,8 +61,8 @@ class SpaceControls {
       if (planet.active) {
         this.ballRef.current.x = planet.xNorm;
         this.ballRef.current.y = planet.yNorm;
-        this.onUpdateBallX(planet.x);
-        this.onUpdateBallY(planet.y);
+        this.onUpdateBallX(planet.xNorm);
+        this.onUpdateBallY(planet.yNorm);
       }
     });
   }
