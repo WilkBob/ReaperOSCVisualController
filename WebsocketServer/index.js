@@ -83,7 +83,7 @@ wss.on("connection", (ws) => {
         setTimeout(() => {
           learning = true;
           console.log("Learn mode enabled after delay", { trackHint, fxHint });
-        }, 3000); // 3 second delay (adjust as needed)
+        }, 5000); // 3 second delay (adjust as needed)
 
         return;
       }
