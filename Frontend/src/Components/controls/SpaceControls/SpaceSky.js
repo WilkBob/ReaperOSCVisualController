@@ -1,22 +1,34 @@
 class SpaceSky {
-  constructor(ctx, mousePosRef) {
+  constructor(ctx, mousePosRef, clickedRef) {
     this.stars = []; // Array to hold stars
     this.canvas = ctx.canvas; // Reference to the canvas element
     this.ctx = ctx; // Reference to the 2D rendering context
     this.mousePosRef = mousePosRef; // Reference to the current mouse position
+    this.clickedRef = clickedRef; // Reference to the clicked state
 
     this.gradientCanvas = document.createElement("canvas"); // Separate canvas for gradient
     this.gradientCanvas.width = this.canvas.width;
     this.gradientCanvas.height = this.canvas.height;
     this.gradientCtx = this.gradientCanvas.getContext("2d");
 
-    this.generateGradient(); // Generate the spacey gradient
+    this.activeGradientCanvas = document.createElement("canvas"); // Separate canvas for active gradient
+    this.activeGradientCanvas.width = this.canvas.width;
+    this.activeGradientCanvas.height = this.canvas.height;
+    this.activeGradientCtx = this.activeGradientCanvas.getContext("2d");
+
+    this.generateGradient(this.gradientCtx, ["#000020", "#000040", "#000000"]); // Normal gradient
+    this.generateGradient(this.activeGradientCtx, [
+      "#400000",
+      "#800000",
+      "#000000",
+    ]); // Active gradient
+
     this.generateStars(200); // Generate 200 stars
   }
 
   // Generate a spacey gradient background
-  generateGradient() {
-    const gradient = this.gradientCtx.createRadialGradient(
+  generateGradient(ctx, colors) {
+    const gradient = ctx.createRadialGradient(
       this.canvas.width / 2,
       this.canvas.height / 2,
       0,
@@ -25,12 +37,12 @@ class SpaceSky {
       Math.max(this.canvas.width, this.canvas.height) / 1.5
     );
 
-    gradient.addColorStop(0, "#000020"); // Deep space blue
-    gradient.addColorStop(0.5, "#000040"); // Slightly lighter blue
-    gradient.addColorStop(1, "#000000"); // Black
+    gradient.addColorStop(0, colors[0]); // First color
+    gradient.addColorStop(0.5, colors[1]); // Middle color
+    gradient.addColorStop(1, colors[2]); // Last color
 
-    this.gradientCtx.fillStyle = gradient;
-    this.gradientCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   // Generate stars and scatter them randomly
@@ -51,8 +63,12 @@ class SpaceSky {
     const mouseX = this.mousePosRef.current.x * this.canvas.width;
     const mouseY = this.mousePosRef.current.y * this.canvas.height;
 
-    // Draw the gradient background
-    this.ctx.drawImage(this.gradientCanvas, 0, 0);
+    // Draw the appropriate gradient background
+    if (this.clickedRef.current) {
+      this.ctx.drawImage(this.activeGradientCanvas, 0, 0);
+    } else {
+      this.ctx.drawImage(this.gradientCanvas, 0, 0);
+    }
 
     // Update and draw the stars
     this.stars.forEach((star) => {
@@ -81,7 +97,14 @@ class SpaceSky {
   resize() {
     this.gradientCanvas.width = this.canvas.width;
     this.gradientCanvas.height = this.canvas.height;
-    this.generateGradient(); // Regenerate the gradient
+    this.activeGradientCanvas.width = this.canvas.width;
+    this.activeGradientCanvas.height = this.canvas.height;
+    this.generateGradient(this.gradientCtx, ["#000020", "#000040", "#000000"]); // Regenerate normal gradient
+    this.generateGradient(this.activeGradientCtx, [
+      "#400000",
+      "#800000",
+      "#000000",
+    ]); // Regenerate active gradient
   }
 }
 
