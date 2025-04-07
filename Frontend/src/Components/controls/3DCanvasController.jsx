@@ -1,11 +1,9 @@
 import { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import useMouseControl from "./UseMouseControl";
-import ParticleControls from "./Particles/ParticleControls";
-import SpaceControls from "./SpaceControls/SpaceControls";
 import HighwayControls from "./Highway/HighwayControls";
 
-const CanvasController = ({
+const ThreeDCanvasController = ({
   trackX,
   trackY,
   trackBallX,
@@ -85,10 +83,6 @@ const CanvasController = ({
     // Initialize ParticleControls or SpaceControls based on visualizer prop
     const getController = (visualizerType) => {
       switch (visualizerType) {
-        case "particle":
-          return new ParticleControls(controllerArgs);
-        case "space":
-          return new SpaceControls(controllerArgs);
         case "highway":
           return new HighwayControls(controllerArgs);
         default:
@@ -158,4 +152,4 @@ const CanvasController = ({
   );
 };
 
-export default CanvasController;
+export default ThreeDCanvasController;

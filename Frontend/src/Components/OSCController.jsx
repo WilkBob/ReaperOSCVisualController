@@ -18,7 +18,10 @@ import VisualizerSelect from "./VisualizerSelect";
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
-  const [visualizer, setVisualizer] = useState("particle");
+  const [visualizer, setVisualizer] = useState({
+    id: "particle",
+    ThreeD: false,
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [parameters, setParameters] = useState([
     {
