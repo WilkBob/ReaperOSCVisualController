@@ -60,7 +60,7 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
       const address = createOSCAddress(param);
       newControlAddresses[controlType].push({
         address,
-        range: param.range,
+        range: param.range, //INVERT logic here
       });
     });
 
@@ -121,7 +121,7 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
           onUpdateBallY={controlConfig["ball-y"].updateFunction}
           onUpdateClick={controlConfig["click"].updateFunction}
           onUpdateChaos={controlConfig["chaos"].updateFunction}
-          visualizer={visualizer.id}
+          visualizerId={visualizer.id}
         />
       ) : (
         <CanvasController

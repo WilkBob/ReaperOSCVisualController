@@ -3,7 +3,6 @@ import { Box } from "@mui/material";
 import useMouseControl from "./UseMouseControl";
 import ParticleControls from "./Particles/ParticleControls";
 import SpaceControls from "./SpaceControls/SpaceControls";
-import HighwayControls from "./Highway/HighwayControls";
 
 const CanvasController = ({
   trackX,
@@ -82,15 +81,14 @@ const CanvasController = ({
       onUpdateChaos,
     };
 
-    // Initialize ParticleControls or SpaceControls based on visualizer prop
+    // Initialize ParticleControls or SpaceControls based on visualizer prop / only 2d visualizers shown
     const getController = (visualizerType) => {
       switch (visualizerType) {
         case "particle":
           return new ParticleControls(controllerArgs);
         case "space":
           return new SpaceControls(controllerArgs);
-        case "highway":
-          return new HighwayControls(controllerArgs);
+
         default:
           console.warn(`Unknown visualizer type: ${visualizerType}`);
           return null;

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 const useMouseControl = ({
   trackX,
   trackY,
-
   trackClick,
   onUpdateX,
   onUpdateY,

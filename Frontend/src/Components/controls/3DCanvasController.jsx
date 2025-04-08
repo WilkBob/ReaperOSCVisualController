@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { Suspense } from "react";
 import { Box } from "@mui/material";
 import useMouseControl from "./UseMouseControl";
-import HighwayControls from "./Highway/HighwayControls";
+import CarHighway3D from "./Highway/CarHighway3D";
 
 const ThreeDCanvasController = ({
   trackX,
@@ -16,10 +16,8 @@ const ThreeDCanvasController = ({
   onUpdateBallY,
   onUpdateClick,
   onUpdateChaos,
-  visualizer,
+  visualizerId, //for swapping threeD visualizers / currently only'highway'
 }) => {
-  const canvasRef = useRef(null);
-
   const { mousePosRef, ballRef, clickedRef, chaosRef } = useMouseControl({
     trackX,
     trackY,
@@ -28,114 +26,22 @@ const ThreeDCanvasController = ({
     onUpdateY,
     onUpdateClick,
   });
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    const drawTrackingInfo = () => {
-      ctx.font = "16px Arial";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "left";
-
-      // Array of tracking information strings
-      const trackingInfo = [
-        `Mouse Position: x=${mousePosRef.current.x.toFixed(
-          2
-        )}, y=${mousePosRef.current.y.toFixed(2)}`,
-        `Ball Position: x=${ballRef.current.x.toFixed(
-          2
-        )}, y=${ballRef.current.y.toFixed(2)}`,
-        `Mouse Clicked: ${clickedRef.current ? "Yes" : "No"}`,
-        `Track Mouse: ${trackX || trackY ? "Yes" : "No"}`,
-        `Track Ball: ${trackBallX || trackBallY ? "Yes" : "No"}`,
-        `Ball Factor: ${ballRef.current.fac}`,
-        `Track Click: ${trackClick ? "Yes" : "No"}`,
-        `Track Chaos: ${trackChaos ? "Yes" : "No"}`,
-        `Chaos Value: ${chaosRef.current.toFixed(2)}`,
-        `Visualizer: ${visualizer}`,
-      ];
-
-      // Iterate over the array and draw each line
-      trackingInfo.forEach((text, index) => {
-        ctx.fillText(text, 10, 50 + index * 20); // Adjust vertical spacing (20px per line)
-      });
-    };
-    const controllerArgs = {
-      canvas,
-      ctx,
-      mousePosRef,
-      trackMouse: trackX || trackY,
-
-      clickedRef,
-      trackClick,
-
-      ballRef,
-      trackBall: trackBallX || trackBallY,
-      onUpdateBallX,
-      onUpdateBallY,
-
-      chaosRef,
-      trackChaos,
-      onUpdateChaos,
-    };
-
-    // Initialize ParticleControls or SpaceControls based on visualizer prop
-    const getController = (visualizerType) => {
-      switch (visualizerType) {
-        case "highway":
-          return new HighwayControls(controllerArgs);
-        default:
-          console.warn(`Unknown visualizer type: ${visualizerType}`);
-          return null;
-      }
-    };
-
-    const controller = getController(visualizer);
-    if (controller === null) {
-      return;
-    }
-    // Resize canvas to fit the window
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      controller.onResize(); // Call the resize method of the controller
-    };
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    let animationFrameId = null;
-    // Animation loop
-    const animate = () => {
-      controller.update(); // Update particles and ball
-      controller.draw(); // Draw particles and ball
-      drawTrackingInfo(); // Draw tracking information
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    animate();
-
-    return () => {
-      // Cleanup event listeners and animation frame
-      window.removeEventListener("resize", resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    };
-  }, [
-    trackX,
-    trackY,
-    trackBallX,
-    trackBallY,
-    trackClick,
+  const controllerArgs = {
     mousePosRef,
-    ballRef,
+    trackMouse: trackX || trackY,
+
     clickedRef,
+    trackClick,
+
+    ballRef,
+    trackBall: trackBallX || trackBallY,
     onUpdateBallX,
     onUpdateBallY,
-    onUpdateChaos,
+
     chaosRef,
     trackChaos,
-    visualizer,
-  ]);
-
+    onUpdateChaos,
+  };
   return (
     <Box
       sx={{
@@ -147,7 +53,11 @@ const ThreeDCanvasController = ({
         zIndex: -1,
       }}
     >
-      <canvas ref={canvasRef} />
+      <Suspense fallback={"wrong"}>
+        {visualizerId === "highway" && (
+          <CarHighway3D args={controllerArgs}></CarHighway3D>
+        )}
+      </Suspense>
     </Box>
   );
 };
