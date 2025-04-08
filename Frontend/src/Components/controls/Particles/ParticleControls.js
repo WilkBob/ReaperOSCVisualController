@@ -18,12 +18,6 @@ class ParticleControls {
       // Chaos tracking
       chaosRef, // Reference to the chaos value
 
-      // Tracking flags
-      trackMouse, // Whether to track mouse movement
-      trackBall, // Whether to track ball movement
-      trackClick, // Whether to track mouse clicks
-      trackChaos, // Whether to track chaos value
-
       // Update callbacks
       onUpdateBallX, // Callback to update the ball's X position
       onUpdateBallY, // Callback to update the ball's Y position
@@ -45,12 +39,6 @@ class ParticleControls {
 
     // Chaos tracking
     this.chaosRef = chaosRef; // Reference to the chaos value
-    this.trackChaos = trackChaos; // Whether chaos tracking is enabled
-
-    // Tracking flags
-    this.trackMouse = trackMouse; // Whether mouse tracking is enabled
-    this.trackBall = trackBall; // Whether ball tracking is enabled
-    this.trackClick = trackClick; // Whether click tracking is enabled
 
     // Update callbacks
     this.onUpdateBallX = onUpdateBallX; // Callback to update the ball's X position
@@ -308,7 +296,7 @@ class ParticleControls {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // Add particles for mouse movement
-    if (this.trackMouse && distance > 0.02) {
+    if (distance > 0.02) {
       // Add particle at current position
       this.addParticle(mouseX, mouseY);
 
@@ -327,7 +315,7 @@ class ParticleControls {
     }
 
     // Handle click events
-    if (this.trackClick && clicked && !this.lastClicked) {
+    if (clicked && !this.lastClicked) {
       this.addParticle(mouseX, mouseY, true);
       // Cycle color scheme on click
       this.cycleColorScheme();
@@ -335,20 +323,19 @@ class ParticleControls {
     this.lastClicked = clicked;
 
     // Update ball position
-    if (this.trackBall) {
-      this.ball.update(this.canvas.width, this.canvas.height);
 
-      // Add trailing particles behind the ball
-      if (Math.random() < 0.3) {
-        const ballX = this.ballRef.current.x;
-        const ballY = this.ballRef.current.y;
-        this.addParticle(ballX, ballY);
-      }
+    this.ball.update(this.canvas.width, this.canvas.height);
 
-      // Call update callbacks if provided
-      if (this.onUpdateBallX) this.onUpdateBallX(this.ballRef.current.x);
-      if (this.onUpdateBallY) this.onUpdateBallY(this.ballRef.current.y);
+    // Add trailing particles behind the ball
+    if (Math.random() < 0.3) {
+      const ballX = this.ballRef.current.x;
+      const ballY = this.ballRef.current.y;
+      this.addParticle(ballX, ballY);
     }
+
+    // Call update callbacks
+    this.onUpdateBallX(this.ballRef.current.x);
+    this.onUpdateBallY(this.ballRef.current.y);
 
     if (this.trackChaos) {
       this.chaosRef.current = this.particles.length / this.maxParticles;
@@ -366,9 +353,8 @@ class ParticleControls {
     this.updateAndDrawParticles();
 
     // Draw the ball
-    if (this.trackBall) {
-      this.ball.draw(this.ctx, this.canvas.width, this.canvas.height);
-    }
+
+    this.ball.draw(this.ctx, this.canvas.width, this.canvas.height);
 
     if (this.clickedRef.current) {
       this.drawMouseClickedRing();

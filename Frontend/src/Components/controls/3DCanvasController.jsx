@@ -53,7 +53,7 @@ const ThreeDCanvasController = ({
         zIndex: -1,
       }}
     >
-      <Suspense fallback={"wrong"}>
+      <Suspense fallback={<div>Loading...</div>}>
         {visualizerId === "highway" && (
           <CarHighway3D args={controllerArgs}></CarHighway3D>
         )}

@@ -109,12 +109,6 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
     <>
       {visualizer.threeD === true ? (
         <ThreeDCanvasController
-          trackX={!!controlAddresses["mouse-x"]}
-          trackY={!!controlAddresses["mouse-y"]}
-          trackBallX={!!controlAddresses["ball-x"]}
-          trackBallY={!!controlAddresses["ball-y"]}
-          trackClick={!!controlAddresses["click"]}
-          trackChaos={!!controlAddresses["chaos"]}
           onUpdateX={controlConfig["mouse-x"].updateFunction}
           onUpdateY={controlConfig["mouse-y"].updateFunction}
           onUpdateBallX={controlConfig["ball-x"].updateFunction}
@@ -125,12 +119,6 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
         />
       ) : (
         <CanvasController
-          trackX={!!controlAddresses["mouse-x"]}
-          trackY={!!controlAddresses["mouse-y"]}
-          trackBallX={!!controlAddresses["ball-x"]}
-          trackBallY={!!controlAddresses["ball-y"]}
-          trackClick={!!controlAddresses["click"]}
-          trackChaos={!!controlAddresses["chaos"]}
           onUpdateX={controlConfig["mouse-x"].updateFunction}
           onUpdateY={controlConfig["mouse-y"].updateFunction}
           onUpdateBallX={controlConfig["ball-x"].updateFunction}

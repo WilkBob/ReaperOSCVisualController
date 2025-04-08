@@ -1,7 +1,8 @@
 import React from "react";
-import { Canvas } from "@react-three/fiber";
-import RoadSection from "./RoadSection";
+import { Canvas, useFrame } from "@react-three/fiber";
+import Car from "./Car";
 import { OrbitControls } from "@react-three/drei";
+
 const CarHighway3D = ({ args }) => {
   const {
     mousePosRef,
@@ -17,6 +18,7 @@ const CarHighway3D = ({ args }) => {
     onUpdateChaos,
   } = args;
 
+  // useFrame(() => {
   return (
     <>
       <Canvas
@@ -29,8 +31,7 @@ const CarHighway3D = ({ args }) => {
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 10, 5]} />
-        <RoadSection z={8} />
-
+        <Car ballRef={ballRef} />
         <OrbitControls />
       </Canvas>
     </>

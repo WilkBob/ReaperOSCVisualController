@@ -5,12 +5,6 @@ import ParticleControls from "./Particles/ParticleControls";
 import SpaceControls from "./SpaceControls/SpaceControls";
 
 const CanvasController = ({
-  trackX,
-  trackY,
-  trackBallX,
-  trackBallY,
-  trackClick,
-  trackChaos,
   onUpdateX,
   onUpdateY,
   onUpdateBallX,
@@ -20,14 +14,13 @@ const CanvasController = ({
   visualizer,
 }) => {
   const canvasRef = useRef(null);
-
-  const { mousePosRef, ballRef, clickedRef, chaosRef } = useMouseControl({
-    trackX,
-    trackY,
-    trackClick,
+  const ballRef = useRef({ x: 0.5, y: 0.5, fac: 0.5 });
+  const chaosRef = useRef(0.2); // Assuming chaos is a float between 0 and 1
+  const { mousePosRef, clickedRef } = useMouseControl({
     onUpdateX,
     onUpdateY,
     onUpdateClick,
+    ballRef, // mouse controls ball fac
   });
 
   useEffect(() => {
@@ -48,11 +41,7 @@ const CanvasController = ({
           2
         )}, y=${ballRef.current.y.toFixed(2)}`,
         `Mouse Clicked: ${clickedRef.current ? "Yes" : "No"}`,
-        `Track Mouse: ${trackX || trackY ? "Yes" : "No"}`,
-        `Track Ball: ${trackBallX || trackBallY ? "Yes" : "No"}`,
         `Ball Factor: ${ballRef.current.fac}`,
-        `Track Click: ${trackClick ? "Yes" : "No"}`,
-        `Track Chaos: ${trackChaos ? "Yes" : "No"}`,
         `Chaos Value: ${chaosRef.current.toFixed(2)}`,
         `Visualizer: ${visualizer}`,
       ];
@@ -66,18 +55,12 @@ const CanvasController = ({
       canvas,
       ctx,
       mousePosRef,
-      trackMouse: trackX || trackY,
-
       clickedRef,
-      trackClick,
 
       ballRef,
-      trackBall: trackBallX || trackBallY,
       onUpdateBallX,
       onUpdateBallY,
-
       chaosRef,
-      trackChaos,
       onUpdateChaos,
     };
 
@@ -124,11 +107,6 @@ const CanvasController = ({
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     };
   }, [
-    trackX,
-    trackY,
-    trackBallX,
-    trackBallY,
-    trackClick,
     mousePosRef,
     ballRef,
     clickedRef,
@@ -136,7 +114,6 @@ const CanvasController = ({
     onUpdateBallY,
     onUpdateChaos,
     chaosRef,
-    trackChaos,
     visualizer,
   ]);
 

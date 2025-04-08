@@ -10,7 +10,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
-import ParameterItem from "./ParameterItem";
+import ParameterItem from "./parameter/ParameterItem";
 import ProfileMenu from "./ProfileMenu";
 
 const ParameterList = ({
