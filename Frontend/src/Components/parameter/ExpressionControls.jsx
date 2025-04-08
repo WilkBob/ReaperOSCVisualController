@@ -13,7 +13,7 @@ const ExpressionControls = ({ param, updateRange, updateParameter }) => {
   return (
     <Box sx={{ mt: 4, mb: 2 }}>
       <Typography variant="subtitle1" sx={{ mb: 2 }}>
-        Parameter Controls
+        Expression Controls
       </Typography>
 
       <Box sx={{ mb: 3 }}>
