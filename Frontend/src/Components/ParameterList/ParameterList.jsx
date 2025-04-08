@@ -10,8 +10,9 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
-import ParameterItem from "./parameter/ParameterItem";
-import ProfileMenu from "./ProfileMenu";
+import ParameterItem from "./ParameterItem";
+import ProfileMenu from "../ProfileMenu";
+import { useEffect } from "react";
 
 const ParameterList = ({
   parameters,
@@ -19,6 +20,20 @@ const ParameterList = ({
   drawerOpen,
   setDrawerOpen,
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "p") {
+        setDrawerOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [setDrawerOpen]);
+
   const addParameter = () => {
     if (parameters.length < 5) {
       setParameters([

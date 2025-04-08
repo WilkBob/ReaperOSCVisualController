@@ -11,7 +11,7 @@ import {
 } from "../API/oscService";
 import Transport from "./Transport";
 import ConnectionStatus from "./ConnectionStatus";
-import ParameterList from "./ParameterList";
+import ParameterList from "./ParameterList/ParameterList";
 import AddressController from "./AddressController";
 import VisualizerSelect from "./VisualizerSelect";
 
@@ -31,7 +31,14 @@ const OSCController = () => {
       fxNum: 1,
       paramNum: 2,
       controlType: "mouse-x",
-      range: { min: 0, max: 1 },
+      valueMap: {
+        stops: [
+          { x: 0.0, y: 0.0 },
+          { x: 1.0, y: 1.0 },
+        ],
+        interpolate: true,
+        invert: true,
+      },
     },
   ]);
 

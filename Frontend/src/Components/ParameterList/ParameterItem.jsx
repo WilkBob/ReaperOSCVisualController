@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, Box, Grid } from "@mui/material";
+import { Card } from "@mui/material";
 import ParameterHeader from "./ParameterHeader";
-import ParameterControls from "./ParameterControls";
+import AddressControls from "./AddressControls";
 
 import ExpressionControls from "./ExpressionControls";
 
@@ -12,11 +12,9 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
     );
   };
 
-  const updateRange = (key, value) => {
+  const updateValueMap = (valueMap) => {
     setParameters((prev) =>
-      prev.map((p, i) =>
-        i === index ? { ...p, range: { ...p.range, [key]: value } } : p
-      )
+      prev.map((p, i) => (i === index ? { ...p, valueMap } : p))
     );
   };
 
@@ -31,8 +29,7 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
         boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
         transition: "all 0.2s ease",
         "&:hover": {
-          backgroundColor: "rgba(42, 42, 42, 0.9)",
-          transform: "translateY(-2px)",
+          backgroundColor: "rgba(42, 42, 42, 0.7)",
         },
         border: "1px solid rgba(255,255,255,0.1)",
       }}
@@ -43,12 +40,12 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
         updateParameter={updateParameter}
         removeParameter={removeParameter}
       />
-      <Grid container spacing={2}>
-        <ParameterControls param={param} updateParameter={updateParameter} />
-      </Grid>
+
+      <AddressControls param={param} updateParameter={updateParameter} />
+
       <ExpressionControls
         param={param}
-        updateRange={updateRange}
+        updateValueMap={updateValueMap}
         updateParameter={updateParameter}
       />
     </Card>

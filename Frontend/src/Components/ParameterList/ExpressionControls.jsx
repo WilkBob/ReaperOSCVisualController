@@ -1,6 +1,7 @@
 import { Box, TextField, Select, MenuItem, Typography } from "@mui/material";
+import ValueMapper from "./ValueMapper/ValueMapper";
 
-const ExpressionControls = ({ param, updateRange, updateParameter }) => {
+const ExpressionControls = ({ param, updateParameter, updateValueMap }) => {
   const controlOptions = [
     { value: "mouse-x", label: "Mouse X" },
     { value: "mouse-y", label: "Mouse Y" },
@@ -11,7 +12,17 @@ const ExpressionControls = ({ param, updateRange, updateParameter }) => {
   ];
 
   return (
-    <Box sx={{ mt: 4, mb: 2 }}>
+    <Box
+      sx={{
+        mt: 4,
+        mb: 2,
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
+        borderRadius: "12px",
+        padding: "16px",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
+      }}
+    >
       <Typography variant="subtitle1" sx={{ mb: 2 }}>
         Expression Controls
       </Typography>
@@ -25,7 +36,13 @@ const ExpressionControls = ({ param, updateRange, updateParameter }) => {
           size="small"
           value={param.controlType}
           onChange={(e) => updateParameter("controlType", e.target.value)}
-          sx={{ mb: 3 }}
+          sx={{
+            mb: 3,
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "8px",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+          }}
         >
           {controlOptions.map(({ value, label }) => (
             <MenuItem key={value} value={value}>
@@ -36,30 +53,12 @@ const ExpressionControls = ({ param, updateRange, updateParameter }) => {
       </Box>
 
       <Typography variant="body2" sx={{ mb: 1 }}>
-        Range Limits
+        Value Mapping - Ranges
       </Typography>
       <Box display="flex" gap={2}>
-        <TextField
-          size="small"
-          type="number"
-          label="Min Range"
-          value={param.range?.min ?? ""}
-          onChange={(e) => {
-            const value = e.target.value === "" ? "" : Number(e.target.value);
-            updateRange("min", value);
-          }}
-          sx={{ flex: 1 }}
-        />
-        <TextField
-          size="small"
-          type="number"
-          label="Max Range"
-          value={param.range?.max ?? ""}
-          onChange={(e) => {
-            const value = e.target.value === "" ? "" : Number(e.target.value);
-            updateRange("max", value);
-          }}
-          sx={{ flex: 1 }}
+        <ValueMapper
+          valueMap={param.valueMap}
+          updateValueMap={updateValueMap}
         />
       </Box>
     </Box>

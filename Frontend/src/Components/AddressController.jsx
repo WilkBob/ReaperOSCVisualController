@@ -3,6 +3,7 @@ import { createOSCAddress, sendMessage } from "../API/oscService";
 
 import CanvasController from "./controls/CanvasController";
 import ThreeDCanvasController from "./controls/3DCanvasController";
+import mapValueThroughStops from "../mapValue";
 //Component creates OSC addresses for different control types and broadcasts their values at a specified interval. It uses React hooks to manage state and side effects, and it scales values between specified ranges for each control type. - adding new controls happens here and in paramlist, - also good place to invert values if added to paramlist - this is the main controller for the address creation and broadcasting.
 const AddressController = ({ params, broadcasting, visualizer, editing }) => {
   // Object to store addresses for each control type
@@ -60,7 +61,8 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
       const address = createOSCAddress(param);
       newControlAddresses[controlType].push({
         address,
-        range: param.range, //INVERT logic here
+        range: param.range,
+        valueMap: param.valueMap,
       });
     });
 
@@ -78,11 +80,11 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
           const addresses = controlAddresses[controlType];
           const { ref } = controlConfig[controlType];
 
-          addresses.forEach(({ address, range }) => {
-            const scaledValue = scaleValue(ref.val, 0, 1, range.min, range.max);
+          addresses.forEach(({ address, valueMap }) => {
+            const scaledValue = mapValueThroughStops(ref.val, valueMap);
             if (scaledValue !== ref.last) {
               sendMessage(address, scaledValue);
-              ref.last = scaledValue; // Update last broadcasted value
+              ref.last = scaledValue;
             }
           });
         });
@@ -94,15 +96,6 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
     };
   }, [broadcasting, controlAddresses, controlConfig]);
 
-  // Helper function to scale values between ranges
-  const scaleValue = (value, inMin, inMax, outMin, outMax) => {
-    return parseFloat(
-      (
-        ((value - inMin) * (outMax - outMin)) / (inMax - inMin) +
-        outMin
-      ).toFixed(2)
-    );
-  };
   if (editing) return;
 
   return (
