@@ -1,7 +1,8 @@
 class Stop {
-  constructor(ctx, x, y, clickedRef, mousePosRef) {
-    this.x = x; // normalized 0–1
-    this.y = y; // normalized 0–1
+  constructor(ctx, stop, clickedRef, mousePosRef) {
+    this.stop = stop; // Reference to the original stop object
+    this.x = stop.x; // normalized 0–1
+    this.y = stop.y; // normalized 0–1
     this.radius = 8; // radius in pixels
     this.dragging = false;
     this.ctx = ctx; // canvas context
@@ -38,10 +39,14 @@ class Stop {
       // Update position based on mouse position
       this.x = this.mousePosRef.current.x;
       this.y = 1 - this.mousePosRef.current.y; // Flip y-axis for canvas
+
+      // Update the original stop object
+      this.stop.x = this.x;
+      this.stop.y = this.y;
     }
   }
 
-  draw() {
+  update() {
     const canvasWidth = this.ctx.canvas.width;
     const canvasHeight = this.ctx.canvas.height;
 

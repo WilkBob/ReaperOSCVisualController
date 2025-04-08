@@ -44,7 +44,9 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       canvas.height,
       mousePosRef,
       clickedRef,
-      mapRef
+      mapRef,
+
+      valueMap.interpolate
     );
     const drawTrackingInfo = (ctx, mousePos) => {
       ctx.fillStyle = "black";
@@ -77,6 +79,7 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
 
     let animId;
     const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
       controller.update();
       drawTrackingInfo(ctx, mousePosRef.current);
       animId = requestAnimationFrame(animate);
@@ -88,10 +91,10 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       cancelAnimationFrame(animId);
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     };
-  }, [mousePosRef, clickedRef]);
+  }, [mousePosRef, clickedRef, valueMap]);
 
   return (
-    <Box>
+    <Box sx={{ width: "100%", height: "100%" }}>
       {JSON.stringify(valueMap)}
       {/* Toolbar with Save button and switches */}
       <Toolbar
@@ -128,10 +131,10 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       </Toolbar>
 
       {/* Canvas */}
-      <Box position="relative">
+      <Box sx={{ position: "relative", width: "100%", height: "200px" }}>
         <canvas
           ref={canvasRef}
-          style={{ border: "1px solid black", width: "100%", height: "200px" }}
+          style={{ border: "2px solid black", width: "100%", height: "200px" }}
         ></canvas>
       </Box>
     </Box>
