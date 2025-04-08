@@ -1,15 +1,9 @@
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { Box } from "@mui/material";
 import useMouseControl from "./UseMouseControl";
 import CarHighway3D from "./Highway/CarHighway3D";
 
 const ThreeDCanvasController = ({
-  trackX,
-  trackY,
-  trackBallX,
-  trackBallY,
-  trackClick,
-  trackChaos,
   onUpdateX,
   onUpdateY,
   onUpdateBallX,
@@ -18,28 +12,24 @@ const ThreeDCanvasController = ({
   onUpdateChaos,
   visualizerId, //for swapping threeD visualizers / currently only'highway'
 }) => {
-  const { mousePosRef, ballRef, clickedRef, chaosRef } = useMouseControl({
-    trackX,
-    trackY,
-    trackClick,
+  const ballRef = useRef({ x: 0.5, y: 0.5, fac: 0.5 });
+  const chaosRef = useRef(0.2); // Assuming chaos is a float between 0 and 1
+  const { mousePosRef, clickedRef } = useMouseControl({
     onUpdateX,
     onUpdateY,
     onUpdateClick,
+    ballRef,
   });
   const controllerArgs = {
     mousePosRef,
-    trackMouse: trackX || trackY,
-
     clickedRef,
-    trackClick,
-
     ballRef,
-    trackBall: trackBallX || trackBallY,
+
     onUpdateBallX,
     onUpdateBallY,
 
     chaosRef,
-    trackChaos,
+
     onUpdateChaos,
   };
   return (

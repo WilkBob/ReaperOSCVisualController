@@ -1,7 +1,9 @@
 import { Button } from "@mui/material";
 import React from "react";
+import useLearnParam from "../useLearnParam";
 
-const LearnButton = ({ isLearning, learn, updateParameter, param }) => {
+const LearnButton = ({ updateParameter, param }) => {
+  const { learn, isLearning } = useLearnParam();
   return (
     <Button
       fullWidth

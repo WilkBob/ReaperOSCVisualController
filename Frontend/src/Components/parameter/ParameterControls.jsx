@@ -1,12 +1,21 @@
 import React from "react";
-import { Grid, Select, MenuItem, TextField, Button } from "@mui/material";
+import { Grid, Select, MenuItem, TextField, Typography } from "@mui/material";
 import LearnButton from "./LearnButton";
-import useLearnParam from "../useLearnParam";
 
 const ParameterControls = ({ param, updateParameter }) => {
-  const { isLearning, learn } = useLearnParam();
   return (
     <>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          fontWeight: 600,
+          color: "rgba(255, 255, 255, 0.8)",
+          mb: 2,
+          textTransform: "uppercase",
+        }}
+      >
+        Address Controls - Choose a Signal Destination
+      </Typography>
       <Grid item xs={12} sm={6}>
         <Select
           fullWidth
@@ -64,13 +73,7 @@ const ParameterControls = ({ param, updateParameter }) => {
               }
             />
           </Grid>
-          <LearnButton
-            learn={learn}
-            param={param}
-            updateParameter={updateParameter}
-            isLearning={isLearning}
-          />
-          /
+          <LearnButton param={param} updateParameter={updateParameter} />
         </>
       )}
     </>

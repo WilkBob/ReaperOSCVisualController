@@ -1,20 +1,20 @@
 import React from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import Car from "./Car";
 import { OrbitControls } from "@react-three/drei";
 
 const CarHighway3D = ({ args }) => {
   const {
     mousePosRef,
-    trackMouse,
+
     clickedRef,
-    trackClick,
+
     ballRef,
-    trackBall,
+
     onUpdateBallX,
     onUpdateBallY,
     chaosRef,
-    trackChaos,
+
     onUpdateChaos,
   } = args;
 

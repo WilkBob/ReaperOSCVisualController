@@ -122,18 +122,15 @@ const ParameterList = ({
         <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 3 }} />
 
         <Box sx={{ mb: 3 }}>
-          <Grid container spacing={2}>
-            {parameters.map((param, index) => (
-              <Grid key={index}>
-                <ParameterItem
-                  param={param}
-                  index={index}
-                  setParameters={setParameters}
-                  removeParameter={removeParameter}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          {parameters.map((param, index) => (
+            <ParameterItem
+              param={param}
+              index={index}
+              setParameters={setParameters}
+              removeParameter={removeParameter}
+              key={index + param.name} // Ensure unique key for each item
+            />
+          ))}
         </Box>
 
         <Button

@@ -2,7 +2,8 @@ import React from "react";
 import { Card, Box, Grid } from "@mui/material";
 import ParameterHeader from "./ParameterHeader";
 import ParameterControls from "./ParameterControls";
-import ParameterRange from "./ParameterRange";
+
+import ExpressionControls from "./ExpressionControls";
 
 const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
   const updateParameter = (key, value) => {
@@ -45,7 +46,11 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
       <Grid container spacing={2}>
         <ParameterControls param={param} updateParameter={updateParameter} />
       </Grid>
-      <ParameterRange param={param} updateRange={updateRange} />
+      <ExpressionControls
+        param={param}
+        updateRange={updateRange}
+        updateParameter={updateParameter}
+      />
     </Card>
   );
 };
