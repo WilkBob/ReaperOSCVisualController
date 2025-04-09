@@ -143,7 +143,7 @@ const ParameterList = ({
 
         <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 3 }} />
 
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
           {parameters.map((param, index) => (
             <ParameterItem
               param={param}

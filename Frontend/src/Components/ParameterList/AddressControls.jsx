@@ -5,124 +5,120 @@ import {
   MenuItem,
   TextField,
   Typography,
-  Divider,
-  Tooltip,
+  Grid,
 } from "@mui/material";
-import LearnButton from "./LearnButton";
-import { createOSCAddress } from "../../API/oscService";
+import PianoIcon from "@mui/icons-material/Piano";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
+import PercentIcon from "@mui/icons-material/Percent";
 
-const AddressControls = ({ param, updateParameter }) => {
+import LearnButton from "./LearnButton";
+
+import { createOSCAddress } from "../../API/oscService";
+import ExpressionControls from "./ExpressionControls";
+
+const AddressControls = ({ param, updateParameter, updateValueMap }) => {
   const parameterTypes = [
-    ["inst", "Instrument"],
-    ["fx", "Effect Param"],
-    ["vol", "Track Volume"],
-    ["sendvol", "Send Volume"],
-    ["pan", "Track Pan"],
-    ["fxWet", "FX Wet/Dry"],
+    ["inst", "Instrument", <PianoIcon fontSize="small" />],
+    ["fx", "Effect Param", <PercentIcon fontSize="small" />],
+    ["vol", "Track Volume", <VolumeUpIcon fontSize="small" />],
+    ["sendvol", "Send Volume", <VolumeUpIcon fontSize="small" />],
+    ["pan", "Track Pan", <SyncAltIcon fontSize="small" />],
+    ["fxWet", "FX Wet/Dry", <PercentIcon fontSize="small" />],
   ];
 
   return (
-    <Box
-      sx={{
-        mb: 3,
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
-        backdropFilter: "blur(10px)",
-        borderRadius: "12px",
-        padding: "16px",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
-      }}
-    >
-      <Typography
-        variant="subtitle1"
-        sx={{
-          fontWeight: 600,
-          color: "rgba(255, 255, 255, 0.8)",
-          mb: 2,
-          textTransform: "uppercase",
-        }}
-      >
-        Address Controls{" "}
-        <Tooltip
-          title={`Choose a signal destination for the parameter. Current: ${createOSCAddress(
-            param
-          )}`}
+    <Grid container spacing={2} alignItems="center">
+      <Grid item xs={12} md={6}>
+        <Typography
+          variant="h5"
+          sx={{
+            color: "rgba(255, 255, 255, 0.8)",
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+          }}
         >
-          <span style={{ fontSize: "0.8rem" }}>ℹ️</span>
-        </Tooltip>
-      </Typography>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          alignItems: "flex-start",
-          gap: 2,
-          flexWrap: "wrap",
-        }}
-      >
-        <Box sx={{ minWidth: 180 }}>
-          <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
-            Parameter Type
+          Address Controls{" "}
+          <Typography sx={{ ml: 1 }} variant="caption">
+            - {"OSC Address: "}
+            {createOSCAddress(param)}
           </Typography>
-          <Select
-            size="small"
-            value={param.type}
-            onChange={(e) => updateParameter("type", e.target.value)}
-            sx={{
-              width: "100%",
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(10px)",
-              borderRadius: "8px",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-            }}
-          >
-            {parameterTypes.map(([value, label]) => (
-              <MenuItem key={value} value={value}>
-                {label}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
+        </Typography>
 
-        <Divider
-          orientation="vertical"
-          flexItem
-          sx={{ display: { xs: "none", md: "block" } }}
-        />
-
-        <Box sx={{ minWidth: 100 }}>
-          <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
-            Track #
-          </Typography>
-          <TextField
-            size="small"
-            type="number"
-            value={param.trackNum}
-            onChange={(e) =>
-              updateParameter("trackNum", Number(e.target.value))
-            }
-            sx={{ width: "100%" }}
-          />
-        </Box>
-
-        {param.type !== "vol" && param.type !== "pan" && (
-          <Box sx={{ minWidth: 100 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
-              {param.type === "sendvol" ? "Send #" : "FX #"}
+              Parameter Type
+            </Typography>
+            <Select
+              size="small"
+              value={param.type}
+              onChange={(e) => updateParameter("type", e.target.value)}
+              sx={{
+                width: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(10px)",
+                borderRadius: "8px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}
+              renderValue={(selected) => {
+                const selectedType = parameterTypes.find(
+                  ([value]) => value === selected
+                );
+                return (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {selectedType[2]}
+                    <Typography variant="body2">{selectedType[1]}</Typography>
+                  </Box>
+                );
+              }}
+            >
+              {parameterTypes.map(([value, label, icon]) => (
+                <MenuItem key={value} value={value}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {icon}
+                    {label}
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+
+          <Grid item xs={3}>
+            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+              Track #
             </Typography>
             <TextField
               size="small"
               type="number"
-              value={param.fxNum}
-              onChange={(e) => updateParameter("fxNum", Number(e.target.value))}
+              value={param.trackNum}
+              onChange={(e) =>
+                updateParameter("trackNum", Number(e.target.value))
+              }
               sx={{ width: "100%" }}
             />
-          </Box>
-        )}
+          </Grid>
 
-        {(param.type === "inst" || param.type === "fx") && (
-          <>
-            <Box sx={{ minWidth: 100 }}>
+          {param.type !== "vol" && param.type !== "pan" && (
+            <Grid item xs={3}>
+              <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                {param.type === "sendvol" ? "Send #" : "FX #"}
+              </Typography>
+              <TextField
+                size="small"
+                type="number"
+                value={param.fxNum}
+                onChange={(e) =>
+                  updateParameter("fxNum", Number(e.target.value))
+                }
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+          )}
+
+          {(param.type === "inst" || param.type === "fx") && (
+            <Grid item xs={3}>
               <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                 Param #
               </Typography>
@@ -133,14 +129,27 @@ const AddressControls = ({ param, updateParameter }) => {
                 onChange={(e) =>
                   updateParameter("paramNum", Number(e.target.value))
                 }
+                sx={{ width: "100%" }}
               />
-            </Box>
+            </Grid>
+          )}
 
-            <LearnButton param={param} updateParameter={updateParameter} />
-          </>
-        )}
-      </Box>
-    </Box>
+          {(param.type === "inst" || param.type === "fx") && (
+            <Grid item xs={3}>
+              <LearnButton param={param} updateParameter={updateParameter} />
+            </Grid>
+          )}
+        </Grid>
+      </Grid>
+
+      <Grid size={12}>
+        <ExpressionControls
+          param={param}
+          updateValueMap={updateValueMap}
+          updateParameter={updateParameter}
+        />
+      </Grid>
+    </Grid>
   );
 };
 

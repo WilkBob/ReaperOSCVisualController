@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "@mui/material";
+import { Box, Card, Divider } from "@mui/material";
 import ParameterHeader from "./ParameterHeader";
 import AddressControls from "./AddressControls";
 
@@ -21,15 +21,15 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
   return (
     <Card
       sx={{
-        p: 3,
-        mb: 2,
-        backgroundColor: "rgba(30, 30, 30, 0.9)",
+        px: 2,
+        py: 1,
+        backgroundColor: "rgba(28, 35, 41, 0.35)",
         color: "white",
         borderRadius: 2,
         boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
         transition: "all 0.2s ease",
         "&:hover": {
-          backgroundColor: "rgba(42, 42, 42, 0.7)",
+          border: "1px solid rgba(255,255,255,0.3)",
         },
         border: "1px solid rgba(255,255,255,0.1)",
       }}
@@ -40,14 +40,14 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
         updateParameter={updateParameter}
         removeParameter={removeParameter}
       />
-
-      <AddressControls param={param} updateParameter={updateParameter} />
-
-      <ExpressionControls
-        param={param}
-        updateValueMap={updateValueMap}
-        updateParameter={updateParameter}
-      />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 1 }} />
+      <Box sx={{ display: "flex", gap: 2, mb: 2, width: "100%" }}>
+        <AddressControls
+          param={param}
+          updateParameter={updateParameter}
+          updateValueMap={updateValueMap}
+        />
+      </Box>
     </Card>
   );
 };

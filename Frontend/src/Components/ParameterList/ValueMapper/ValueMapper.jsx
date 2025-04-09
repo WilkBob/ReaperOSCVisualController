@@ -1,22 +1,30 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   Box,
   IconButton,
   Toolbar,
   FormControlLabel,
   Switch,
+  Typography,
+  Divider,
+  Tooltip,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+import QuestionMark from "@mui/icons-material/QuestionMark";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
 import MapCanvas from "./MapCanvas";
 import useCanvasMouse from "./useCanvasMouse";
+import ValueMapperTooltip from "./ValueMapperTooltip";
 
-const ValueMapper = ({ valueMap, updateValueMap }) => {
+const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
   const canvasRef = useRef(null);
   const stopsRef = useRef([...valueMap.stops]);
 
   const { mousePosRef, clickedRef } = useCanvasMouse(canvasRef);
-
-  const setMapFromRef = () => {
+  const controllerRef = useRef(null);
+  const setMapFromRef = useCallback(() => {
     // Ensure stops are sorted by x value and round x, y to 2 decimal places
     const stops = stopsRef.current
       .map((stop) => ({
@@ -27,7 +35,8 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
 
     console.log("Rounded Stops:", stops); // Debug log
     updateValueMap({ ...valueMap, stops: [...stops] });
-  };
+    closeMapper(); // Close the mapper after saving
+  }, [valueMap, updateValueMap, closeMapper]);
   const setInterpolate = (e) => {
     const newValueMap = { ...valueMap, interpolate: e.target.checked };
     updateValueMap(newValueMap);
@@ -67,7 +76,7 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
     //     );
     //   });
     // };
-
+    controllerRef.current = controller; // Store the controller reference
     const resizeCanvas = () => {
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
@@ -81,6 +90,11 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("keydown", controller.handleKeyDown);
     canvas.addEventListener("dblclick", controller.handleDoubleClick);
+    canvas.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        setMapFromRef();
+      }
+    });
 
     let animId;
     const animate = () => {
@@ -98,47 +112,115 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       cancelAnimationFrame(animId);
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     };
-  }, [mousePosRef, clickedRef, valueMap]);
+  }, [mousePosRef, clickedRef, valueMap, setMapFromRef]);
 
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
-      {JSON.stringify(valueMap)}
-      {/* Toolbar with Save button and switches */}
-      <Toolbar
-        style={{
-          display: "flex",
+      <Box sx={{ display: "flex", gap: 2, mb: 1 }}>
+        <Typography
+          variant="h5"
+          sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
+        >
+          Value Mapper
+        </Typography>
+        <Tooltip
+          enterDelay={1000}
+          title="Whether the value smoothly or sharply
+          transitions between stops - Off is useful for gates."
+          arrow
+        >
+          <FormControlLabel
+            control={
+              <Switch
+                checked={valueMap.interpolate}
+                onChange={setInterpolate}
+                color="primary"
+              />
+            }
+            label="Interpolate:"
+            labelPlacement="start"
+          />
+        </Tooltip>
 
-          marginBottom: "10px",
-        }}
-      >
-        <FormControlLabel
-          control={
-            <Switch
-              checked={valueMap.interpolate}
-              onChange={setInterpolate}
-              color="primary"
-            />
-          }
-          label="Interpolate"
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={valueMap.invert}
-              onChange={setInvert}
-              color="primary"
-            />
-          }
-          label="Invert"
-        />
-        <IconButton onClick={setMapFromRef} style={{}}>
-          <SaveIcon />
-        </IconButton>
-      </Toolbar>
+        <Tooltip
+          enterDelay={1000}
+          title="Whether the gradient is inverted - switches the diretion of the gradient."
+          arrow
+        >
+          <FormControlLabel
+            control={
+              <Switch
+                checked={valueMap.invert}
+                onChange={setInvert}
+                color="primary"
+              />
+            }
+            label="Invert:"
+            labelPlacement="start"
+          />
+        </Tooltip>
+        <Divider orientation="vertical" flexItem />
+        <Tooltip enterDelay={1000} title="Save Map" arrow>
+          <IconButton onClick={setMapFromRef} style={{}}>
+            <SaveIcon />
+          </IconButton>
+        </Tooltip>
+        <Divider orientation="vertical" flexItem />
+        <Tooltip enterDelay={1000} title="Discard Changes" arrow>
+          <IconButton
+            onClick={() => {
+              closeMapper();
+            }}
+            style={{}}
+          >
+            <CloseIcon color="error" />
+          </IconButton>
+        </Tooltip>
+        <Divider orientation="vertical" flexItem />
+        <Tooltip enterDelay={1000} title="Delete Stop" arrow>
+          <IconButton
+            onClick={() => {
+              controllerRef.current.deleteSelectedStop();
+            }}
+            style={{}}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+        <Divider orientation="vertical" flexItem />
+        <Tooltip enterDelay={1000} title="Add Stop" arrow>
+          <IconButton
+            onClick={() => {
+              if (stopsRef.current.some((stop) => stop.x === 0.5)) {
+                return; // Stop already exists at (0.5, 0.5)
+              }
+              controllerRef.current.addStopAtPosition(0.5, 0.5); // Add a stop at the center of the canvas
+            }}
+            style={{}}
+          >
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
 
+        <ValueMapperTooltip>
+          <IconButton sx={{ ml: "auto" }} color="info">
+            <QuestionMark />
+          </IconButton>
+        </ValueMapperTooltip>
+      </Box>
       {/* Canvas */}
       <Box sx={{ position: "relative", width: "100%" }}>
-        <canvas ref={canvasRef} style={{ border: "", width: "100%" }}></canvas>
+        <Box
+          component={"canvas"}
+          tabIndex={0}
+          ref={canvasRef}
+          sx={{
+            border: "2px solid rgba(255, 255, 255, 0.4)",
+            borderRadius: "8px",
+            width: "100%",
+            height: "100px",
+          }}
+        />
       </Box>
     </Box>
   );

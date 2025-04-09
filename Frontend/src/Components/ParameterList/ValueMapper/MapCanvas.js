@@ -85,6 +85,10 @@ class MapCanvas {
   }
 
   addStopAtPosition(x, y) {
+    if (this.stopsRef.current.length >= 10) {
+      // Limit the number of stops to 10
+      return false;
+    }
     const newStop = this.screenToNormalized(x * this.width, y * this.height);
 
     // Find insert position to maintain left-to-right order

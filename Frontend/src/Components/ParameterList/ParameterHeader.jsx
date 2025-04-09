@@ -13,12 +13,7 @@ const ParameterHeader = ({
   const [editName, setEditName] = useState(false);
 
   return (
-    <Box
-      display="flex"
-      justifyContent="space-between"
-      alignItems="center"
-      mb={2.5}
-    >
+    <Box display="flex" justifyContent="space-between" alignItems="center">
       {editName ? (
         <Box display="flex" alignItems="center" gap={1}>
           <TextField
@@ -46,7 +41,6 @@ const ParameterHeader = ({
             variant="h6"
             sx={{ fontWeight: 600, display: "flex", alignItems: "center" }}
           >
-            <span style={{ marginRight: 8 }}>🎛</span>{" "}
             {param.name || `Parameter ${index + 1}`}
           </Typography>
           <IconButton onClick={() => setEditName(true)}>

@@ -1,5 +1,7 @@
-import { Box, TextField, Select, MenuItem, Typography } from "@mui/material";
+import { Box, Select, MenuItem, Typography } from "@mui/material";
 import ValueMapper from "./ValueMapper/ValueMapper";
+import { useState } from "react";
+import ClosedMapper from "./ValueMapper/ClosedMapper";
 
 const ExpressionControls = ({ param, updateParameter, updateValueMap }) => {
   const controlOptions = [
@@ -10,56 +12,61 @@ const ExpressionControls = ({ param, updateParameter, updateValueMap }) => {
     { value: "click", label: "Mouse Click" },
     { value: "chaos", label: "Chaos" },
   ];
+  const [mapperOpen, setMapperOpen] = useState(false);
+  // Use valueMap to generate a linear gradient string for the canvas background, respect invert and interpolate (double stops if invert is true)
 
   return (
     <Box
       sx={{
-        mt: 4,
-        mb: 2,
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
-        backdropFilter: "blur(10px)",
-        borderRadius: "12px",
-        padding: "16px",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        gap: 2,
+        flexDirection: "column",
       }}
     >
-      <Typography variant="subtitle1" sx={{ mb: 2 }}>
-        Expression Controls
-      </Typography>
-
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          Control Type
+      <Typography
+        variant="h5"
+        sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
+      >
+        Expression Controls{" "}
+        <Typography variant="caption" sx={{ ml: 1 }}>
+          - Chosen control value will be interpreted according to the gradient
+          (lighter color = higher value)
         </Typography>
-        <Select
-          fullWidth
-          size="small"
-          value={param.controlType}
-          onChange={(e) => updateParameter("controlType", e.target.value)}
-          sx={{
-            mb: 3,
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            backdropFilter: "blur(10px)",
-            borderRadius: "8px",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-          }}
-        >
-          {controlOptions.map(({ value, label }) => (
-            <MenuItem key={value} value={value}>
-              {label}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
-
-      <Typography variant="body2" sx={{ mb: 1 }}>
-        Value Mapping - Ranges
       </Typography>
-      <Box display="flex" gap={2}>
-        <ValueMapper
-          valueMap={param.valueMap}
-          updateValueMap={updateValueMap}
-        />
+      <Select
+        fullWidth
+        size="small"
+        value={param.controlType}
+        onChange={(e) => updateParameter("controlType", e.target.value)}
+        sx={{
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(10px)",
+          borderRadius: "8px",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+        }}
+      >
+        {controlOptions.map(({ value, label }) => (
+          <MenuItem key={value} value={value}>
+            {label}
+          </MenuItem>
+        ))}
+      </Select>
+
+      <Box display="flex" sx={{ width: "100%", height: "100%" }}>
+        {mapperOpen ? (
+          <ValueMapper
+            valueMap={param.valueMap}
+            updateValueMap={updateValueMap}
+            closeMapper={() => setMapperOpen(false)}
+          />
+        ) : (
+          <ClosedMapper
+            valueMap={param.valueMap}
+            setMapperOpen={setMapperOpen}
+          />
+        )}
       </Box>
     </Box>
   );
