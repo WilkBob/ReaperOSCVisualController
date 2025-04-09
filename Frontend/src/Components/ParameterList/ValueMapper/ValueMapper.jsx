@@ -10,10 +10,11 @@ import {
   Tooltip,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import DeleteIcon from "@mui/icons-material/Delete";
+import RemoveIcon from "@mui/icons-material/Remove";
 import QuestionMark from "@mui/icons-material/QuestionMark";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import MapCanvas from "./MapCanvas";
 import useCanvasMouse from "./useCanvasMouse";
 import ValueMapperTooltip from "./ValueMapperTooltip";
@@ -114,9 +115,44 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
     };
   }, [mousePosRef, clickedRef, valueMap, setMapFromRef]);
 
+  const actions = [
+    {
+      title: "Delete Stop",
+      icon: <RemoveIcon />,
+      onClick: () => controllerRef.current.deleteSelectedStop(),
+    },
+    {
+      title: "Add Stop",
+      icon: <AddIcon />,
+      onClick: () => {
+        if (stopsRef.current.some((stop) => stop.x === 0.5)) {
+          return; // Stop already exists at (0.5, 0.5)
+        }
+        controllerRef.current.addStopAtPosition(0.5, 0.5); // Add a stop at the center of the canvas
+      },
+    },
+    {
+      title: "Save Map",
+      icon: <SaveIcon />,
+      onClick: setMapFromRef,
+    },
+    {
+      title: "Discard Changes",
+      icon: <CloseIcon color="error" />,
+      onClick: closeMapper,
+    },
+    {
+      title: "Reset to Default",
+      icon: <RefreshIcon />,
+      onClick: () => {
+        controllerRef.current.reset();
+      },
+    },
+  ];
+
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
-      <Box sx={{ display: "flex", gap: 2, mb: 1 }}>
+      <Box sx={{ display: "flex", gap: 2, mb: 1, flexWrap: "wrap" }}>
         <Typography
           variant="h5"
           sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
@@ -159,49 +195,21 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
             labelPlacement="start"
           />
         </Tooltip>
-        <Divider orientation="vertical" flexItem />
-        <Tooltip enterDelay={1000} title="Save Map" arrow>
-          <IconButton onClick={setMapFromRef} style={{}}>
-            <SaveIcon />
-          </IconButton>
-        </Tooltip>
-        <Divider orientation="vertical" flexItem />
-        <Tooltip enterDelay={1000} title="Discard Changes" arrow>
-          <IconButton
-            onClick={() => {
-              closeMapper();
-            }}
-            style={{}}
-          >
-            <CloseIcon color="error" />
-          </IconButton>
-        </Tooltip>
-        <Divider orientation="vertical" flexItem />
-        <Tooltip enterDelay={1000} title="Delete Stop" arrow>
-          <IconButton
-            onClick={() => {
-              controllerRef.current.deleteSelectedStop();
-            }}
-            style={{}}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-        <Divider orientation="vertical" flexItem />
-        <Tooltip enterDelay={1000} title="Add Stop" arrow>
-          <IconButton
-            onClick={() => {
-              if (stopsRef.current.some((stop) => stop.x === 0.5)) {
-                return; // Stop already exists at (0.5, 0.5)
-              }
-              controllerRef.current.addStopAtPosition(0.5, 0.5); // Add a stop at the center of the canvas
-            }}
-            style={{}}
-          >
-            <AddIcon />
-          </IconButton>
-        </Tooltip>
 
+        <Divider orientation="vertical" flexItem />
+        {/* ACTIONS */}
+        {actions.map((action, index) => (
+          <>
+            <Tooltip key={index} enterDelay={1000} title={action.title} arrow>
+              <IconButton onClick={action.onClick} style={{}}>
+                {action.icon}
+              </IconButton>
+            </Tooltip>
+            {index < actions.length - 1 && (
+              <Divider orientation="vertical" flexItem />
+            )}
+          </>
+        ))}
         <ValueMapperTooltip>
           <IconButton sx={{ ml: "auto" }} color="info">
             <QuestionMark />

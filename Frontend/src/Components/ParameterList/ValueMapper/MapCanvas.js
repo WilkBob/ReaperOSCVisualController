@@ -184,6 +184,10 @@ class MapCanvas {
     this.addStopAtPosition(x, y);
   };
 
+  canDelete() {
+    return this.stopsRef.current.length > 2;
+  }
+
   update() {
     // Update gradient background
     this.gradientBackground.drawGradient(this.width, this.height);
@@ -234,11 +238,31 @@ class MapCanvas {
       ctx.arc(x, y, this.stopRadius, 0, Math.PI * 2);
       ctx.fill();
 
+      //draw valueY if selected
+      if (isSelected) {
+        ctx.fillStyle = "black";
+        ctx.font = "12px Arial";
+        const text = `(${stop.y.toFixed(2)})`;
+        const textWidth = ctx.measureText(text).width;
+        const textPos = x < this.width / 2 ? x + 15 : x - textWidth - 15;
+        ctx.fillText(text, textPos, y);
+      }
+
       // Add a border to the handle for better visibility
       ctx.strokeStyle = isSelected ? "#0fa7c3" : "rgba(255,255,255,0.5)";
       ctx.lineWidth = 1;
       ctx.stroke();
     });
+  }
+
+  reset() {
+    this.stopsRef.current = [
+      { x: 0.0, y: 0.0 },
+      { x: 1.0, y: 1.0 },
+    ];
+    this.gradientBackground.stops = this.stopsRef.current;
+    this.selectedStopIndex = null;
+    this.isDragging = false;
   }
 
   onResize() {

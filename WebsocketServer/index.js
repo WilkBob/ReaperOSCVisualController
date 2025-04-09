@@ -40,9 +40,7 @@ osc.on("*", (message) => {
         });
 
         // Disable learn mode
-        learning = false;
-        trackHint = null;
-        fxHint = null;
+        resetLearningState();
       }
     }
   }
@@ -56,6 +54,14 @@ const wss = new WebSocket.Server({ port: 8080 }, () => {
   console.log("WebSocket server started on ws://localhost:8080");
 });
 
+// Function to reset the learning state
+function resetLearningState() {
+  learning = false;
+  trackHint = null;
+  fxHint = null;
+  console.log("Learning state reset");
+}
+
 wss.on("connection", (ws) => {
   console.log("Client connected");
 
@@ -63,6 +69,11 @@ wss.on("connection", (ws) => {
     try {
       const message = JSON.parse(data);
       console.log("Received message:", message);
+
+      if (message.learnCancel) {
+        resetLearningState();
+        return;
+      }
 
       if (message.learn) {
         // Temporarily disable learning until the flood subsides
@@ -100,6 +111,12 @@ wss.on("connection", (ws) => {
     }
   });
 
-  ws.on("close", () => console.log("Client disconnected"));
+  ws.on("close", () => {
+    console.log("Client disconnected");
+    if (learning) {
+      resetLearningState();
+    }
+  });
+
   ws.on("error", (error) => console.error("WebSocket error:", error));
 });

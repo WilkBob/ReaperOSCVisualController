@@ -211,7 +211,7 @@ class ParticleControls {
 
   updateAndDrawParticles() {
     const updatedParticles = [];
-
+    const totalLifeForChaos = { max: 0, ac: 0 };
     // If we're not clearing the canvas each frame (for trails)
     if (this.trailEffect) {
       this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
@@ -228,11 +228,16 @@ class ParticleControls {
 
       // Update position and properties
       particle.update();
+      totalLifeForChaos.max += particle.maxLife;
+      totalLifeForChaos.ac += particle.life;
 
       if (particle.life > 0) {
         updatedParticles.push(particle);
       }
     });
+    //after summing ac/max = chaosRef.current
+    this.chaosRef.current = totalLifeForChaos.ac / totalLifeForChaos.max;
+    this.onUpdateChaos(totalLifeForChaos.ac / totalLifeForChaos.max);
 
     // Draw connection lines between nearby particles
     if (this.connectParticles) {

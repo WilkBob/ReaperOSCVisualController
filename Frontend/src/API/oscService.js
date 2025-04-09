@@ -15,6 +15,14 @@ export const removeConnectionListener = (listener) => {
 let learnResolve = null;
 const ws = new WebSocket("ws://localhost:8080");
 
+export const cancelLearn = () => {
+  if (learnResolve) {
+    learnResolve(null); // Resolve with null to indicate cancellation
+    learnResolve = null;
+  }
+  ws.send(JSON.stringify({ learnCancel: true })); // Notify backend to stop learning
+};
+
 export const learnNextParam = (trackHint = null, fxHint = null) => {
   return new Promise((resolve) => {
     learnResolve = resolve;

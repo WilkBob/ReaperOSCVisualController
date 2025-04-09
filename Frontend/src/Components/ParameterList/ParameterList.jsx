@@ -96,6 +96,20 @@ const ParameterList = ({
             width: "100%",
             borderBottom: "1px solid rgba(255,255,255,0.1)",
             boxShadow: "0 4px 30px rgba(0,0,0,0.5)",
+            "&::-webkit-scrollbar": {
+              width: "8px",
+              height: "8px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
           },
         }}
       >
@@ -150,7 +164,7 @@ const ParameterList = ({
               index={index}
               setParameters={setParameters}
               removeParameter={removeParameter}
-              key={index + param.name} // Ensure unique key for each item
+              key={index} // Ensure unique key for each item
             />
           ))}
         </Box>

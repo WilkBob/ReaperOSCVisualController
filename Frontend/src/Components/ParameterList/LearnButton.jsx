@@ -3,11 +3,16 @@ import React from "react";
 import useLearnParam from "../useLearnParam";
 
 const LearnButton = ({ updateParameter, param }) => {
-  const { learn, isLearning } = useLearnParam();
+  const { learn, cancel, isLearning, waiting } = useLearnParam();
+
   return (
     <Tooltip
       title={
-        "Click to learn a parameter - Wait 5 seconds, then jiggle the slider in Reaper on the specified fxNum and trackNum."
+        waiting
+          ? "Click to cancel"
+          : isLearning
+          ? "Click to Cancel jiggle the slider in Reaper on the specified fxNum and trackNum."
+          : "Click to learn a parameter - Wait 5 seconds, then jiggle the slider in Reaper on the specified fxNum and trackNum."
       }
       enterDelay={2000}
     >
@@ -18,16 +23,24 @@ const LearnButton = ({ updateParameter, param }) => {
           height: "100%",
         }}
         onClick={async () => {
-          const result = await learn(param.trackNum, param.fxNum);
-          if (result) {
-            updateParameter("type", result.type);
-            updateParameter("trackNum", result.trackNum);
-            updateParameter("fxNum", result.fxNum);
-            updateParameter("paramNum", result.paramNum);
+          if (isLearning) {
+            cancel();
+          } else {
+            const result = await learn(param.trackNum, param.fxNum);
+            if (result) {
+              updateParameter("type", result.type);
+              updateParameter("trackNum", result.trackNum);
+              updateParameter("fxNum", result.fxNum);
+              updateParameter("paramNum", result.paramNum);
+            }
           }
         }}
       >
-        {isLearning ? "🧠 Listening..." : "🔍 Learn"}
+        {isLearning
+          ? waiting
+            ? "⏳ Waiting..."
+            : "🧠 Listening..."
+          : "🔍 Learn"}
       </Button>
     </Tooltip>
   );
