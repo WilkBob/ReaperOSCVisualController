@@ -160,6 +160,44 @@ class MapCanvas {
     } else if (event.key === "Escape") {
       this.selectedStopIndex = null;
     }
+    if (event.key === "ArrowUp") {
+      if (this.selectedStopIndex === null) return;
+
+      // Move selected stop up
+      const selectedStop = this.stopsRef.current[this.selectedStopIndex];
+      const newY = Math.min(selectedStop.y + 0.01, 1.0); // Ensure y is within bounds
+      this.stopsRef.current[this.selectedStopIndex] = {
+        ...selectedStop,
+        y: newY,
+      };
+    }
+    if (event.key === "ArrowDown") {
+      if (this.selectedStopIndex === null) return;
+
+      // Move selected stop down
+      const selectedStop = this.stopsRef.current[this.selectedStopIndex];
+      const newY = Math.max(selectedStop.y - 0.01, 0.0); // Ensure y is within bounds
+      this.stopsRef.current[this.selectedStopIndex] = {
+        ...selectedStop,
+        y: newY,
+      };
+    }
+
+    if (event.key === "ArrowLeft") {
+      if (this.selectedStopIndex === null) return;
+
+      // select the previous stop
+      this.selectedStopIndex = Math.max(this.selectedStopIndex - 1, 0);
+    }
+    if (event.key === "ArrowRight") {
+      if (this.selectedStopIndex === null) return;
+
+      // select the next stop
+      this.selectedStopIndex = Math.min(
+        this.selectedStopIndex + 1,
+        this.stopsRef.current.length - 1
+      );
+    }
   };
 
   handleDoubleClick = (event) => {
@@ -244,8 +282,8 @@ class MapCanvas {
         ctx.font = "12px Arial";
         const text = `(${stop.y.toFixed(2)})`;
         const textWidth = ctx.measureText(text).width;
-        const textPos = x < this.width / 2 ? x + 15 : x - textWidth - 15;
-        ctx.fillText(text, textPos, y);
+        const textX = x < this.width / 2 ? x + 15 : x - textWidth - 15;
+        ctx.fillText(text, textX, stop.y <= 0.5 ? y - 10 : y + 15);
       }
 
       // Add a border to the handle for better visibility

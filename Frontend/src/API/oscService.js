@@ -13,7 +13,55 @@ export const removeConnectionListener = (listener) => {
 };
 
 let learnResolve = null;
-const ws = new WebSocket("ws://localhost:8080");
+let reconnectInterval = null;
+let ws = new WebSocket("ws://localhost:8080");
+
+const attemptReconnect = () => {
+  if (
+    ws.readyState === WebSocket.OPEN ||
+    ws.readyState === WebSocket.CONNECTING
+  ) {
+    return; // Skip if already connected or connecting
+  }
+
+  console.log("Attempting to reconnect...");
+  ws = new WebSocket("ws://localhost:8080");
+
+  ws.onopen = () => {
+    console.log("Reconnected to WebSocket server");
+    connectionListeners.forEach((listener) => listener(true));
+    clearInterval(reconnectInterval); // Stop reconnect attempts
+    reconnectInterval = null;
+  };
+
+  ws.onclose = () => {
+    console.log("Disconnected from WebSocket server");
+    connectionListeners.forEach((listener) => listener(false));
+    if (!reconnectInterval) {
+      reconnectInterval = setInterval(attemptReconnect, 5000); // Retry every 5 seconds
+    }
+  };
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    connectionListeners.forEach((listener) => listener(false));
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      console.log("Received message:", event.data);
+      const message = JSON.parse(event.data);
+      const { learnedParam } = message;
+      if (learnResolve) {
+        const { type, trackNum, fxNum, paramNum } = learnedParam;
+        learnResolve({ type, trackNum, fxNum, paramNum });
+        learnResolve = null;
+      }
+    } catch (error) {
+      console.error("Message parsing error:", error);
+    }
+  };
+};
 
 export const cancelLearn = () => {
   if (learnResolve) {
@@ -38,34 +86,11 @@ export const learnNextParam = (trackHint = null, fxHint = null) => {
   });
 };
 
-ws.onopen = () => {
-  console.log("Connected to WebSocket server");
-  connectionListeners.forEach((listener) => listener(true));
-};
-
 ws.onclose = () => {
   console.log("Disconnected from WebSocket server");
   connectionListeners.forEach((listener) => listener(false));
-};
-
-ws.onerror = (error) => {
-  console.error("WebSocket error:", error);
-  connectionListeners.forEach((listener) => listener(false));
-};
-
-ws.onmessage = (event) => {
-  try {
-    console.log("Received message:", event.data);
-    const message = JSON.parse(event.data);
-    const { learnedParam } = message;
-    if (learnResolve) {
-      // Format: /learned_param <type> <trackNum> <fxNum> <paramNum>
-      const { type, trackNum, fxNum, paramNum } = learnedParam;
-      learnResolve({ type, trackNum, fxNum, paramNum });
-      learnResolve = null;
-    }
-  } catch (error) {
-    console.error("Message parsing error:", error);
+  if (!reconnectInterval) {
+    reconnectInterval = setInterval(attemptReconnect, 5000); // Retry every 5 seconds
   }
 };
 

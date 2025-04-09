@@ -89,10 +89,13 @@ wss.on("connection", (ws) => {
         if (fxHint !== null) {
           osc.send(new OSC.Message("/device/fx/select", fxHint));
         }
-
+        learning = true;
         // Delay enabling learning to avoid the initial flood
         setTimeout(() => {
-          learning = true;
+          if (learning === false) {
+            console.log("Learn mode disabled before delay completed");
+            return;
+          }
           console.log("Learn mode enabled after delay", { trackHint, fxHint });
         }, 5000); // 3 second delay (adjust as needed)
 

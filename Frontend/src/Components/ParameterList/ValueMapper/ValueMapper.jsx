@@ -89,7 +89,7 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("keydown", controller.handleKeyDown);
+    canvas.addEventListener("keydown", controller.handleKeyDown);
     canvas.addEventListener("dblclick", controller.handleDoubleClick);
     canvas.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
