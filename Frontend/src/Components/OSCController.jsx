@@ -37,7 +37,7 @@ const OSCController = () => {
           { x: 1.0, y: 1.0 },
         ],
         interpolate: true,
-        invert: true,
+        invert: false,
       },
     },
   ]);

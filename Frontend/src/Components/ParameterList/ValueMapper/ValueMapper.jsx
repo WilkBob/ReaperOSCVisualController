@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   Box,
   IconButton,
@@ -12,19 +12,22 @@ import useCanvasMouse from "./useCanvasMouse";
 
 const ValueMapper = ({ valueMap, updateValueMap }) => {
   const canvasRef = useRef(null);
-  const mapRef = useRef({
-    stops: valueMap.stops,
-  });
+  const stopsRef = useRef([...valueMap.stops]);
 
   const { mousePosRef, clickedRef } = useCanvasMouse(canvasRef);
 
   const setMapFromRef = () => {
-    // Ensure stops are sorted by x value
-    const stops = mapRef.current.stops.sort((a, b) => a.x - b.x);
+    // Ensure stops are sorted by x value and round x, y to 2 decimal places
+    const stops = stopsRef.current
+      .map((stop) => ({
+        x: Math.round(stop.x * 100) / 100,
+        y: Math.round(stop.y * 100) / 100,
+      }))
+      .sort((a, b) => a.x - b.x);
 
-    updateValueMap({ stops, ...valueMap });
+    console.log("Rounded Stops:", stops); // Debug log
+    updateValueMap({ ...valueMap, stops: [...stops] });
   };
-
   const setInterpolate = (e) => {
     const newValueMap = { ...valueMap, interpolate: e.target.checked };
     updateValueMap(newValueMap);
@@ -44,26 +47,26 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       canvas.height,
       mousePosRef,
       clickedRef,
-      mapRef,
-
-      valueMap.interpolate
+      stopsRef,
+      valueMap.interpolate,
+      valueMap.invert
     );
-    const drawTrackingInfo = (ctx, mousePos) => {
-      ctx.fillStyle = "black";
-      ctx.font = "12px Arial";
-      ctx.fillText(`Mouse X: ${mousePos.x}`, 10, 20);
-      ctx.fillText(`Mouse Y: ${mousePos.y}`, 10, 40);
-      ctx.fillText(`Clicked: ${clickedRef.current}`, 10, 60);
-      // draw mapref's stops xy pairs
-      ctx.fillText("Stops:", 10, 80);
-      mapRef.current.stops.forEach((stop, index) => {
-        ctx.fillText(
-          `Stop ${index}: (${stop.x}, ${stop.y})`,
-          10,
-          100 + index * 20
-        );
-      });
-    };
+    // const drawTrackingInfo = (ctx, mousePos) => {
+    //   ctx.fillStyle = "black";
+    //   ctx.font = "12px Arial";
+    //   ctx.fillText(`Mouse X: ${mousePos.x}`, 10, 20);
+    //   ctx.fillText(`Mouse Y: ${mousePos.y}`, 10, 40);
+    //   ctx.fillText(`Clicked: ${clickedRef.current}`, 10, 60);
+    //   // draw mapref's stops xy pairs
+    //   ctx.fillText("Stops (ref):", 10, 80);
+    //   stopsRef.current.forEach((stop, index) => {
+    //     ctx.fillText(
+    //       `Stop ${index}: (${stop.x}, ${stop.y})`,
+    //       10,
+    //       100 + index * 20
+    //     );
+    //   });
+    // };
 
     const resizeCanvas = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -76,18 +79,22 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("keydown", controller.handleKeyDown);
+    canvas.addEventListener("dblclick", controller.handleDoubleClick);
 
     let animId;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
       controller.update();
-      drawTrackingInfo(ctx, mousePosRef.current);
+      // drawTrackingInfo(ctx, mousePosRef.current);
       animId = requestAnimationFrame(animate);
     };
     animate();
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      canvas.removeEventListener("keydown", controller.handleKeyDown);
+      canvas.removeEventListener("dblclick", controller.handleDoubleClick);
       cancelAnimationFrame(animId);
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     };
@@ -100,7 +107,6 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       <Toolbar
         style={{
           display: "flex",
-          justifyContent: "space-between",
 
           marginBottom: "10px",
         }}
@@ -131,11 +137,8 @@ const ValueMapper = ({ valueMap, updateValueMap }) => {
       </Toolbar>
 
       {/* Canvas */}
-      <Box sx={{ position: "relative", width: "100%", height: "200px" }}>
-        <canvas
-          ref={canvasRef}
-          style={{ border: "2px solid black", width: "100%", height: "200px" }}
-        ></canvas>
+      <Box sx={{ position: "relative", width: "100%" }}>
+        <canvas ref={canvasRef} style={{ border: "", width: "100%" }}></canvas>
       </Box>
     </Box>
   );

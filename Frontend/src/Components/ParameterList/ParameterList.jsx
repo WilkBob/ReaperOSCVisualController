@@ -45,7 +45,14 @@ const ParameterList = ({
           fxNum: 1,
           paramNum: 2,
           controlType: "mouse-x",
-          range: { min: 0, max: 1 },
+          valueMap: {
+            stops: [
+              { x: 0.0, y: 0.0 },
+              { x: 1.0, y: 1.0 },
+            ],
+            interpolate: true,
+            invert: false,
+          },
         },
       ]);
     }
