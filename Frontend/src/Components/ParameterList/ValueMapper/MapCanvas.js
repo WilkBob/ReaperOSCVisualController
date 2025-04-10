@@ -37,10 +37,8 @@ class MapCanvas {
     this.stopRadius = 7;
     this.selectionDistance = 10;
 
-    // Event listeners
-
     // Make sure canvas can receive keyboard events
-    this.canvas.tabIndex = 1000;
+    this.canvas.tabIndex = 0;
   }
 
   // Convert between screen and normalized coordinates
@@ -185,14 +183,33 @@ class MapCanvas {
 
     if (event.key === "ArrowLeft") {
       if (this.selectedStopIndex === null) return;
-
-      // select the previous stop
+      if (event.ctrlKey) {
+        // Move selected stop left
+        const selectedStop = this.stopsRef.current[this.selectedStopIndex];
+        const newX = Math.max(selectedStop.x - 0.01, 0.0); // Ensure x is within bounds
+        this.stopsRef.current[this.selectedStopIndex] = {
+          ...selectedStop,
+          x: newX,
+        };
+        return;
+      }
+      // Otherwise select the previous stop
       this.selectedStopIndex = Math.max(this.selectedStopIndex - 1, 0);
     }
     if (event.key === "ArrowRight") {
       if (this.selectedStopIndex === null) return;
+      if (event.ctrlKey) {
+        // Move selected stop right
+        const selectedStop = this.stopsRef.current[this.selectedStopIndex];
+        const newX = Math.min(selectedStop.x + 0.01, 1.0); // Ensure x is within bounds
+        this.stopsRef.current[this.selectedStopIndex] = {
+          ...selectedStop,
+          x: newX,
+        };
+        return;
+      }
 
-      // select the next stop
+      //otherwise select the next stop
       this.selectedStopIndex = Math.min(
         this.selectedStopIndex + 1,
         this.stopsRef.current.length - 1

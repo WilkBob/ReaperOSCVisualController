@@ -6,13 +6,13 @@ class ShootingStars {
     this.stars = []; // Array to hold active shooting stars
 
     // Configuration options
-    this.fadeRate = 0.01; // How quickly stars fade out
-    this.trailLength = 15; // Length of star trail
-    this.minSize = 2;
-    this.maxSize = 5;
-    this.minSpeed = 2;
-    this.maxSpeed = 5;
-    this.maxStars = 50; // Maximum number of stars allowed at once
+    this.FADE_RATE = 0.01; // How quickly stars fade out
+    this.TRAIL_LENGTH = 15; // Length of star trail
+    this.MIN_SIZE = 2;
+    this.MAX_SIZE = 5;
+    this.MIN_SPEED = 2;
+    this.MAX_SPEED = 5;
+    this.MAX_STARS = 50;
 
     // Pre-rendered star images - different sizes and trail lengths
     this.starImages = this.createStarImages();
@@ -25,7 +25,7 @@ class ShootingStars {
 
     for (const size of sizesToRender) {
       // Ensure minimum dimensions for the canvas
-      const trailLength = Math.max(this.trailLength, 5);
+      const trailLength = Math.max(this.TRAIL_LENGTH, 5);
       const canvasWidth = Math.max(size * 2 + trailLength * 2, 10);
       const canvasHeight = Math.max(size * 4, 10);
 
@@ -134,11 +134,12 @@ class ShootingStars {
 
   spawnStar() {
     // Limit the number of stars
-    if (this.stars.length >= this.maxStars) {
+    if (this.stars.length >= this.MAX_STARS) {
       return;
     }
 
-    const size = Math.random() * (this.maxSize - this.minSize) + this.minSize;
+    const size =
+      Math.random() * (this.MAX_SIZE - this.MIN_SIZE) + this.MIN_SIZE;
     let x, y;
 
     // Random position near the top 20% of the screen
@@ -148,7 +149,7 @@ class ShootingStars {
     // Angle between 30-60 degrees for natural diagonal movement
     const angle = (Math.random() * 30 + 30) * (Math.PI / 180);
     const speed =
-      Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed;
+      Math.random() * (this.MAX_SPEED - this.MIN_SPEED) + this.MIN_SPEED;
 
     const velocity = {
       x: Math.cos(angle) * speed,
@@ -179,7 +180,7 @@ class ShootingStars {
     }
 
     // Add random stars occasionally
-    if (Math.random() < 0.02 && this.stars.length < this.maxStars / 2) {
+    if (Math.random() < 0.02 && this.stars.length < this.MAX_STARS / 2) {
       this.spawnStar();
     }
 
@@ -195,7 +196,7 @@ class ShootingStars {
       star.y += star.velocity.y;
 
       // Update opacity
-      star.opacity -= this.fadeRate;
+      star.opacity -= this.FADE_RATE;
 
       // Check if star should remain active
       if (

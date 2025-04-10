@@ -1,13 +1,20 @@
 class Ball {
   constructor(ballRef) {
-    this.ballRef = ballRef; // Reference to the ballRef object, this object must be manipulated to broadcast it's properties to the OSCController
-    this.glowSize = 10; // Initial glow size
-    this.glowDirection = 1; // Direction of glow size change (1 = increasing, -1 = decreasing)
-    this.glowSpeed = 0.5; // Speed of the glow pulsing
+    this.ballRef = ballRef; // Reference to the ballRef object, this object must be manipulated to broadcast its properties to the OSCController
+
+    this.GLOW_DIRECTION = 1; // Direction of glow size change (1 = increasing, -1 = decreasing)
+    this.GLOWSPEED = 0.5; // Speed of the glow pulsing
+    this.BALL_SIZE = 15; // Size of the ball
+    this.GLOW_SIZE_MAX = 50; // Maximum glow size
+    this.GLOW_SIZE_MIN = 10; // Minimum glow size
+    this.GRADIENT_COLOR_START = "rgba(255, 255, 255, 0.8)"; // Gradient start color
+    this.GRADIENT_COLOR_END = "rgba(255, 255, 255, 0)"; // Gradient end color
+    this.BALL_COLOR = "rgba(255, 255, 255, 0.9)"; // Ball color
 
     // Velocity properties
     this.vx = 0.01; // Initial horizontal velocity
     this.vy = 0.01; // Initial vertical velocity
+    this.GLOW_SIZE = 10; // Initial glow size
   }
 
   update() {
@@ -24,9 +31,12 @@ class Ball {
     }
 
     // Update glow size for pulsing effect
-    this.glowSize += this.glowDirection * this.glowSpeed;
-    if (this.glowSize >= 50 || this.glowSize <= 10) {
-      this.glowDirection *= -1; // Reverse direction when reaching limits
+    this.GLOW_SIZE += this.GLOW_DIRECTION * this.GLOWSPEED;
+    if (
+      this.GLOW_SIZE >= this.GLOW_SIZE_MAX ||
+      this.GLOW_SIZE <= this.GLOW_SIZE_MIN
+    ) {
+      this.GLOW_DIRECTION *= -1; // Reverse direction when reaching limits
     }
 
     // Clamp position to stay within bounds
@@ -45,20 +55,20 @@ class Ball {
       0,
       ballX,
       ballY,
-      this.glowSize
+      this.GLOW_SIZE
     );
-    gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
-    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+    gradient.addColorStop(0, this.GRADIENT_COLOR_START);
+    gradient.addColorStop(1, this.GRADIENT_COLOR_END);
 
     ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(ballX, ballY, this.glowSize, 0, Math.PI * 2);
+    ctx.arc(ballX, ballY, this.GLOW_SIZE, 0, Math.PI * 2);
     ctx.fill();
 
     // Draw the actual ball
-    ctx.fillStyle = `rgba(255, 255, 255, 0.9)`;
+    ctx.fillStyle = this.BALL_COLOR;
     ctx.beginPath();
-    ctx.arc(ballX, ballY, 15, 0, Math.PI * 2);
+    ctx.arc(ballX, ballY, this.BALL_SIZE, 0, Math.PI * 2);
     ctx.fill();
   }
 }

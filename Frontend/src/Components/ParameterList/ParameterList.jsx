@@ -11,7 +11,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import ParameterItem from "./ParameterItem";
-import ProfileMenu from "../ProfileMenu";
+import ProfileMenu from "./ProfileMenu";
 import { useEffect } from "react";
 
 const ParameterList = ({

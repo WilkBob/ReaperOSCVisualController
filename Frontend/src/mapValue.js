@@ -29,8 +29,8 @@ const mapValueThroughStops = (value, valueMap) => {
     }
   }
 
-  // Round to 2 decimal points
-  return Math.round(value * 100) / 100;
+  // Round to 3 decimal points
+  return Math.round(value * 1000) / 1000;
 };
 
 export default mapValueThroughStops;

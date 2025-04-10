@@ -7,18 +7,10 @@ class ParticleControls {
       // Canvas and rendering context
       canvas, // The canvas element
       ctx, // The 2D rendering context for the canvas
-
-      // Mouse tracking
       mousePosRef, // Reference to the current mouse position
       clickedRef, // Reference to the current mouse click status
-
-      // Ball tracking
       ballRef, // Reference to the ball's position and factor
-
-      // Chaos tracking
       chaosRef, // Reference to the chaos value
-
-      // Update callbacks
       onUpdateBallX, // Callback to update the ball's X position
       onUpdateBallY, // Callback to update the ball's Y position
       onUpdateChaos, // Callback to update the chaos value
@@ -45,11 +37,10 @@ class ParticleControls {
     this.onUpdateBallY = onUpdateBallY; // Callback to update the ball's Y position
     this.onUpdateChaos = onUpdateChaos; // Callback to update the chaos value
 
-    this.particles = [];
-    this.ball = new Ball(ballRef);
+    // SETTINGS
 
-    // New properties for enhanced effects
-    this.colorSchemes = [
+    //PARTICLEs
+    this.COLOR_SCHEMES = [
       // Neon scheme
       ["#ff00ff", "#00ffff", "#ffff00", "#ff0099"],
       // Fire scheme
@@ -61,22 +52,30 @@ class ParticleControls {
       // Sunset scheme
       ["#ff7f50", "#ff6347", "#ff4500", "#ff8c00"],
     ];
+
+    this.PARTICLE_TYPES = ["circle", "square", "triangle", "star"];
+    this.TRAIL_EFFECT = false;
+    this.TRAIL_BACKGROUND_COLOR = "rgba(34, 32, 32, 0.1)"; // Background color for trail effect
+    this.GRAVITY_EFFECT = 0.03;
+    this.WIND_EFFECT = 0;
+    this.EXPLOSION_FORCE = 50;
+    this.BURST_COUNT = 100;
+    this.MAX_PARTICLES = 500;
+    this.PARTICLE_SIZE_RANGE = { MIN: 5, MAX: 15 };
+    this.PARTICLE_LIFE_RANGE = { MIN: 80, MAX: 150 };
+
+    // LINES
+    this.CONNECT_PARTICLES = true;
+    this.CONNECTION_DISTANCE = 80;
+    this.CONNECTION_OPACITY_DIVISOR = 2;
+
+    // MOUSE
+    this.MOUSE_RING_COLOR = "#ffffff"; // Color for mouse clicked ring
+
     this.activeColorScheme = 0;
-    this.particleTypes = ["circle", "square", "triangle", "star"];
-    this.trailEffect = true;
-    this.gravityEffect = 0.03;
-    this.windEffect = 0;
-    this.explosionForce = 12;
-    this.particleCount = 30;
-    this.maxParticles = 500;
-    this.particleSizeRange = { min: 5, max: 15 };
-    this.particleLifeRange = { min: 80, max: 150 };
 
-    // For connecting particles
-    this.connectParticles = true;
-    this.connectionDistance = 80;
-    this.connectionOpacityDivisor = 2;
-
+    this.particles = [];
+    this.ball = new Ball(ballRef);
     this.init();
   }
 
@@ -85,11 +84,11 @@ class ParticleControls {
 
     // Randomize wind effect periodically
     setInterval(() => {
-      this.windEffect = Math.random() * 0.1 - 0.05;
+      this.WIND_EFFECT = Math.random() * 0.1 - 0.05;
     }, 5000);
   }
   drawMouseClickedRing() {
-    const color = "#ffffff";
+    const color = this.MOUSE_RING_COLOR;
     const { x, y } = this.mousePosRef.current;
     const size = 20; // Size of the ring
     const lineWidth = 2; // Width of the ring
@@ -107,14 +106,14 @@ class ParticleControls {
   }
   // Get random color from current scheme
   getRandomColor() {
-    const colors = this.colorSchemes[this.activeColorScheme];
+    const colors = this.COLOR_SCHEMES[this.activeColorScheme];
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
   // Cycle to next color scheme
   cycleColorScheme() {
     this.activeColorScheme =
-      (this.activeColorScheme + 1) % this.colorSchemes.length;
+      (this.activeColorScheme + 1) % this.COLOR_SCHEMES.length;
   }
   starfunceslint = (ctx, size) => {
     const outerRadius = size / 2;
@@ -161,16 +160,16 @@ class ParticleControls {
   }
 
   addParticle(x, y, burst = false) {
-    const count = burst ? this.particleCount : 1;
+    const count = burst ? this.BURST_COUNT : 1;
     for (let i = 0; i < count; i++) {
       const size =
         Math.random() *
-          (this.particleSizeRange.max - this.particleSizeRange.min) +
-        this.particleSizeRange.min;
+          (this.PARTICLE_SIZE_RANGE.MAX - this.PARTICLE_SIZE_RANGE.MIN) +
+        this.PARTICLE_SIZE_RANGE.MIN;
       const life =
         Math.random() *
-          (this.particleLifeRange.max - this.particleLifeRange.min) +
-        this.particleLifeRange.min;
+          (this.PARTICLE_LIFE_RANGE.MAX - this.PARTICLE_LIFE_RANGE.MIN) +
+        this.PARTICLE_LIFE_RANGE.MIN;
 
       // Enhanced particle constructor
       const particle = new Particle(
@@ -179,15 +178,15 @@ class ParticleControls {
         size,
         life,
         this.getRandomColor(),
-        this.particleTypes[
-          Math.floor(Math.random() * this.particleTypes.length)
+        this.PARTICLE_TYPES[
+          Math.floor(Math.random() * this.PARTICLE_TYPES.length)
         ]
       );
 
       if (burst) {
         // Create explosion effect
         const angle = Math.random() * Math.PI * 2;
-        const force = Math.random() * this.explosionForce;
+        const force = Math.random() * this.EXPLOSION_FORCE;
         particle.vx = Math.cos(angle) * force;
         particle.vy = Math.sin(angle) * force;
 
@@ -204,8 +203,8 @@ class ParticleControls {
     }
 
     // Limit the number of particles
-    if (this.particles.length > this.maxParticles) {
-      this.particles = this.particles.slice(-this.maxParticles);
+    if (this.particles.length > this.MAX_PARTICLES) {
+      this.particles = this.particles.slice(-this.MAX_PARTICLES);
     }
   }
 
@@ -213,18 +212,18 @@ class ParticleControls {
     const updatedParticles = [];
     const totalLifeForChaos = { max: 0, ac: 0 };
     // If we're not clearing the canvas each frame (for trails)
-    if (this.trailEffect) {
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    if (this.TRAIL_EFFECT) {
+      this.ctx.fillStyle = this.TRAIL_BACKGROUND_COLOR;
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     // First update all particles
     this.particles.forEach((particle) => {
       // Apply gravity
-      particle.vy += this.gravityEffect;
+      particle.vy += this.GRAVITY_EFFECT;
 
       // Apply wind
-      particle.vx += this.windEffect;
+      particle.vx += this.WIND_EFFECT;
 
       // Update position and properties
       particle.update();
@@ -240,7 +239,7 @@ class ParticleControls {
     this.onUpdateChaos(totalLifeForChaos.ac / totalLifeForChaos.max);
 
     // Draw connection lines between nearby particles
-    if (this.connectParticles) {
+    if (this.CONNECT_PARTICLES) {
       this.ctx.lineWidth = 0.5;
       this.ctx.strokeStyle = "#ffffff";
 
@@ -252,12 +251,12 @@ class ParticleControls {
           const dy = p1.y - p2.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < this.connectionDistance) {
+          if (distance < this.CONNECTION_DISTANCE) {
             this.ctx.beginPath();
             // Set opacity based on distance
             this.ctx.globalAlpha =
-              (1 - distance / this.connectionDistance) /
-              this.connectionOpacityDivisor;
+              (1 - distance / this.CONNECTION_DISTANCE) /
+              this.CONNECTION_OPACITY_DIVISOR;
             this.ctx.moveTo(p1.x, p1.y);
             this.ctx.lineTo(p2.x, p2.y);
             this.ctx.stroke();
@@ -343,14 +342,14 @@ class ParticleControls {
     this.onUpdateBallY(this.ballRef.current.y);
 
     if (this.trackChaos) {
-      this.chaosRef.current = this.particles.length / this.maxParticles;
+      this.chaosRef.current = this.particles.length / this.MAX_PARTICLES;
       this.onUpdateChaos(this.chaosRef.current);
     }
   }
 
   draw() {
     // Clear the canvas if trail effect is disabled
-    if (!this.trailEffect) {
+    if (!this.TRAIL_EFFECT) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 

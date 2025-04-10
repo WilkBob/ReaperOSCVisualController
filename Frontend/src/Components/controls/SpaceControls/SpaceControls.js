@@ -34,39 +34,40 @@ class SpaceControls {
     this.onUpdateBallX = onUpdateBallX;
     this.onUpdateBallY = onUpdateBallY;
     this.onUpdateChaos = onUpdateChaos;
+
     this.shootingStars = new ShootingStars(canvas, ctx, clickedRef);
     this.spaceSky = new SpaceSky(this.ctx, this.mousePosRef, clickedRef);
     this.sun = new Sun();
 
-    // Add planets with scaled sizes and distances
+    this.PLANET_COUNT = 3;
+
+    this.PLANET_SIZES = [0.02, 0.025, 0.03];
+    this.PLANET_DISTANCES = [0.3, 0.6, 0.8];
+    this.PLANET_SPEEDS = [0.017, 0.02, 0.013];
+    this.PLANET_COLORS = [
+      ["#643A71", "#8B5FBF", "#E3879E", "#FEC0CE"],
+      ["#D05353", "#E58F65", "#F9E784", "#F1E8B8"],
+      ["#1E441E", "#2A7221", "#119822", "#31CB00"],
+    ];
+
     this.planets = [
-      new Planet(
-        "Planet 1",
-        0.02,
-        0.3,
-        ["#643A71", "#8B5FBF", "#E3879E", "#FEC0CE"],
-        this.sun,
-        canvas,
-        0.017
-      ), //colors [dark, normal, light, lighter]
-      new Planet(
-        "Planet 2",
-        0.02,
-        0.6,
-        ["#D05353", "#E58F65", "#F9E784", "#F1E8B8"],
-        this.sun,
-        canvas,
-        0.02
-      ),
-      new Planet(
-        "Planet 3",
-        0.025,
-        0.8,
-        ["#1E441E", "#2A7221", "#119822", "#31CB00"],
-        this.sun,
-        canvas,
-        0.013
-      ),
+      ...Array.from({ length: this.PLANET_COUNT }, (_, i) => {
+        const name = `Planet ${i + 1}`;
+        const size = this.PLANET_SIZES[i];
+        const distance = this.PLANET_DISTANCES[i];
+        const colors = this.PLANET_COLORS[i];
+        const speed = this.PLANET_SPEEDS[i];
+
+        return new Planet(
+          name,
+          size,
+          distance,
+          colors,
+          this.sun,
+          this.canvas,
+          speed
+        );
+      }),
     ];
 
     console.log(
@@ -119,6 +120,8 @@ class SpaceControls {
   onResize() {
     // Update the sun's position on resize
     this.sun.resize(this.canvas.width, this.canvas.height);
+    // Update the space sky's size on resize
+    this.spaceSky.resize(this.canvas.width, this.canvas.height);
 
     // Update planet scaling on resize
     this.planets.forEach((planet) => planet.resize());
