@@ -2,6 +2,7 @@ import SpaceSky from "./SpaceSky";
 import Sun from "./Sun";
 import Planet from "./Planet";
 import ShootingStars from "./ShootingStars";
+import { settingsManager } from "../Settings/settingsManager";
 
 class SpaceControls {
   constructor(argsOBJ) {
@@ -39,16 +40,20 @@ class SpaceControls {
     this.spaceSky = new SpaceSky(this.ctx, this.mousePosRef, clickedRef);
     this.sun = new Sun();
 
-    this.PLANET_COUNT = 3;
+    const {
+      PLANET_COLORS,
+      PLANET_COUNT,
+      PLANET_DISTANCES,
+      PLANET_SIZES,
+      PLANET_SPEEDS,
+    } = settingsManager.settings.space;
 
-    this.PLANET_SIZES = [0.02, 0.025, 0.03];
-    this.PLANET_DISTANCES = [0.3, 0.6, 0.8];
-    this.PLANET_SPEEDS = [0.017, 0.02, 0.013];
-    this.PLANET_COLORS = [
-      ["#643A71", "#8B5FBF", "#E3879E", "#FEC0CE"],
-      ["#D05353", "#E58F65", "#F9E784", "#F1E8B8"],
-      ["#1E441E", "#2A7221", "#119822", "#31CB00"],
-    ];
+    this.PLANET_COUNT = PLANET_COUNT;
+
+    this.PLANET_SIZES = PLANET_SIZES;
+    this.PLANET_DISTANCES = PLANET_DISTANCES;
+    this.PLANET_SPEEDS = PLANET_SPEEDS;
+    this.PLANET_COLORS = PLANET_COLORS;
 
     this.planets = [
       ...Array.from({ length: this.PLANET_COUNT }, (_, i) => {

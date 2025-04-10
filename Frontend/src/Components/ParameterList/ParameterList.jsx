@@ -69,9 +69,6 @@ const ParameterList = ({
       <IconButton
         onClick={() => setDrawerOpen(true)}
         sx={{
-          position: "absolute",
-          top: 16,
-          left: 16,
           color: "white",
           backgroundColor: "rgba(0,0,0,0.3)",
           backdropFilter: "blur(5px)",

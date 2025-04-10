@@ -1,3 +1,4 @@
+import { settingsManager } from "../Settings/settingsManager";
 import Ball from "./Ball";
 import Particle from "./Particle";
 
@@ -39,38 +40,41 @@ class ParticleControls {
 
     // SETTINGS
 
-    //PARTICLEs
-    this.COLOR_SCHEMES = [
-      // Neon scheme
-      ["#ff00ff", "#00ffff", "#ffff00", "#ff0099"],
-      // Fire scheme
-      ["#ff4500", "#ff8c00", "#ffd700", "#ff0000"],
-      // Ocean scheme
-      ["#0077be", "#00ccff", "#4169e1", "#00bfff"],
-      // Forest scheme
-      ["#228b22", "#32cd32", "#00ff00", "#7cfc00"],
-      // Sunset scheme
-      ["#ff7f50", "#ff6347", "#ff4500", "#ff8c00"],
-    ];
+    const {
+      COLOR_SCHEMES,
+      PARTICLE_TYPES,
+      TRAIL_BACKGROUND_COLOR,
+      GRAVITY_EFFECT,
+      WIND_EFFECT,
+      EXPLOSION_FORCE,
+      BURST_COUNT,
+      MAX_PARTICLES,
+      PARTICLE_SIZE_RANGE,
+      PARTICLE_LIFE_RANGE,
+      CONNECT_PARTICLES,
+      CONNECTION_DISTANCE,
+      CONNECTION_OPACITY_DIVISOR,
+      TRAIL_EFFECT,
+      MOUSE_RING_COLOR,
+    } = settingsManager.settings.particles;
 
-    this.PARTICLE_TYPES = ["circle", "square", "triangle", "star"];
-    this.TRAIL_EFFECT = false;
-    this.TRAIL_BACKGROUND_COLOR = "rgba(34, 32, 32, 0.1)"; // Background color for trail effect
-    this.GRAVITY_EFFECT = 0.03;
-    this.WIND_EFFECT = 0;
-    this.EXPLOSION_FORCE = 50;
-    this.BURST_COUNT = 100;
-    this.MAX_PARTICLES = 500;
-    this.PARTICLE_SIZE_RANGE = { MIN: 5, MAX: 15 };
-    this.PARTICLE_LIFE_RANGE = { MIN: 80, MAX: 150 };
-
-    // LINES
-    this.CONNECT_PARTICLES = true;
-    this.CONNECTION_DISTANCE = 80;
-    this.CONNECTION_OPACITY_DIVISOR = 2;
+    this.COLOR_SCHEMES = COLOR_SCHEMES;
+    this.PARTICLE_TYPES = PARTICLE_TYPES;
+    this.TRAIL_BACKGROUND_COLOR = TRAIL_BACKGROUND_COLOR;
+    this.GRAVITY_EFFECT = GRAVITY_EFFECT;
+    this.WIND_EFFECT = WIND_EFFECT;
+    this.EXPLOSION_FORCE = EXPLOSION_FORCE;
+    this.BURST_COUNT = BURST_COUNT;
+    this.MAX_PARTICLES = MAX_PARTICLES;
+    this.PARTICLE_SIZE_RANGE = PARTICLE_SIZE_RANGE;
+    this.PARTICLE_LIFE_RANGE = PARTICLE_LIFE_RANGE;
+    this.CONNECT_PARTICLES = CONNECT_PARTICLES;
+    this.CONNECTION_DISTANCE = CONNECTION_DISTANCE;
+    this.CONNECTION_OPACITY_DIVISOR = CONNECTION_OPACITY_DIVISOR;
+    this.TRAIL_EFFECT = TRAIL_EFFECT;
 
     // MOUSE
-    this.MOUSE_RING_COLOR = "#ffffff"; // Color for mouse clicked ring
+    this.MOUSE_RING_COLOR = MOUSE_RING_COLOR;
 
     this.activeColorScheme = 0;
 

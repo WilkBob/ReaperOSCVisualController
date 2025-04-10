@@ -126,6 +126,7 @@ const CanvasController = ({
         width: "100vw",
         height: "100vh",
         zIndex: -1,
+        backgroundColor: "#101212",
       }}
     >
       <canvas ref={canvasRef} />

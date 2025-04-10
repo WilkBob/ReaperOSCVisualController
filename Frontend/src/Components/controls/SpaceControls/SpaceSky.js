@@ -1,5 +1,15 @@
 class SpaceSky {
   constructor(ctx, mousePosRef, clickedRef) {
+    this.STAR_COUNT = 200; // Number of stars
+    this.STAR_MIN_SIZE = 1; // Minimum star size
+    this.STAR_MAX_SIZE = 3; // Maximum star size
+    this.STAR_GLOW_DISTANCE = 50; // Distance for star glow
+    this.STAR_BASE_COLOR = "#999999"; // Default star color
+    this.STAR_GLOW_COLOR = "#d466ff"; // Glow color when mouse is near
+
+    this.GRADIENT_COLORS = ["#000020", "#000040", "#000000"]; // Normal gradient colors
+    this.ACTIVE_GRADIENT_COLORS = ["#400000", "#800000", "#000000"]; // Active gradient colors
+
     this.stars = []; // Array to hold stars
     this.canvas = ctx.canvas; // Reference to the canvas element
     this.ctx = ctx; // Reference to the 2D rendering context
@@ -16,14 +26,10 @@ class SpaceSky {
     this.activeGradientCanvas.height = this.canvas.height;
     this.activeGradientCtx = this.activeGradientCanvas.getContext("2d");
 
-    this.generateGradient(this.gradientCtx, ["#000020", "#000040", "#000000"]); // Normal gradient
-    this.generateGradient(this.activeGradientCtx, [
-      "#400000",
-      "#800000",
-      "#000000",
-    ]); // Active gradient
+    this.generateGradient(this.gradientCtx, this.GRADIENT_COLORS); // Normal gradient
+    this.generateGradient(this.activeGradientCtx, this.ACTIVE_GRADIENT_COLORS); // Active gradient
 
-    this.generateStars(200); // Generate 200 stars
+    this.generateStars(this.STAR_COUNT); // Generate stars
   }
 
   // Generate a spacey gradient background
@@ -51,9 +57,11 @@ class SpaceSky {
       this.stars.push({
         x: Math.random() * this.canvas.width, // Random x position
         y: Math.random() * this.canvas.height, // Random y position
-        size: Math.random() * 2 + 1, // Random size (1-3)
-        baseColor: "#999999", // Default star color
-        glowColor: "#d466ff", // Glow color when mouse is near
+        size:
+          Math.random() * (this.STAR_MAX_SIZE - this.STAR_MIN_SIZE) +
+          this.STAR_MIN_SIZE, // Random size (1-3)
+        baseColor: this.STAR_BASE_COLOR, // Default star color
+        glowColor: this.STAR_GLOW_COLOR, // Glow color when mouse is near
       });
     }
   }
@@ -77,7 +85,7 @@ class SpaceSky {
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       // If the mouse is near the star, illuminate it
-      star.isGlowing = distance < 50; // Glow if within 50px of the mouse
+      star.isGlowing = distance < this.STAR_GLOW_DISTANCE; // Glow if within 50px of the mouse
 
       // Draw the star
       this.ctx.beginPath();
@@ -99,12 +107,8 @@ class SpaceSky {
     this.gradientCanvas.height = this.canvas.height;
     this.activeGradientCanvas.width = this.canvas.width;
     this.activeGradientCanvas.height = this.canvas.height;
-    this.generateGradient(this.gradientCtx, ["#000020", "#000040", "#000000"]); // Regenerate normal gradient
-    this.generateGradient(this.activeGradientCtx, [
-      "#400000",
-      "#800000",
-      "#000000",
-    ]); // Regenerate active gradient
+    this.generateGradient(this.gradientCtx, this.GRADIENT_COLORS); // Regenerate normal gradient
+    this.generateGradient(this.activeGradientCtx, this.ACTIVE_GRADIENT_COLORS); // Regenerate active gradient
   }
 }
 

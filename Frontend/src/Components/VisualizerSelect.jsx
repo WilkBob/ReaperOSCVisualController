@@ -37,10 +37,6 @@ const VisualizerSelect = ({ visualizer, setVisualizer }) => {
         padding: 2,
         backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
         borderRadius: "8px",
-        position: "absolute",
-        top: 10,
-        right: 10,
-        zIndex: 10,
       }}
     >
       <Typography

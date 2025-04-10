@@ -7,7 +7,7 @@ class ShootingStars {
 
     // Configuration options
     this.FADE_RATE = 0.01; // How quickly stars fade out
-    this.TRAIL_LENGTH = 15; // Length of star trail
+    this.TRAIL_LENGTH = 20; // Length of star trail
     this.MIN_SIZE = 2;
     this.MAX_SIZE = 5;
     this.MIN_SPEED = 2;
@@ -49,7 +49,7 @@ class ShootingStars {
       // Create a gradient for the trail
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
       gradient.addColorStop(0, "rgba(255, 255, 255, 0)"); // Transparent start
-      gradient.addColorStop(0.4, "rgba(200, 200, 255, 0.3)"); // Subtle blue tint
+      gradient.addColorStop(0.4, "rgba(222, 95, 226, 0.4)"); // Subtle pink tint
       gradient.addColorStop(0.8, "rgba(255, 255, 255, 0.7)"); // Brighter middle
       gradient.addColorStop(1, "rgba(255, 255, 255, 1)"); // Full white at end
 
