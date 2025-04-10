@@ -34,7 +34,7 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
       }))
       .sort((a, b) => a.x - b.x);
 
-    console.log("Rounded Stops:", stops); // Debug log
+    //console.log("Rounded Stops:", stops); // Debug log
     updateValueMap({ ...valueMap, stops: [...stops] });
     closeMapper(); // Close the mapper after saving
   }, [valueMap, updateValueMap, closeMapper]);

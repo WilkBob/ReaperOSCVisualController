@@ -30,8 +30,8 @@ const OSCController = () => {
       trackNum: 1,
       fxNum: 1,
       paramNum: 2,
-      controlType: "mouse-x",
       valueMap: {
+        enabled: true,
         stops: [
           { x: 0.0, y: 0.0 },
           { x: 1.0, y: 1.0 },

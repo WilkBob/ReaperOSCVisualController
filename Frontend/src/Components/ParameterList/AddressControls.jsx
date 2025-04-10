@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   Box,
   Select,
@@ -15,14 +15,11 @@ import PercentIcon from "@mui/icons-material/Percent";
 import LearnButton from "./LearnButton";
 
 import { createOSCAddress } from "../../API/oscService";
-import ExpressionControls from "./ExpressionControls";
 
-const AddressControls = ({
-  param,
-  updateParameter,
-  updateValueMap,
-  visualizer,
-}) => {
+import ValueMapper from "./ValueMapper/ValueMapper";
+import ClosedMapper from "./ValueMapper/ClosedMapper";
+
+const AddressControls = ({ param, updateParameter, updateValueMap }) => {
   const parameterTypes = [
     ["inst", "Instrument", <PianoIcon fontSize="small" />],
     ["fx", "Effect Param", <PercentIcon fontSize="small" />],
@@ -32,6 +29,7 @@ const AddressControls = ({
     ["fxWet", "FX Wet/Dry", <PercentIcon fontSize="small" />],
   ];
 
+  const [mapperOpen, setMapperOpen] = useState(false);
   return (
     <Grid container spacing={2} alignItems="center">
       <Grid>
@@ -148,12 +146,18 @@ const AddressControls = ({
       </Grid>
 
       <Grid size={12}>
-        <ExpressionControls
-          visualizer={visualizer}
-          param={param}
-          updateValueMap={updateValueMap}
-          updateParameter={updateParameter}
-        />
+        {mapperOpen ? (
+          <ValueMapper
+            valueMap={param.valueMap}
+            updateValueMap={updateValueMap}
+            closeMapper={() => setMapperOpen(false)}
+          />
+        ) : (
+          <ClosedMapper
+            valueMap={param.valueMap}
+            setMapperOpen={setMapperOpen}
+          />
+        )}
       </Grid>
     </Grid>
   );

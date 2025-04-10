@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
-import CanvasController from "./controls/CanvasController";
-import ThreeDCanvasController from "./controls/3DCanvasController";
+
 import mapValueThroughStops from "../mapValue";
 
 // Main component for creating OSC addresses and broadcasting control values
@@ -61,7 +60,10 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
           const ref = controlRefs.current[controlType]; // Get ref for control type
 
           addresses.forEach(({ address, valueMap }) => {
-            const scaledValue = mapValueThroughStops(ref.current, valueMap); // Scale value
+            let scaledValue = ref.current;
+            if (valueMap?.enabled) {
+              scaledValue = mapValueThroughStops(ref.current, valueMap); // Scale value if enabled
+            }
             if (scaledValue !== ref.last) {
               // Check if value has changed
               sendMessage(address, scaledValue); // Send OSC message
@@ -95,9 +97,7 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
 
   console.log("controlConfig", controlConfig);
 
-  if (editing) {
-    return null; // Return null if in editing mode
-  }
+  return null; // Return null if in editing mode
 
   return (
     <>
