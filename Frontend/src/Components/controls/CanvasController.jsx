@@ -4,24 +4,19 @@ import useMouseControl from "./UseMouseControl";
 import ParticleControls from "./Particles/ParticleControls";
 import SpaceControls from "./SpaceControls/SpaceControls";
 
-const CanvasController = ({
-  onUpdateX,
-  onUpdateY,
-  onUpdateBallX,
-  onUpdateBallY,
-  onUpdateClick,
-  onUpdateChaos,
-  visualizer,
-}) => {
+const CanvasController = ({ controlConfig, visualizer }) => {
   const canvasRef = useRef(null);
   const ballRef = useRef({ x: 0.5, y: 0.5, fac: 0.5 });
   const chaosRef = useRef(0.2); // Assuming chaos is a float between 0 and 1
   const { mousePosRef, clickedRef } = useMouseControl({
-    onUpdateX,
-    onUpdateY,
-    onUpdateClick,
+    onUpdateX: controlConfig["mouse-x"]?.updateFunction || (() => {}),
+    onUpdateY: controlConfig["mouse-y"]?.updateFunction || (() => {}),
+
+    onUpdateClick: controlConfig["click"]?.updateFunction || (() => {}),
     ballRef, // mouse controls ball fac
   });
+
+  const beGay = () => {};
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -58,16 +53,16 @@ const CanvasController = ({
       clickedRef,
 
       ballRef,
-      onUpdateBallX,
-      onUpdateBallY,
+      onUpdateBallX: controlConfig["sim1"]?.updateFunction || beGay,
+      onUpdateBallY: controlConfig["sim2"]?.updateFunction || beGay,
       chaosRef,
-      onUpdateChaos,
+      onUpdateChaos: controlConfig["sim3"]?.updateFunction || beGay,
     };
 
     // Initialize ParticleControls or SpaceControls based on visualizer prop / only 2d visualizers shown
     const getController = (visualizerType) => {
       switch (visualizerType) {
-        case "particle":
+        case "particles":
           return new ParticleControls(controllerArgs);
         case "space":
           return new SpaceControls(controllerArgs);
@@ -106,16 +101,7 @@ const CanvasController = ({
       cancelAnimationFrame(animationFrameId);
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     };
-  }, [
-    mousePosRef,
-    ballRef,
-    clickedRef,
-    onUpdateBallX,
-    onUpdateBallY,
-    onUpdateChaos,
-    chaosRef,
-    visualizer,
-  ]);
+  }, [mousePosRef, ballRef, clickedRef, controlConfig, chaosRef, visualizer]);
 
   return (
     <Box

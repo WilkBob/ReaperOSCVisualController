@@ -61,13 +61,6 @@ class SpaceControls {
         );
       }),
     ];
-
-    console.log(
-      "SpaceControls initialized",
-      this.spaceSky,
-      this.sun,
-      this.planets
-    );
   }
 
   update() {

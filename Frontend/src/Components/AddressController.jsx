@@ -1,58 +1,39 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { createOSCAddress, sendMessage } from "../API/oscService";
-
 import CanvasController from "./controls/CanvasController";
 import ThreeDCanvasController from "./controls/3DCanvasController";
 import mapValueThroughStops from "../mapValue";
-//Component creates OSC addresses for different control types and broadcasts their values at a specified interval. It uses React hooks to manage state and side effects, and it scales values between specified ranges for each control type. - adding new controls happens here and in paramlist,  this is the main controller for the address creation and broadcasting.
+
+// Main component for creating OSC addresses and broadcasting control values
 const AddressController = ({ params, broadcasting, visualizer, editing }) => {
-  // Object to store addresses for each control type
   const [controlAddresses, setControlAddresses] = useState({});
 
-  // Refs to store current values and last broadcasted values
-  const controlRefs = useRef({
-    "mouse-x": { val: 0, last: null },
-    "mouse-y": { val: 0, last: null },
-    "ball-x": { val: 0, last: null },
-    "ball-y": { val: 0, last: null },
-    click: { val: 0, last: null },
-    chaos: { val: 0, last: null },
-  });
+  // Initialize ref with empty object
+  const controlRefs = useRef({});
 
-  // Configuration for control types
-  const controlConfig = useMemo(() => {
-    return {
-      "mouse-x": {
-        ref: controlRefs.current["mouse-x"],
-        updateFunction: (val) => (controlRefs.current["mouse-x"].val = val),
-      },
-      "mouse-y": {
-        ref: controlRefs.current["mouse-y"],
-        updateFunction: (val) => (controlRefs.current["mouse-y"].val = val),
-      },
-      "ball-x": {
-        ref: controlRefs.current["ball-x"],
-        updateFunction: (val) => (controlRefs.current["ball-x"].val = val),
-      },
-      "ball-y": {
-        ref: controlRefs.current["ball-y"],
-        updateFunction: (val) => (controlRefs.current["ball-y"].val = val),
-      },
-      click: {
-        ref: controlRefs.current["click"],
-        updateFunction: (val) => (controlRefs.current["click"].val = val),
-      },
-      chaos: {
-        ref: controlRefs.current["chaos"],
-        updateFunction: (val) => (controlRefs.current["chaos"].val = val),
-      },
-    };
-  }, []);
-
-  // Update control states and addresses when params change
+  // Combined useEffect to handle both controlRefs and controlAddresses updates
   useEffect(() => {
-    const newControlAddresses = {};
+    // Update controlRefs
+    params.forEach((param) => {
+      const { controlType } = param;
+      if (!controlRefs.current[controlType]) {
+        controlRefs.current[controlType] = { current: 1, last: 0 };
+      }
+    });
 
+    // Clean up removed control types
+    const currentKeys = Object.keys(controlRefs.current);
+    const activeKeys = params.map((p) => p.controlType);
+    currentKeys.forEach((key) => {
+      if (!activeKeys.includes(key)) {
+        delete controlRefs.current[key];
+      }
+    });
+
+    console.log("Updated controlRefs", controlRefs.current);
+
+    // Update controlAddresses
+    const newControlAddresses = {};
     params.forEach((param) => {
       const { controlType } = param;
       if (!newControlAddresses[controlType]) {
@@ -61,63 +42,73 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
       const address = createOSCAddress(param);
       newControlAddresses[controlType].push({
         address,
-        range: param.range,
         valueMap: param.valueMap,
       });
     });
 
     setControlAddresses(newControlAddresses);
-    console.log("controls adresses", newControlAddresses);
+    console.log("controls addresses", newControlAddresses);
   }, [params]);
 
-  // Set up OSC broadcast interval when broadcasting is enabled
+  // Broadcast control values at regular intervals when broadcasting is enabled
   useEffect(() => {
     let interval;
 
     if (broadcasting) {
       interval = setInterval(() => {
         Object.keys(controlAddresses).forEach((controlType) => {
-          const addresses = controlAddresses[controlType];
-          const { ref } = controlConfig[controlType];
+          const addresses = controlAddresses[controlType]; // Get addresses for control type
+          const ref = controlRefs.current[controlType]; // Get ref for control type
 
           addresses.forEach(({ address, valueMap }) => {
-            const scaledValue = mapValueThroughStops(ref.val, valueMap);
+            const scaledValue = mapValueThroughStops(ref.current, valueMap); // Scale value
             if (scaledValue !== ref.last) {
-              sendMessage(address, scaledValue);
-              ref.last = scaledValue;
+              // Check if value has changed
+              sendMessage(address, scaledValue); // Send OSC message
+              ref.last = scaledValue; // Update last broadcasted value
             }
           });
         });
-      }, 50); // Update rate - 50ms
+      }, 50); // Broadcast every 50ms
     }
 
     return () => {
-      if (interval) clearInterval(interval);
+      if (interval) clearInterval(interval); // Clear interval on cleanup
     };
-  }, [broadcasting, controlAddresses, controlConfig]);
+  }, [broadcasting, controlAddresses]);
 
-  if (editing) return;
+  const controlConfig = useMemo(() => {
+    return Object.fromEntries(
+      Object.keys(controlAddresses).map((controlType) => {
+        const ref = controlRefs.current[controlType];
+        return [
+          controlType,
+          {
+            updateFunction: (value) => {
+              ref.current = value; // Update ref value
+            },
+          },
+        ];
+      })
+    );
+  }, [controlAddresses]);
+
+  console.log("controlConfig", controlConfig);
+
+  if (editing) {
+    return null; // Return null if in editing mode
+  }
 
   return (
     <>
       {visualizer.threeD === true ? (
         <ThreeDCanvasController
-          onUpdateX={controlConfig["mouse-x"].updateFunction}
-          onUpdateY={controlConfig["mouse-y"].updateFunction}
-          onUpdateBallX={controlConfig["ball-x"].updateFunction}
-          onUpdateBallY={controlConfig["ball-y"].updateFunction}
-          onUpdateClick={controlConfig["click"].updateFunction}
-          onUpdateChaos={controlConfig["chaos"].updateFunction}
+          controlConfig={controlConfig}
           visualizerId={visualizer.id}
         />
       ) : (
         <CanvasController
-          onUpdateX={controlConfig["mouse-x"].updateFunction}
-          onUpdateY={controlConfig["mouse-y"].updateFunction}
-          onUpdateBallX={controlConfig["ball-x"].updateFunction}
-          onUpdateBallY={controlConfig["ball-y"].updateFunction}
-          onUpdateClick={controlConfig["click"].updateFunction}
-          onUpdateChaos={controlConfig["chaos"].updateFunction}
+          controlConfig={controlConfig}
           visualizer={visualizer.id}
         />
       )}

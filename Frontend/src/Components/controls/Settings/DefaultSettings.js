@@ -1,5 +1,31 @@
 const DEFAULT_SETTINGS = {
   particles: {
+    controls: [
+      {
+        id: "sim1",
+        name: "Ball-X",
+        description: "X value of ball",
+        behavior: "lfo",
+      },
+      {
+        id: "sim2",
+        name: "Ball-Y",
+        description: "Y value of ball",
+        behavior: "lfo",
+      },
+      {
+        id: "sim3",
+        name: "Ball AVG",
+        description: "Mouse click",
+        behavior: "chaos",
+      },
+      {
+        id: "sim4",
+        name: "AVG Life",
+        description: "Average life of particles on screen",
+        behavior: "chaos",
+      },
+    ],
     COLOR_SCHEMES: [
       // Neon scheme
       ["#ff00ff", "#00ffff", "#ffff00", "#ff0099"],
@@ -45,6 +71,32 @@ const DEFAULT_SETTINGS = {
   },
 
   space: {
+    controls: [
+      {
+        id: "sim1",
+        name: "Planet-X",
+        description: "X position of selected planet",
+        behavior: "lfo",
+      },
+      {
+        id: "sim2",
+        name: "Planet-Y",
+        description: "Y position of selected planet",
+        behavior: "lfo",
+      },
+      {
+        id: "sim3",
+        name: "Planet AVG",
+        description: "Average distance of planets from sun",
+        behavior: "chaos",
+      },
+      {
+        id: "sim4",
+        name: "AVG Speed",
+        description: "Average speed of planets",
+        behavior: "chaos",
+      },
+    ],
     PLANET_COUNT: 3,
     PLANET_SIZES: [0.02, 0.025, 0.03],
     PLANET_DISTANCES: [0.3, 0.6, 0.8],

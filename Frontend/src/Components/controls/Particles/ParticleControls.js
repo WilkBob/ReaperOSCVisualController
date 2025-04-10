@@ -84,8 +84,6 @@ class ParticleControls {
   }
 
   init() {
-    console.log("Enhanced ParticleControls initialized");
-
     // Randomize wind effect periodically
     setInterval(() => {
       this.WIND_EFFECT = Math.random() * 0.1 - 0.05;

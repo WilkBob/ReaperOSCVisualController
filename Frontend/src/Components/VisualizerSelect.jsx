@@ -9,7 +9,7 @@ const VisualizerSelect = ({ visualizer, setVisualizer }) => {
   // Array of visualizer options
   const visualizerOptions = [
     {
-      id: "particle",
+      id: "particles",
       label: "Particle Controls",
       icon: <BubbleChartIcon />,
       threeD: false,

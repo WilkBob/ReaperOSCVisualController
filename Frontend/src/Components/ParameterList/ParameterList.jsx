@@ -15,6 +15,7 @@ import ProfileMenu from "./ProfileMenu";
 import { useEffect } from "react";
 
 const ParameterList = ({
+  visualizer,
   parameters,
   setParameters,
   drawerOpen,
@@ -151,6 +152,7 @@ const ParameterList = ({
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
           {parameters.map((param, index) => (
             <ParameterItem
+              visualizer={visualizer}
               param={param}
               index={index}
               setParameters={setParameters}

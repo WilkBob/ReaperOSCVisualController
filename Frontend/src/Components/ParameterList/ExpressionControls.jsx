@@ -1,19 +1,38 @@
-import { Box, Select, MenuItem, Typography } from "@mui/material";
+import { Box, ButtonGroup, Typography } from "@mui/material";
 import ValueMapper from "./ValueMapper/ValueMapper";
 import { useState } from "react";
 import ClosedMapper from "./ValueMapper/ClosedMapper";
 
-const ExpressionControls = ({ param, updateParameter, updateValueMap }) => {
+import { DEFAULT_SETTINGS } from "../controls/Settings/DefaultSettings";
+import ExpressionSelect from "./ExpressionSelect";
+const ExpressionControls = ({
+  param,
+  updateParameter,
+  updateValueMap,
+  visualizer,
+}) => {
   const controlOptions = [
-    { value: "mouse-x", label: "Mouse X" },
-    { value: "mouse-y", label: "Mouse Y" },
-    { value: "ball-x", label: "Ball X" },
-    { value: "ball-y", label: "Ball Y" },
-    { value: "click", label: "Mouse Click" },
-    { value: "chaos", label: "Chaos" },
+    {
+      id: "mouse-x",
+      name: "Mouse X",
+      description: "Mouse X position",
+      behavior: "linear",
+    },
+    {
+      id: "mouse-y",
+      name: "Mouse Y",
+      description: "Mouse Y position",
+      behavior: "linear",
+    },
+    {
+      id: "click",
+      name: "Mouse Click",
+      description: "Whether Mouse is Clicked (0 or 1)",
+      behavior: "gate",
+    },
   ];
+  console.log(visualizer, DEFAULT_SETTINGS[visualizer.id]);
   const [mapperOpen, setMapperOpen] = useState(false);
-  // Use valueMap to generate a linear gradient string for the canvas background, respect invert and interpolate (double stops if invert is true)
 
   return (
     <Box
@@ -35,24 +54,29 @@ const ExpressionControls = ({ param, updateParameter, updateValueMap }) => {
           (lighter color = higher value)
         </Typography>
       </Typography>
-      <Select
-        fullWidth
-        size="small"
-        value={param.controlType}
-        onChange={(e) => updateParameter("controlType", e.target.value)}
-        sx={{
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          backdropFilter: "blur(10px)",
-          borderRadius: "8px",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-        }}
-      >
-        {controlOptions.map(({ value, label }) => (
-          <MenuItem key={value} value={value}>
-            {label}
-          </MenuItem>
+      <ButtonGroup fullWidth size="small">
+        {controlOptions.map(({ id, name, description, behavior }) => (
+          <ExpressionSelect
+            id={id}
+            name={name}
+            description={description}
+            behavior={behavior}
+            param={param}
+            updateParameter={updateParameter}
+          />
         ))}
-      </Select>
+
+        {DEFAULT_SETTINGS[visualizer.id].controls.map((control) => (
+          <ExpressionSelect
+            id={control.id}
+            name={control.name}
+            description={control.description}
+            behavior={control.behavior}
+            param={param}
+            updateParameter={updateParameter}
+          />
+        ))}
+      </ButtonGroup>
 
       <Box display="flex" sx={{ width: "100%", height: "100%" }}>
         {mapperOpen ? (

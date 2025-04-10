@@ -17,7 +17,12 @@ import LearnButton from "./LearnButton";
 import { createOSCAddress } from "../../API/oscService";
 import ExpressionControls from "./ExpressionControls";
 
-const AddressControls = ({ param, updateParameter, updateValueMap }) => {
+const AddressControls = ({
+  param,
+  updateParameter,
+  updateValueMap,
+  visualizer,
+}) => {
   const parameterTypes = [
     ["inst", "Instrument", <PianoIcon fontSize="small" />],
     ["fx", "Effect Param", <PercentIcon fontSize="small" />],
@@ -144,6 +149,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
 
       <Grid size={12}>
         <ExpressionControls
+          visualizer={visualizer}
           param={param}
           updateValueMap={updateValueMap}
           updateParameter={updateParameter}
