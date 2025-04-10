@@ -55,7 +55,8 @@ const DEFAULT_SETTINGS = {
       ["#1E441E", "#2A7221", "#119822", "#31CB00"],
     ],
     stars: {
-      TRAIL_LENGTH: 15,
+      FADE_RATE: 0.01, // How quickly stars fade out
+      TRAIL_LENGTH: 20, // Length of star trail
       MIN_SIZE: 2,
       MAX_SIZE: 5,
       MIN_SPEED: 2,

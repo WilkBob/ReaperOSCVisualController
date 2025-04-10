@@ -68,14 +68,8 @@ const ParameterList = ({
     <>
       <IconButton
         onClick={() => setDrawerOpen(true)}
-        sx={{
-          color: "white",
-          backgroundColor: "rgba(0,0,0,0.3)",
-          backdropFilter: "blur(5px)",
-          "&:hover": {
-            backgroundColor: "rgba(0,0,0,0.5)",
-          },
-        }}
+        color="white"
+        sx={{ zIndex: 1000 }}
       >
         <MenuIcon />
       </IconButton>

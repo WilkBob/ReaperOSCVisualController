@@ -15,13 +15,16 @@ const Transport = ({ play, stop, record, toggleMetronome, disabled }) => {
   return (
     <Box
       sx={{
+        position: "absolute",
+        left: "50%",
+        transform: "translateX(-50%)", // Center Transport
+
         display: "flex",
         width: "fit-content",
         gap: 1,
         justifyContent: "center",
+
         p: 2,
-        background: "#ffffff55",
-        borderRadius: "10px",
       }}
     >
       <IconButton color="primary" disabled={disabled} onClick={play}>

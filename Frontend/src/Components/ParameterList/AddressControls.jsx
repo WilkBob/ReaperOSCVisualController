@@ -29,7 +29,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
 
   return (
     <Grid container spacing={2} alignItems="center">
-      <Grid item xs={12} md={6}>
+      <Grid>
         <Typography
           variant="h5"
           sx={{
@@ -47,7 +47,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
         </Typography>
 
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid>
             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
               Parameter Type
             </Typography>
@@ -85,7 +85,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
             </Select>
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid>
             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
               Track #
             </Typography>
@@ -101,7 +101,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
           </Grid>
 
           {param.type !== "vol" && param.type !== "pan" && (
-            <Grid item xs={3}>
+            <Grid>
               <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                 {param.type === "sendvol" ? "Send #" : "FX #"}
               </Typography>
@@ -118,7 +118,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
           )}
 
           {(param.type === "inst" || param.type === "fx") && (
-            <Grid item xs={3}>
+            <Grid>
               <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                 Param #
               </Typography>
@@ -135,7 +135,7 @@ const AddressControls = ({ param, updateParameter, updateValueMap }) => {
           )}
 
           {(param.type === "inst" || param.type === "fx") && (
-            <Grid item xs={3}>
+            <Grid>
               <LearnButton param={param} updateParameter={updateParameter} />
             </Grid>
           )}

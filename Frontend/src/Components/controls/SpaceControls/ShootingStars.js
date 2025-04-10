@@ -1,21 +1,15 @@
+import { settingsManager } from "../Settings/settingsManager";
+
 class ShootingStars {
   constructor(canvas, ctx, clickedRef) {
     this.canvas = canvas;
     this.ctx = ctx;
     this.clickedRef = clickedRef;
     this.stars = []; // Array to hold active shooting stars
-
-    // Configuration options
-    this.FADE_RATE = 0.01; // How quickly stars fade out
-    this.TRAIL_LENGTH = 20; // Length of star trail
-    this.MIN_SIZE = 2;
-    this.MAX_SIZE = 5;
-    this.MIN_SPEED = 2;
-    this.MAX_SPEED = 5;
-    this.MAX_STARS = 50;
-
+    this.settings = settingsManager.settings.space.stars;
     // Pre-rendered star images - different sizes and trail lengths
     this.starImages = this.createStarImages();
+    console.log("ShootingStars initialized with settings:", this.settings);
   }
 
   createStarImages() {
@@ -25,7 +19,7 @@ class ShootingStars {
 
     for (const size of sizesToRender) {
       // Ensure minimum dimensions for the canvas
-      const trailLength = Math.max(this.TRAIL_LENGTH, 5);
+      const trailLength = Math.max(this.settings.TRAIL_LENGTH, 5);
       const canvasWidth = Math.max(size * 2 + trailLength * 2, 10);
       const canvasHeight = Math.max(size * 4, 10);
 
@@ -134,12 +128,13 @@ class ShootingStars {
 
   spawnStar() {
     // Limit the number of stars
-    if (this.stars.length >= this.MAX_STARS) {
+    if (this.stars.length >= this.settings.MAX_STARS) {
       return;
     }
 
     const size =
-      Math.random() * (this.MAX_SIZE - this.MIN_SIZE) + this.MIN_SIZE;
+      Math.random() * (this.settings.MAX_SIZE - this.settings.MIN_SIZE) +
+      this.settings.MIN_SIZE;
     let x, y;
 
     // Random position near the top 20% of the screen
@@ -149,7 +144,8 @@ class ShootingStars {
     // Angle between 30-60 degrees for natural diagonal movement
     const angle = (Math.random() * 30 + 30) * (Math.PI / 180);
     const speed =
-      Math.random() * (this.MAX_SPEED - this.MIN_SPEED) + this.MIN_SPEED;
+      Math.random() * (this.settings.MAX_SPEED - this.settings.MIN_SPEED) +
+      this.settings.MIN_SPEED;
 
     const velocity = {
       x: Math.cos(angle) * speed,
@@ -180,7 +176,10 @@ class ShootingStars {
     }
 
     // Add random stars occasionally
-    if (Math.random() < 0.02 && this.stars.length < this.MAX_STARS / 2) {
+    if (
+      Math.random() < 0.02 &&
+      this.stars.length < this.settings.MAX_STARS / 2
+    ) {
       this.spawnStar();
     }
 
@@ -196,7 +195,7 @@ class ShootingStars {
       star.y += star.velocity.y;
 
       // Update opacity
-      star.opacity -= this.FADE_RATE;
+      star.opacity -= this.settings.FADE_RATE;
 
       // Check if star should remain active
       if (

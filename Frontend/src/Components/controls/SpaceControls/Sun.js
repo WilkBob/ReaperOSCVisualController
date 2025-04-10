@@ -1,17 +1,22 @@
+import { settingsManager } from "../Settings/settingsManager";
+
 class Sun {
   constructor() {
     this.x = 0.5; // Normalized X position
     this.y = 0.5; // Normalized Y position
 
+    this.settings = settingsManager.settings.space.sun; // Settings for the sun
+
     // Constants
-    this.RADIUS_FRACTION = 0.06;
-    this.GLOW_FRACTION = 0.02; // Glow size as a fraction of the smallest dimension
-    this.ACTIVE_RADIUS_MULTIPLIER = 1.4; // Sun grows by 40% when active
-    this.ACTIVE_GLOW_MULTIPLIER = 2.0; // Glow grows by 100% when active
-    this.BASE_COLOR = "#FFA500"; // Orange base
-    this.ACTIVE_COLOR = "#FF4500"; // Red-orange when active
-    this.RAY_COUNT = 12; // Number of rays for the "groovy" glow
-    this.RAY_LENGTH = 0.5; // Length of rays relative to sun radius
+
+    // this.settings.RADIUS_FRACTION = 0.06;
+    // this.settings.GLOW_FACTOR = 0.02; // Glow size as a fraction of the smallest dimension
+    // this.settings.ACTIVE_RADIUS_MULTIPLIER = 1.4; // Sun grows by 40% when active
+    // this.settings. = 2.0; // Glow grows by 100% when active
+    // this.BASE_COLOR = "#FFA500"; // Orange base
+    // this.ACTIVE_COLOR = "#FF4500"; // Red-orange when active
+    // this.RAY_COUNT = 12; // Number of rays for the "groovy" glow
+    // this.RAY_LENGTH = 0.5; // Length of rays relative to sun radius
 
     // Scaled values
     this.scaled_radius = 0;
@@ -28,8 +33,8 @@ class Sun {
   resize(canvasWidth = 800, canvasHeight = 600) {
     // Use the smallest dimension to scale radius and glow
     const smallestDimension = Math.min(canvasWidth, canvasHeight);
-    this.scaled_radius = this.RADIUS_FRACTION * smallestDimension;
-    this.scaled_glow = this.GLOW_FRACTION * smallestDimension;
+    this.scaled_radius = this.settings.RADIUS_FRACTION * smallestDimension;
+    this.scaled_glow = this.settings.GLOW_FRACTION * smallestDimension;
 
     // Pre-render the sun images
     this.normal_image = this.createSunImage(false);
@@ -38,14 +43,18 @@ class Sun {
 
   createSunImage(isActive) {
     // Calculate sizes based on active state
-    const radiusMultiplier = isActive ? this.ACTIVE_RADIUS_MULTIPLIER : 1;
-    const glowMultiplier = isActive ? this.ACTIVE_GLOW_MULTIPLIER : 1;
+    const radiusMultiplier = isActive
+      ? this.settings.ACTIVE_RADIUS_MULTIPLIER
+      : 1;
+    const glowMultiplier = isActive ? this.settings.ACTIVE_GLOW_MULTIPLIER : 1;
 
     const currentRadius = this.scaled_radius * radiusMultiplier;
     const currentGlow = this.scaled_glow * glowMultiplier;
 
     // Calculate the total size needed for the canvas (sun + rays)
-    const rayLengthFactor = isActive ? this.RAY_LENGTH * 1.5 : this.RAY_LENGTH;
+    const rayLengthFactor = isActive
+      ? this.settings.RAY_LENGTH * 1.5
+      : this.settings.RAY_LENGTH;
     const outerRadius = currentRadius * (1 + rayLengthFactor);
     const totalSize = outerRadius * 2 + currentGlow * 2;
 
@@ -64,7 +73,7 @@ class Sun {
       centerX,
       centerY,
       currentRadius,
-      this.RAY_LENGTH,
+      this.settings.RAY_LENGTH,
       isActive
     );
 
@@ -78,7 +87,9 @@ class Sun {
       currentRadius
     );
 
-    const color = isActive ? this.ACTIVE_COLOR : this.BASE_COLOR;
+    const color = isActive
+      ? this.settings.ACTIVE_COLOR
+      : this.settings.BASE_COLOR;
     gradient.addColorStop(0, color);
     gradient.addColorStop(1, this.colorWithOpacity(color, 0.9));
 
@@ -102,7 +113,7 @@ class Sun {
 
   // Create groovy rays
   drawRays(ctx, centerX, centerY, radius, rayLength, isActive) {
-    const rayCount = this.RAY_COUNT;
+    const rayCount = this.settings.RAY_COUNT;
     const rayLengthFactor = isActive ? rayLength * 1.5 : rayLength;
     const outerRadius = radius * (1 + rayLengthFactor);
 
@@ -137,7 +148,9 @@ class Sun {
       outerRadius
     );
 
-    const color = isActive ? this.ACTIVE_COLOR : this.BASE_COLOR;
+    const color = isActive
+      ? this.settings.ACTIVE_COLOR
+      : this.settings.BASE_COLOR;
     gradient.addColorStop(0, color);
     gradient.addColorStop(0.5, this.colorWithOpacity(color, 0.7));
     gradient.addColorStop(1, this.colorWithOpacity(color, 0));

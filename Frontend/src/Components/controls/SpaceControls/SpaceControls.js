@@ -37,31 +37,18 @@ class SpaceControls {
     this.onUpdateChaos = onUpdateChaos;
 
     this.shootingStars = new ShootingStars(canvas, ctx, clickedRef);
-    this.spaceSky = new SpaceSky(this.ctx, this.mousePosRef, clickedRef);
+    this.spaceSky = new SpaceSky(this.ctx, mousePosRef, clickedRef);
     this.sun = new Sun();
 
-    const {
-      PLANET_COLORS,
-      PLANET_COUNT,
-      PLANET_DISTANCES,
-      PLANET_SIZES,
-      PLANET_SPEEDS,
-    } = settingsManager.settings.space;
-
-    this.PLANET_COUNT = PLANET_COUNT;
-
-    this.PLANET_SIZES = PLANET_SIZES;
-    this.PLANET_DISTANCES = PLANET_DISTANCES;
-    this.PLANET_SPEEDS = PLANET_SPEEDS;
-    this.PLANET_COLORS = PLANET_COLORS;
+    this.settings = settingsManager.settings.space; //check defaults
 
     this.planets = [
-      ...Array.from({ length: this.PLANET_COUNT }, (_, i) => {
+      ...Array.from({ length: this.settings.PLANET_COUNT }, (_, i) => {
         const name = `Planet ${i + 1}`;
-        const size = this.PLANET_SIZES[i];
-        const distance = this.PLANET_DISTANCES[i];
-        const colors = this.PLANET_COLORS[i];
-        const speed = this.PLANET_SPEEDS[i];
+        const size = this.settings.PLANET_SIZES[i];
+        const distance = this.settings.PLANET_DISTANCES[i];
+        const colors = this.settings.PLANET_COLORS[i];
+        const speed = this.settings.PLANET_SPEEDS[i];
 
         return new Planet(
           name,

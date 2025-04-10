@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Typography } from "@mui/material";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart"; // Icon for ParticleControls
 import PublicIcon from "@mui/icons-material/Public"; // Icon for SpaceControls
 import DriveEtaIcon from "@mui/icons-material/DriveEta";
+import SettingsIcon from "@mui/icons-material/Settings"; // Icon for settings
 const VisualizerSelect = ({ visualizer, setVisualizer }) => {
   // visualizer = {id: '', threeD: bool}
   // Array of visualizer options
@@ -39,15 +40,6 @@ const VisualizerSelect = ({ visualizer, setVisualizer }) => {
         borderRadius: "8px",
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{
-          color: "white",
-          fontWeight: "bold",
-        }}
-      >
-        Select Visualizer:
-      </Typography>
       {visualizerOptions.map((option) => (
         <IconButton
           key={option.id}
@@ -66,6 +58,10 @@ const VisualizerSelect = ({ visualizer, setVisualizer }) => {
           {option.icon}
         </IconButton>
       ))}
+      <Divider orientation="vertical" flexItem />
+      <IconButton>
+        <SettingsIcon />
+      </IconButton>
     </Box>
   );
 };

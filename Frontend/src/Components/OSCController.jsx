@@ -59,16 +59,22 @@ const OSCController = () => {
       sx={{
         p: 2,
         display: "flex",
-        flexDirection: "column",
+        width: "100%",
+        height: "fit-content",
         gap: 2,
         alignItems: "center",
+        position: "relative", // For absolute positioning of Transport
       }}
     >
-      <ConnectionStatus
-        connected={connected}
-        broadcasting={broadcasting}
-        setBroadcasting={setBroadcasting}
+      {/* Far Left */}
+      <ParameterList
+        setParameters={setParameters}
+        parameters={parameters}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
       />
+
+      {/* Center */}
       <Transport
         play={play}
         record={record}
@@ -77,20 +83,26 @@ const OSCController = () => {
         disabled={!connected}
       />
 
-      {!broadcasting && (
-        <>
-          <ParameterList
-            setParameters={setParameters}
-            parameters={parameters}
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-          />
-          <VisualizerSelect
-            setVisualizer={setVisualizer}
-            visualizer={visualizer}
-          />
-        </>
-      )}
+      {/* Far Right */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          marginLeft: "auto",
+          alignItems: "center",
+        }}
+      >
+        <ConnectionStatus
+          connected={connected}
+          broadcasting={broadcasting}
+          setBroadcasting={setBroadcasting}
+        />
+        <VisualizerSelect
+          setVisualizer={setVisualizer}
+          visualizer={visualizer}
+        />
+      </Box>
+
       <AddressController
         params={parameters}
         broadcasting={broadcasting}

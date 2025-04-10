@@ -19,9 +19,6 @@ const LearnButton = ({ updateParameter, param }) => {
       <Button
         variant={isLearning ? "outlined" : "contained"}
         color={isLearning ? "warning" : "secondary"}
-        sx={{
-          height: "100%",
-        }}
         onClick={async () => {
           if (isLearning) {
             cancel();
