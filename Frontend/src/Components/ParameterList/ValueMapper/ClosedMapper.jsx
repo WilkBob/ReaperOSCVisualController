@@ -1,10 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Switch, Typography } from "@mui/material";
 
 import GradientBackground from "./GradientBackground";
 
-const ClosedMapper = ({ valueMap, setMapperOpen }) => {
+const ClosedMapper = ({ valueMap, setMapperOpen, updateValueMap }) => {
   const canvasRef = useRef(null);
+
+  const setEnabled = (enabled) => {
+    const newValueMap = { ...valueMap, enabled: enabled };
+    updateValueMap(newValueMap);
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,6 +45,13 @@ const ClosedMapper = ({ valueMap, setMapperOpen }) => {
         variant="h5"
         sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
       >
+        <Switch
+          component={"span"}
+          checked={valueMap.enabled}
+          onChange={(e) => {
+            setEnabled(e.target.checked);
+          }}
+        />
         Value Mapper{" "}
         <Typography variant="caption" sx={{ ml: 1 }}>
           - Value will be interpreted according to the gradient (lighter color =

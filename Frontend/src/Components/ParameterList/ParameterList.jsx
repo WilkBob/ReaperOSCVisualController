@@ -15,7 +15,6 @@ import ProfileMenu from "./ProfileMenu";
 import { useEffect } from "react";
 
 const ParameterList = ({
-  visualizer,
   parameters,
   setParameters,
   drawerOpen,
@@ -36,17 +35,15 @@ const ParameterList = ({
   }, [setDrawerOpen]);
 
   const addParameter = () => {
-    if (parameters.length < 5) {
+    if (parameters.length < 10) {
       setParameters([
         ...parameters,
         {
           name: "New Parameter",
-          type: "inst",
-          trackNum: 1,
-          fxNum: 1,
-          paramNum: 2,
-          controlType: "mouse-x",
+          address: `/track/${parameters.length + 1}/volume`,
+
           valueMap: {
+            enabled: true,
             stops: [
               { x: 0.0, y: 0.0 },
               { x: 1.0, y: 1.0 },
@@ -147,12 +144,11 @@ const ParameterList = ({
           </Box>
         </Box>
 
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 3 }} />
+        <Divider />
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, my: 2 }}>
           {parameters.map((param, index) => (
             <ParameterItem
-              visualizer={visualizer}
               param={param}
               index={index}
               setParameters={setParameters}
@@ -164,11 +160,11 @@ const ParameterList = ({
 
         <Button
           onClick={addParameter}
-          disabled={parameters.length >= 5}
+          disabled={parameters.length >= 10}
           variant="contained"
           startIcon={<AddCircleIcon />}
         >
-          Add Parameter {parameters.length}/5
+          Add Parameter {parameters.length}/10
         </Button>
       </Drawer>
     </>

@@ -2,7 +2,7 @@ import { Button, Tooltip } from "@mui/material";
 import React from "react";
 import useLearnParam from "../useLearnParam";
 
-const LearnButton = ({ updateParameter, param }) => {
+const LearnButton = ({ setParamNum, param }) => {
   const { learn, cancel, isLearning, waiting } = useLearnParam();
 
   return (
@@ -17,6 +17,9 @@ const LearnButton = ({ updateParameter, param }) => {
       enterDelay={2000}
     >
       <Button
+        sx={{
+          height: "100%",
+        }}
         variant={isLearning ? "outlined" : "contained"}
         color={isLearning ? "warning" : "secondary"}
         onClick={async () => {
@@ -25,10 +28,7 @@ const LearnButton = ({ updateParameter, param }) => {
           } else {
             const result = await learn(param.trackNum, param.fxNum);
             if (result) {
-              updateParameter("type", result.type);
-              updateParameter("trackNum", result.trackNum);
-              updateParameter("fxNum", result.fxNum);
-              updateParameter("paramNum", result.paramNum);
+              setParamNum(result.paramNum);
             }
           }
         }}

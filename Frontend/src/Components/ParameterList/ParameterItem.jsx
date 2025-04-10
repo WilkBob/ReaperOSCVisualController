@@ -1,24 +1,16 @@
-import React from "react";
-import { Box, Card, Divider } from "@mui/material";
+import { useState } from "react";
+import { Box, Card, Divider, Grid } from "@mui/material";
 import ParameterHeader from "./ParameterHeader";
 import AddressControls from "./AddressControls";
+import ValueMapper from "./ValueMapper/ValueMapper";
+import ClosedMapper from "./ValueMapper/ClosedMapper";
 
-const ParameterItem = ({
-  param,
-  index,
-  setParameters,
-  removeParameter,
-  visualizer,
-}) => {
+const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
+  const [mapperOpen, setMapperOpen] = useState(false);
+
   const updateParameter = (key, value) => {
     setParameters((prev) =>
       prev.map((p, i) => (i === index ? { ...p, [key]: value } : p))
-    );
-  };
-
-  const updateValueMap = (valueMap) => {
-    setParameters((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, valueMap } : p))
     );
   };
 
@@ -46,12 +38,31 @@ const ParameterItem = ({
       />
       <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 1 }} />
       <Box sx={{ display: "flex", gap: 2, mb: 2, width: "100%" }}>
-        <AddressControls
-          visualizer={visualizer}
-          param={param}
-          updateParameter={updateParameter}
-          updateValueMap={updateValueMap}
-        />
+        <Grid container spacing={2} alignItems="center">
+          <AddressControls
+            address={param.address}
+            updateAddress={(address) => updateParameter("address", address)}
+          />
+          <Grid size={12}>
+            {mapperOpen ? (
+              <ValueMapper
+                valueMap={param.valueMap}
+                updateValueMap={(valueMap) =>
+                  updateParameter("valueMap", valueMap)
+                }
+                closeMapper={() => setMapperOpen(false)}
+              />
+            ) : (
+              <ClosedMapper
+                valueMap={param.valueMap}
+                setMapperOpen={setMapperOpen}
+                updateValueMap={(valueMap) =>
+                  updateParameter("valueMap", valueMap)
+                }
+              />
+            )}
+          </Grid>
+        </Grid>
       </Box>
     </Card>
   );

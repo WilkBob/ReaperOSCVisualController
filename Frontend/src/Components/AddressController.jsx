@@ -1,28 +1,26 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import { createOSCAddress, sendMessage } from "../API/oscService";
+import { useEffect, useState, useRef } from "react";
+import { sendMessage } from "../API/oscService";
 
 import mapValueThroughStops from "../mapValue";
 
-// Main component for creating OSC addresses and broadcasting control values
-const AddressController = ({ params, broadcasting, visualizer, editing }) => {
+// Main component for broadcasting control values, we're creating addresses elsewhere
+const AddressController = ({ params, broadcasting, visualizer }) => {
   const [controlAddresses, setControlAddresses] = useState({});
 
-  // Initialize ref with empty object
   const controlRefs = useRef({});
 
-  // Combined useEffect to handle both controlRefs and controlAddresses updates
   useEffect(() => {
     // Update controlRefs
     params.forEach((param) => {
-      const { controlType } = param;
-      if (!controlRefs.current[controlType]) {
-        controlRefs.current[controlType] = { current: 1, last: 0 };
+      const { name } = param;
+      if (!controlRefs.current[name]) {
+        controlRefs.current[name] = { current: 1, last: 0 };
       }
     });
 
     // Clean up removed control types
     const currentKeys = Object.keys(controlRefs.current);
-    const activeKeys = params.map((p) => p.controlType);
+    const activeKeys = params.map((p) => p.name);
     currentKeys.forEach((key) => {
       if (!activeKeys.includes(key)) {
         delete controlRefs.current[key];
@@ -34,12 +32,12 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
     // Update controlAddresses
     const newControlAddresses = {};
     params.forEach((param) => {
-      const { controlType } = param;
-      if (!newControlAddresses[controlType]) {
-        newControlAddresses[controlType] = [];
+      const { name } = param;
+      if (!newControlAddresses[name]) {
+        newControlAddresses[name] = [];
       }
-      const address = createOSCAddress(param);
-      newControlAddresses[controlType].push({
+      const address = param.address;
+      newControlAddresses[name].push({
         address,
         valueMap: param.valueMap,
       });
@@ -51,69 +49,35 @@ const AddressController = ({ params, broadcasting, visualizer, editing }) => {
 
   // Broadcast control values at regular intervals when broadcasting is enabled
   useEffect(() => {
-    let interval;
+    let rafId;
 
-    if (broadcasting) {
-      interval = setInterval(() => {
-        Object.keys(controlAddresses).forEach((controlType) => {
-          const addresses = controlAddresses[controlType]; // Get addresses for control type
-          const ref = controlRefs.current[controlType]; // Get ref for control type
+    const loop = () => {
+      if (broadcasting) {
+        Object.keys(controlAddresses).forEach((name) => {
+          const addresses = controlAddresses[name];
+          const ref = controlRefs.current[name];
 
           addresses.forEach(({ address, valueMap }) => {
             let scaledValue = ref.current;
             if (valueMap?.enabled) {
-              scaledValue = mapValueThroughStops(ref.current, valueMap); // Scale value if enabled
+              scaledValue = mapValueThroughStops(ref.current, valueMap);
             }
+
             if (scaledValue !== ref.last) {
-              // Check if value has changed
-              sendMessage(address, scaledValue); // Send OSC message
-              ref.last = scaledValue; // Update last broadcasted value
+              sendMessage(address, scaledValue);
+              ref.last = scaledValue;
             }
           });
         });
-      }, 50); // Broadcast every 50ms
-    }
-
-    return () => {
-      if (interval) clearInterval(interval); // Clear interval on cleanup
+        rafId = requestAnimationFrame(loop);
+      }
     };
+
+    if (broadcasting) rafId = requestAnimationFrame(loop);
+
+    return () => cancelAnimationFrame(rafId);
   }, [broadcasting, controlAddresses]);
-
-  const controlConfig = useMemo(() => {
-    return Object.fromEntries(
-      Object.keys(controlAddresses).map((controlType) => {
-        const ref = controlRefs.current[controlType];
-        return [
-          controlType,
-          {
-            updateFunction: (value) => {
-              ref.current = value; // Update ref value
-            },
-          },
-        ];
-      })
-    );
-  }, [controlAddresses]);
-
-  console.log("controlConfig", controlConfig);
-
-  return null; // Return null if in editing mode
-
-  return (
-    <>
-      {visualizer.threeD === true ? (
-        <ThreeDCanvasController
-          controlConfig={controlConfig}
-          visualizerId={visualizer.id}
-        />
-      ) : (
-        <CanvasController
-          controlConfig={controlConfig}
-          visualizer={visualizer.id}
-        />
-      )}
-    </>
-  );
+  return <>{JSON.stringify}</>;
 };
 
 export default AddressController;

@@ -114,6 +114,68 @@ export function createOSCAddress(param) {
   }
 }
 
+export function extractParametersFromAddress(address) {
+  // Define separate regular expressions for each address pattern
+  const volRegex = /\/track\/(\d+)\/volume/;
+  const instRegex = /\/track\/(\d+)\/fxinstparam\/(\d+)\/value/;
+  const fxRegex = /\/track\/(\d+)\/fx\/(\d+)\/fxparam\/(\d+)\/value/;
+  const fxWetRegex = /\/track\/(\d+)\/fx\/(\d+)\/wetdry/;
+  const panRegex = /\/track\/(\d+)\/pan/;
+  const sendvolRegex = /\/track\/(\d+)\/send\/(\d+)\/volume/;
+
+  let match;
+
+  match = address.match(volRegex);
+  if (match) {
+    return { type: "vol", trackNum: parseInt(match[1], 10) };
+  }
+
+  match = address.match(instRegex);
+  if (match) {
+    return {
+      type: "inst",
+      trackNum: parseInt(match[1], 10),
+      paramNum: parseInt(match[2], 10),
+    };
+  }
+
+  match = address.match(fxRegex);
+  if (match) {
+    return {
+      type: "fx",
+      trackNum: parseInt(match[1], 10),
+      fxNum: parseInt(match[2], 10),
+      paramNum: parseInt(match[3], 10),
+    };
+  }
+
+  match = address.match(fxWetRegex);
+  if (match) {
+    return {
+      type: "fxWet",
+      trackNum: parseInt(match[1], 10),
+      fxNum: parseInt(match[2], 10),
+    };
+  }
+
+  match = address.match(panRegex);
+  if (match) {
+    return { type: "pan", trackNum: parseInt(match[1], 10) };
+  }
+
+  match = address.match(sendvolRegex);
+  if (match) {
+    return {
+      type: "sendvol",
+      trackNum: parseInt(match[1], 10),
+      fxNum: parseInt(match[2], 10),
+    };
+  }
+
+  console.warn(`Invalid OSC address: ${address}`);
+  return { type: "custom", trackNum: 0, fxNum: 0, paramNum: 0 }; // Default case for custom address
+}
+
 export function sendMessage(address, value) {
   try {
     const message = value !== undefined ? { address, value } : { address };

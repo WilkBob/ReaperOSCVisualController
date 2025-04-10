@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef } from "react";
 import {
   Box,
   IconButton,
-  Toolbar,
   FormControlLabel,
   Switch,
   Typography,
@@ -44,6 +43,11 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
   };
   const setInvert = (e) => {
     const newValueMap = { ...valueMap, invert: e.target.checked };
+    updateValueMap(newValueMap);
+  };
+
+  const setActive = (active) => {
+    const newValueMap = { ...valueMap, enabled: active };
     updateValueMap(newValueMap);
   };
 
@@ -157,6 +161,12 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
           variant="h5"
           sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
         >
+          <Switch
+            component={"span"}
+            checked={valueMap.enabled}
+            onChange={(e) => setActive(e.target.checked)}
+            color="primary"
+          />
           Value Mapper
         </Typography>
         <Tooltip
@@ -171,6 +181,7 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
                 checked={valueMap.interpolate}
                 onChange={setInterpolate}
                 color="primary"
+                disabled={!valueMap.enabled}
               />
             }
             label="Interpolate:"
@@ -189,6 +200,7 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
                 checked={valueMap.invert}
                 onChange={setInvert}
                 color="primary"
+                disabled={!valueMap.enabled}
               />
             }
             label="Invert:"
@@ -201,7 +213,11 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
         {actions.map((action, index) => (
           <>
             <Tooltip key={index} enterDelay={1000} title={action.title} arrow>
-              <IconButton onClick={action.onClick} style={{}}>
+              <IconButton
+                onClick={action.onClick}
+                style={{}}
+                disabled={!valueMap.enabled}
+              >
                 {action.icon}
               </IconButton>
             </Tooltip>

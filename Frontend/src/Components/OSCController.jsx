@@ -26,10 +26,7 @@ const OSCController = () => {
   const [parameters, setParameters] = useState([
     {
       name: "Parameter 1",
-      type: "inst",
-      trackNum: 1,
-      fxNum: 1,
-      paramNum: 2,
+      address: "/track/1/pan",
       valueMap: {
         enabled: true,
         stops: [
@@ -68,7 +65,6 @@ const OSCController = () => {
     >
       {/* Far Left */}
       <ParameterList
-        visualizer={visualizer}
         setParameters={setParameters}
         parameters={parameters}
         drawerOpen={drawerOpen}
@@ -108,7 +104,6 @@ const OSCController = () => {
         params={parameters}
         broadcasting={broadcasting}
         visualizer={visualizer}
-        editing={drawerOpen}
       />
     </Box>
   );
