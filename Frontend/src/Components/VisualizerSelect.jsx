@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart"; // Icon for ParticleControls
 import PublicIcon from "@mui/icons-material/Public"; // Icon for SpaceControls
 import DriveEtaIcon from "@mui/icons-material/DriveEta";
 import SettingsIcon from "@mui/icons-material/Settings"; // Icon for settings
-const VisualizerSelect = ({ visualizer, setVisualizer }) => {
+import VisualizerContext from "./context/VisualizerContext";
+const VisualizerSelect = () => {
+  const { visualizer, setVisualizer } = useContext(VisualizerContext); // Assuming you have a context for visualizer state
   // visualizer = {id: '', threeD: bool}
   // Array of visualizer options
   const visualizerOptions = [

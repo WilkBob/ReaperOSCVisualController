@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
-const useMouseControl = ({ onUpdateX, onUpdateY, onUpdateClick, ballRef }) => {
-  //THESE end up being the manipulated values in the OSCController - MousePos, clicked, and ballFac are manipulated here, all the rest will be manipulated in the OSCController depending on different visualizers; Ball Pos& Chaos
+const useMouseControl = () => {
   const mousePosRef = useRef({ x: 0.5, y: 0.5 });
 
   const clickedRef = useRef(false);
@@ -19,7 +18,7 @@ const useMouseControl = ({ onUpdateX, onUpdateY, onUpdateClick, ballRef }) => {
 
     const handleMouseWheel = (e) => {
       const ball = ballRef.current;
-      const delta = e.deltaY * 0.001; // Adjust sensitivity as needed
+      const delta = e.deltaY * 0.001;
 
       // Update fac with clamping and smoothing
       ball.fac = Math.min(1, Math.max(0.001, ball.fac - delta));

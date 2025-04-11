@@ -1,17 +1,18 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { sendMessage } from "../API/oscService";
 
 import mapValueThroughStops from "../mapValue";
+import ParameterListContext from "./context/ParameterContext";
 
 // Main component for broadcasting control values, we're creating addresses elsewhere
-const AddressController = ({ params, broadcasting, visualizer }) => {
+const AddressController = ({ broadcasting }) => {
   const [controlAddresses, setControlAddresses] = useState({});
-
+  const { parameters } = useContext(ParameterListContext);
   const controlRefs = useRef({});
 
   useEffect(() => {
     // Update controlRefs
-    params.forEach((param) => {
+    parameters.forEach((param) => {
       const { name } = param;
       if (!controlRefs.current[name]) {
         controlRefs.current[name] = { current: 1, last: 0 };
@@ -20,7 +21,7 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
 
     // Clean up removed control types
     const currentKeys = Object.keys(controlRefs.current);
-    const activeKeys = params.map((p) => p.name);
+    const activeKeys = parameters.map((p) => p.name);
     currentKeys.forEach((key) => {
       if (!activeKeys.includes(key)) {
         delete controlRefs.current[key];
@@ -31,7 +32,7 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
 
     // Update controlAddresses
     const newControlAddresses = {};
-    params.forEach((param) => {
+    parameters.forEach((param) => {
       const { name } = param;
       if (!newControlAddresses[name]) {
         newControlAddresses[name] = [];
@@ -45,7 +46,7 @@ const AddressController = ({ params, broadcasting, visualizer }) => {
 
     setControlAddresses(newControlAddresses);
     console.log("controls addresses", newControlAddresses);
-  }, [params]);
+  }, [parameters]);
 
   // Broadcast control values at regular intervals when broadcasting is enabled
   useEffect(() => {

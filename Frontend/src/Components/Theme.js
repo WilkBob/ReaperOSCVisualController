@@ -1,35 +1,36 @@
 import { createTheme } from "@mui/material/styles";
+import { amber, blueGrey, teal } from "@mui/material/colors"; // Importing some Material UI colors for inspiration
 
 const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#3a435e", // Delft Blue
-      light: "#5c6672", // Payne's gray
-      dark: "#313e50", // Charcoal
+      main: "#283593", // Indigo - A deeper, more distinct primary
+      light: "#5f5fc4",
+      dark: "#001064",
       contrastText: "#FFFFFF",
     },
     secondary: {
-      main: "#6c6f7f", // Slate gray
-      light: "#8d909f",
-      dark: "#455561", // Charcoal 2
+      main: "#00897b", // Teal - Provides better contrast and visual interest
+      light: "#4db6ac",
+      dark: "#005b4f",
       contrastText: "#FFFFFF",
     },
     background: {
-      default: "#313e50", // Charcoal
-      paper: "#3a435e", // Delft Blue
+      default: "#121212", // A darker, true dark gray
+      paper: "#1e1e1e", // Slightly lighter dark gray for paper surfaces
     },
     error: {
-      main: "#ff6b6b",
+      main: "#f44336", // Standard Material UI error
     },
     warning: {
-      main: "#ffd166",
+      main: amber[700], // Using a warmer amber for warning
     },
     info: {
-      main: "#5c6672", // Payne's gray
+      main: blueGrey[300], // A lighter blue-grey for better distinction
     },
     success: {
-      main: "#06d6a0",
+      main: teal.A400, // A vibrant teal for success
     },
     text: {
       primary: "#FFFFFF",
@@ -39,11 +40,20 @@ const theme = createTheme({
     divider: "rgba(255, 255, 255, 0.12)",
     action: {
       active: "rgba(255, 255, 255, 0.8)",
-      hover: "rgba(255, 255, 255, 0.08)",
-      selected: "rgba(255, 255, 255, 0.16)",
+      hover: "rgba(40, 53, 147, 0.12)", // Tint hover with primary dark
+      selected: "rgba(40, 53, 147, 0.24)", // Tint selected with primary dark
       disabled: "rgba(255, 255, 255, 0.3)",
       disabledBackground: "rgba(255, 255, 255, 0.12)",
     },
+  },
+  typography: {
+    // You can add more typography customizations here if needed
+  },
+  shape: {
+    // You can customize border radius here
+  },
+  components: {
+    // You can customize specific components here (e.g., MuiButton, MuiAppBar)
   },
 });
 

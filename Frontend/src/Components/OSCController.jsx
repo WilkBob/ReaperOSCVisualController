@@ -18,26 +18,8 @@ import VisualizerSelect from "./VisualizerSelect";
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
-  const [visualizer, setVisualizer] = useState({
-    id: "particles",
-    threeD: false,
-  });
+
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [parameters, setParameters] = useState([
-    {
-      name: "Parameter 1",
-      address: "/track/1/pan",
-      valueMap: {
-        enabled: true,
-        stops: [
-          { x: 0.0, y: 0.0 },
-          { x: 1.0, y: 1.0 },
-        ],
-        interpolate: true,
-        invert: false,
-      },
-    },
-  ]);
 
   useEffect(() => {
     const handleConnectionChange = (status) => {
@@ -64,12 +46,7 @@ const OSCController = () => {
       }}
     >
       {/* Far Left */}
-      <ParameterList
-        setParameters={setParameters}
-        parameters={parameters}
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}
-      />
+      <ParameterList drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
 
       {/* Center */}
       <Transport
@@ -94,17 +71,10 @@ const OSCController = () => {
           broadcasting={broadcasting}
           setBroadcasting={setBroadcasting}
         />
-        <VisualizerSelect
-          setVisualizer={setVisualizer}
-          visualizer={visualizer}
-        />
+        <VisualizerSelect />
       </Box>
 
-      <AddressController
-        params={parameters}
-        broadcasting={broadcasting}
-        visualizer={visualizer}
-      />
+      <AddressController broadcasting={broadcasting} />
     </Box>
   );
 };

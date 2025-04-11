@@ -12,14 +12,12 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import ParameterItem from "./ParameterItem";
 import ProfileMenu from "./ProfileMenu";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import ParameterListContext from "../context/ParameterContext";
 
-const ParameterList = ({
-  parameters,
-  setParameters,
-  drawerOpen,
-  setDrawerOpen,
-}) => {
+const ParameterList = ({ drawerOpen, setDrawerOpen }) => {
+  const { parameters, setParameters } = useContext(ParameterListContext);
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "p") {
