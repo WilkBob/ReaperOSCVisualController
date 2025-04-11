@@ -13,7 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ParameterItem from "./ParameterItem";
 import ProfileMenu from "./ProfileMenu";
 import { useContext, useEffect } from "react";
-import ParameterListContext from "../context/ParameterContext";
+import ParameterListContext from "../../Context/ParameterContext";
 
 const ParameterList = ({ drawerOpen, setDrawerOpen }) => {
   const { parameters, setParameters } = useContext(ParameterListContext);

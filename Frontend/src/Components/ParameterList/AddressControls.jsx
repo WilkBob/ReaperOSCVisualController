@@ -21,7 +21,7 @@ import {
   extractParametersFromAddress,
 } from "../../API/oscService";
 
-const AddressControls = ({ address, updateAddress }) => {
+const AddressControls = ({ address, updateAddress, index }) => {
   const [type, setType] = useState("inst");
   const [trackNum, setTrackNum] = useState(1);
   const [fxNum, setFxNum] = useState(1);
@@ -77,7 +77,7 @@ const AddressControls = ({ address, updateAddress }) => {
   return (
     <Grid
       sx={{
-        backgroundColor: edited ? "rgba(255, 94, 94, 0.29)" : "transparent",
+        backgroundColor: edited ? "rgba(255, 94, 94, 0.16)" : "transparent",
         width: "100%",
         p: 2,
         borderRadius: 2,
@@ -206,13 +206,14 @@ const AddressControls = ({ address, updateAddress }) => {
         {(type === "inst" || type === "fx") && (
           <Grid>
             <LearnButton
+              index={index}
               param={{
                 type,
                 trackNum,
                 fxNum,
                 paramNum,
               }}
-              setParamnum={setParamNum}
+              setParamNum={setParamNum}
             />
           </Grid>
         )}

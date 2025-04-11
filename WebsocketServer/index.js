@@ -1,10 +1,6 @@
 const WebSocket = require("ws");
 const OSC = require("osc-js");
 
-let learning = false;
-let trackHint = null;
-let fxHint = null;
-
 const osc = new OSC({
   plugin: new OSC.DatagramPlugin({
     send: { port: 8000 },
@@ -12,55 +8,71 @@ const osc = new OSC({
   }),
 });
 
+let learning = false;
+let trackHint = null;
+let fxHint = null;
+let learnBuffer = {
+  name: null,
+  paramNum: null,
+};
+
 osc.open();
 osc.on("*", (message) => {
   console.log("Received OSC message:", message);
 
-  if (learning) {
-    // Handle messages like /fxparam/<paramNum>/value
-    if (/^\/fxparam\/\d+\/value$/.test(message.address)) {
-      const addressParts = message.address.split("/");
-      const paramNum = parseInt(addressParts[2], 10);
+  if (!learning) return;
+  let count = 0;
+  // Capture parameter name
+  if (message.address === "/fxparam/last_touched/name" && message.args?.[0]) {
+    learnBuffer.name = message.args[0];
+    console.log("Captured parameter name:", learnBuffer.name);
+  }
 
-      if (trackHint !== null && fxHint !== null) {
-        const learnedParam = {
-          type: "fx",
-          trackNum: trackHint,
-          fxNum: fxHint,
-          paramNum: paramNum,
-        };
+  // Capture parameter number from /fxparam/{num}/value
+  if (/^\/fxparam\/\d+\/value$/.test(message.address)) {
+    learnBuffer.paramNum = parseInt(message.address.split("/")[2], 10);
+    console.log("Captured parameter number:", learnBuffer.paramNum);
+  }
 
-        console.log("Learned parameter:", learnedParam);
+  if (
+    (learnBuffer.name && learnBuffer.paramNum !== null) ||
+    (learnBuffer.paramNum !== null && count >= 100)
+  ) {
+    const learnedParam = {
+      type: "fx",
+      trackNum: trackHint,
+      fxNum: fxHint,
+      paramNum: learnBuffer.paramNum,
+      name: learnBuffer.name,
+    };
 
-        // Send the learned parameter back to the frontend
-        wss.clients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ learnedParam }));
-          }
-        });
+    console.log("Learned parameter:", learnedParam);
 
-        // Disable learn mode
-        resetLearningState();
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ learnedParam }));
       }
-    }
+    });
+
+    resetLearningState();
+  }
+  count++;
+  if (count > 100) {
+    console.log("Learning timed out, resetting state.");
+    resetLearningState();
   }
 });
 
+// Handle OSC errors
 osc.on("error", (error) => {
   console.error("OSC error:", error);
 });
 
+// --- WebSocket Setup ---
+
 const wss = new WebSocket.Server({ port: 8080 }, () => {
   console.log("WebSocket server started on ws://localhost:8080");
 });
-
-// Function to reset the learning state
-function resetLearningState() {
-  learning = false;
-  trackHint = null;
-  fxHint = null;
-  console.log("Learning state reset");
-}
 
 wss.on("connection", (ws) => {
   console.log("Client connected");
@@ -70,39 +82,39 @@ wss.on("connection", (ws) => {
       const message = JSON.parse(data);
       console.log("Received message:", message);
 
+      // Cancel learning
       if (message.learnCancel) {
         resetLearningState();
         return;
       }
 
+      // Initiate learning
       if (message.learn) {
-        // Temporarily disable learning until the flood subsides
-        trackHint = message.trackHint || null;
-        fxHint = message.fxHint || null;
+        trackHint = message.trackHint ?? null;
+        fxHint = message.fxHint ?? null;
 
-        console.log("Preparing to enable learn mode", { trackHint, fxHint });
+        console.log("Preparing to enter learn mode", { trackHint, fxHint });
 
-        // Send /device/track/select and /device/fx/select
         if (trackHint !== null) {
           osc.send(new OSC.Message("/device/track/select", trackHint));
         }
         if (fxHint !== null) {
           osc.send(new OSC.Message("/device/fx/select", fxHint));
         }
+
+        learnBuffer = { name: null, paramNum: null };
         learning = true;
-        // Delay enabling learning to avoid the initial flood
+
         setTimeout(() => {
-          if (learning === false) {
-            console.log("Learn mode disabled before delay completed");
-            return;
+          if (learning) {
+            console.log("Learn mode active after delay");
           }
-          console.log("Learn mode enabled after delay", { trackHint, fxHint });
-        }, 5000); // 3 second delay (adjust as needed)
+        }, 5000);
 
         return;
       }
 
-      // Create OSC message based on presence of value
+      // Regular OSC message passthrough
       const oscMessage =
         message.value !== undefined
           ? new OSC.Message(message.address, message.value)
@@ -110,16 +122,24 @@ wss.on("connection", (ws) => {
 
       osc.send(oscMessage);
     } catch (error) {
-      console.error("Message processing error:", error);
+      console.error("WebSocket message error:", error);
     }
   });
 
   ws.on("close", () => {
     console.log("Client disconnected");
-    if (learning) {
-      resetLearningState();
-    }
+    if (learning) resetLearningState();
   });
 
   ws.on("error", (error) => console.error("WebSocket error:", error));
 });
+
+// --- Helpers ---
+
+function resetLearningState() {
+  learning = false;
+  trackHint = null;
+  fxHint = null;
+  learnBuffer = { name: null, paramNum: null };
+  console.log("Learning state reset");
+}

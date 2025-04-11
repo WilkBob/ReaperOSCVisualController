@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Box, Card, Divider, Grid } from "@mui/material";
 import ParameterHeader from "./ParameterHeader";
 import AddressControls from "./AddressControls";
 import ValueMapper from "./ValueMapper/ValueMapper";
 import ClosedMapper from "./ValueMapper/ClosedMapper";
+import ParameterListContext from "../../Context/ParameterContext";
 
-const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
+const ParameterItem = ({ index }) => {
+  const { parameters, setParameters, removeParameter } =
+    useContext(ParameterListContext);
+  const param = parameters[index];
   const [mapperOpen, setMapperOpen] = useState(false);
 
   const updateParameter = (key, value) => {
@@ -40,6 +44,7 @@ const ParameterItem = ({ param, index, setParameters, removeParameter }) => {
       <Box sx={{ display: "flex", gap: 2, mb: 2, width: "100%" }}>
         <Grid container spacing={2} alignItems="center">
           <AddressControls
+            index={index}
             address={param.address}
             updateAddress={(address) => updateParameter("address", address)}
           />

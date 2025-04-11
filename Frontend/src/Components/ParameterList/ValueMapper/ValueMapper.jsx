@@ -157,10 +157,7 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
       <Box sx={{ display: "flex", gap: 2, mb: 1, flexWrap: "wrap" }}>
-        <Typography
-          variant="h5"
-          sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
-        >
+        <Typography variant="h5" sx={{ display: "flex", alignItems: "center" }}>
           <Switch
             component={"span"}
             checked={valueMap.enabled}
@@ -212,7 +209,12 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
         {/* ACTIONS */}
         {actions.map((action, index) => (
           <>
-            <Tooltip key={index} enterDelay={1000} title={action.title} arrow>
+            <Tooltip
+              key={index + action.title}
+              enterDelay={1000}
+              title={action.title}
+              arrow
+            >
               <IconButton
                 onClick={action.onClick}
                 style={{}}

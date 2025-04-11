@@ -1,7 +1,7 @@
 import OSCController from "./Components/OSCController";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "./Components/Theme";
-import { ParameterListProvider } from "./Components/context/ContextProvider";
+import { ParameterListProvider } from "./Context/ContextProvider";
 
 function App() {
   return (

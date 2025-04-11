@@ -43,7 +43,7 @@ const ClosedMapper = ({ valueMap, setMapperOpen, updateValueMap }) => {
     <Box sx={{ width: "100%", height: "100%" }}>
       <Typography
         variant="h5"
-        sx={{ mb: 0.5, display: "flex", alignItems: "center" }}
+        sx={{ display: "flex", alignItems: "center", minHeight: "100%" }}
       >
         <Switch
           component={"span"}

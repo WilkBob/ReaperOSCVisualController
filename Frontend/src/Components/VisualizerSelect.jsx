@@ -4,7 +4,7 @@ import BubbleChartIcon from "@mui/icons-material/BubbleChart"; // Icon for Parti
 import PublicIcon from "@mui/icons-material/Public"; // Icon for SpaceControls
 import DriveEtaIcon from "@mui/icons-material/DriveEta";
 import SettingsIcon from "@mui/icons-material/Settings"; // Icon for settings
-import VisualizerContext from "./context/VisualizerContext";
+import VisualizerContext from "../Context/VisualizerContext";
 const VisualizerSelect = () => {
   const { visualizer, setVisualizer } = useContext(VisualizerContext); // Assuming you have a context for visualizer state
   // visualizer = {id: '', threeD: bool}

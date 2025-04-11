@@ -12,14 +12,15 @@ import {
 import Transport from "./Transport";
 import ConnectionStatus from "./ConnectionStatus";
 import ParameterList from "./ParameterList/ParameterList";
-import AddressController from "./AddressController";
+
 import VisualizerSelect from "./VisualizerSelect";
+import useOSCController from "../Hooks/useOSCController";
 
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
-
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { controlRefs } = useOSCController(broadcasting);
 
   useEffect(() => {
     const handleConnectionChange = (status) => {
@@ -73,8 +74,6 @@ const OSCController = () => {
         />
         <VisualizerSelect />
       </Box>
-
-      <AddressController broadcasting={broadcasting} />
     </Box>
   );
 };

@@ -53,8 +53,8 @@ const attemptReconnect = () => {
       const message = JSON.parse(event.data);
       const { learnedParam } = message;
       if (learnResolve) {
-        const { type, trackNum, fxNum, paramNum } = learnedParam;
-        learnResolve({ type, trackNum, fxNum, paramNum });
+        const { type, trackNum, fxNum, paramNum, name } = learnedParam;
+        learnResolve({ type, trackNum, fxNum, paramNum, name });
         learnResolve = null;
       }
     } catch (error) {
@@ -71,7 +71,7 @@ export const cancelLearn = () => {
   ws.send(JSON.stringify({ learnCancel: true })); // Notify backend to stop learning
 };
 
-export const learnNextParam = (trackHint = null, fxHint = null) => {
+export const learnNextParam = (trackHint, fxHint) => {
   return new Promise((resolve) => {
     learnResolve = resolve;
 
@@ -79,8 +79,8 @@ export const learnNextParam = (trackHint = null, fxHint = null) => {
     ws.send(
       JSON.stringify({
         learn: true,
-        trackHint: trackHint || null,
-        fxHint: fxHint || null,
+        trackHint: trackHint,
+        fxHint: fxHint,
       })
     );
   });
