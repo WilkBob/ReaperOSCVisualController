@@ -1,141 +1,30 @@
-# 🚀 CONTROL: A React + Vite Application with WebSocket and OSC Integration
+🎛️ OSC Visual Controller
+A modular, browser-based OSC controller for REAPER with interactive visual control surfaces.
 
-CONTROL is a modern web application built with React and Vite, designed for real-time control of parameters via WebSocket and OSC (Open Sound Control). The project includes a frontend interface for parameter manipulation and a WebSocket server for OSC message handling. 🎛️⚡
+Overview
+This project provides a dynamic frontend interface to control REAPER parameters via OSC, using intuitive, real-time visual interactions such as mouse movement, particle simulations, and interactive canvases. It supports value mapping and customizable control behaviors for expressive DAW manipulation.
 
----
+How It Works
+Client (this repo): Web-based controller UI built with React. Sends OSC messages based on interactive visuals (mouse, ball, chaos, etc.).
 
-## 📜 Table of Contents
+Server: A lightweight WebSocket/OSC bridge relays communication between REAPER and the client.
 
-- [✨ Features](#features)
-- [📂 Project Structure](#project-structure)
-- [🚀 Getting Started](#getting-started)
-  - [🔧 Prerequisites](#prerequisites)
-  - [📥 Installation](#installation)
-  - [▶️ Running the Application](#running-the-application)
-- [🛠 Usage](#usage)
-  - [🎨 Frontend](#frontend)
-  - [📡 WebSocket Server](#websocket-server)
-- [🛠 Technologies Used](#technologies-used)
-- [🤝 Contributing](#contributing)
-- [📜 License](#license)
+DAW (REAPER): Sends and receives OSC messages. Currently, the OSC setup in REAPER is configured to forward certain parameter messages to the WebSocket server, enabling limited bidirectional communication.
 
----
+Features
+🔗 OSC Address Mapping – Assign any control surface to an OSC path.
 
-## ✨ Features
+🎚️ Value Mapping – Shape input values (e.g., Mouse X, Ball Y) to desired output curves.
 
-### **Frontend 🎨**
+🧩 Modular Visualizers – Refactoring in progress for node-based simulation control and scalable parameter assignment.
 
-✅ Built with **React** and **Vite** for fast development and performance.  
-✅ **Material-UI** for a sleek and responsive design.  
-✅ **Real-time parameter control** using mouse and keyboard inputs.  
-✅ **Save, load, and delete** parameter profiles using **local storage**.  
-✅ **Interactive canvas** for visual feedback and control.
+🔄 Live Communication – Real-time message sending; partial response handling via WebSocket.
 
-### **Backend 🖥️**
+Current Status
+✅ OSC control routing
 
-✅ **WebSocket server** for real-time communication.  
-✅ **OSC integration** for sending and receiving control messages.
+✅ Value mapping editor
 
----
+🔧 Refactoring visualizer architecture for node-based flexibility
 
-## 📂 Project Structure
-
-```
-CONTROL/
-├── Frontend/
-│   ├── public/           # Static assets
-│   ├── src/              # Source code
-│   │   ├── API/          # API utilities (WebSocket, OSC)
-│   │   ├── Components/   # React components
-│   │   │   ├── controls/ # Canvas and mouse control utilities
-│   │   ├── App.jsx       # Main application component
-│   │   ├── main.jsx      # Entry point
-│   │   ├── index.css     # Global styles
-│   ├── package.json      # Frontend dependencies and scripts
-│   ├── vite.config.js    # Vite configuration
-│   ├── eslint.config.js  # ESLint configuration
-│   ├── index.html        # HTML template
-├── WebsocketServer/
-│   ├── index.js          # WebSocket server with OSC integration
-│   ├── package.json      # Backend dependencies and scripts
-├── README.md             # Project documentation
-├── .gitignore            # Ignored files and directories
-```
-
----
-
-## 🚀 Getting Started
-
-### 🔧 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v16 or higher) 🟢
-- **npm** or **yarn** 📦
-
-### 📥 Installation
-
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/your-username/control.git
-   cd control
-   ```
-2. **Install dependencies for the frontend:**
-   ```sh
-   cd Frontend
-   npm install
-   ```
-3. **Install dependencies for the WebSocket server:**
-   ```sh
-   cd ../WebsocketServer
-   npm install
-   ```
-
-### ▶️ Running the Application
-
-1. **Start the WebSocket Server:**
-   ```sh
-   cd WebsocketServer
-   node index.js
-   ```
-2. **Start the Frontend Application:**
-   ```sh
-   cd ../Frontend
-   npm run dev
-   ```
-3. Open your browser and visit: `http://localhost:5173/` 🌐
-
----
-
-## 🛠 Usage
-
-### 🎨 **Frontend**
-
-The frontend provides a sleek UI with real-time controls for manipulating OSC parameters. Users can interact with:
-
-- Sliders, buttons, and canvas-based controls.
-- WebSocket-driven real-time updates.
-- Parameter saving and recall for easy workflow.
-
-### 📡 **WebSocket Server**
-
-The WebSocket server acts as the bridge between the frontend and OSC-enabled applications, ensuring low-latency communication.
-
----
-
-## 🛠 Technologies Used
-
-🚀 **Frontend:** React, Vite, Material-UI, WebSockets, HTML5 Canvas  
-🖥️ **Backend:** Node.js, WebSockets, OSC-js
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! 🎉 If you'd like to improve this project, feel free to submit a pull request.
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License**. 📝
+🚧 No persistent state or presets (yet)
