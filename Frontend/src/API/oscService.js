@@ -49,7 +49,6 @@ const attemptReconnect = () => {
 
   ws.onmessage = (event) => {
     try {
-      console.log("Received message:", event.data);
       const message = JSON.parse(event.data);
       const { learnedParam } = message;
       if (learnResolve) {

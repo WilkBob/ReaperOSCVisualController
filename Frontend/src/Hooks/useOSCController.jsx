@@ -6,24 +6,24 @@ import ParameterListContext from "../Context/ParameterContext";
 // Custom hook to manage control broadcasting and value refs
 const useOSCController = (broadcasting = true) => {
   const { parameters } = useContext(ParameterListContext);
-  const controlRefs = useRef({});
+  const OSCOutputRefs = useRef({});
 
-  // Sync controlRefs with current parameters
+  // Sync OSCOutputRefs with current parameters
   useEffect(() => {
-    const currentKeys = Object.keys(controlRefs.current);
+    const currentKeys = Object.keys(OSCOutputRefs.current);
     const activeKeys = parameters.map((p) => p.name);
 
     // Add missing refs
     activeKeys.forEach((name) => {
-      if (!controlRefs.current[name]) {
-        controlRefs.current[name] = { current: 1, last: 0 }; //1 instead of zero to send a message on first render for debug / later 0.5, 0.5
+      if (!OSCOutputRefs.current[name]) {
+        OSCOutputRefs.current[name] = { current: 1, last: 0, name }; //1 instead of zero to send a message on first render for debug / later 0.5, 0.5
       }
     });
 
     // Clean up stale refs
     currentKeys.forEach((key) => {
       if (!activeKeys.includes(key)) {
-        delete controlRefs.current[key];
+        delete OSCOutputRefs.current[key];
       }
     });
   }, [parameters]);
@@ -35,8 +35,11 @@ const useOSCController = (broadcasting = true) => {
     const loop = () => {
       if (broadcasting) {
         parameters.forEach(({ name, address, valueMap }) => {
-          const ref = controlRefs.current[name];
-          if (!ref || !address) return;
+          const ref = OSCOutputRefs.current[name];
+          if (!ref || !address) {
+            console.warn(`No ref or address for ${name} - something's F8cked`);
+            return;
+          }
 
           let value = ref.current;
           if (valueMap?.enabled) {
@@ -57,7 +60,7 @@ const useOSCController = (broadcasting = true) => {
     return () => cancelAnimationFrame(rafId);
   }, [broadcasting, parameters]);
 
-  return controlRefs;
+  return OSCOutputRefs;
 };
 
 export default useOSCController;

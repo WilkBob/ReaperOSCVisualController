@@ -12,15 +12,19 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import ParameterItem from "./ParameterItem";
 import ProfileMenu from "./ProfileMenu";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import ParameterListContext from "../../Context/ParameterContext";
 
-const ParameterList = ({ drawerOpen, setDrawerOpen }) => {
+const ParameterList = ({ broadcasting }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false); // State to control the drawer open/close
   const { parameters, setParameters } = useContext(ParameterListContext);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "p") {
+        if (broadcasting) {
+          setDrawerOpen(false);
+        }
         setDrawerOpen((prev) => !prev);
       }
     };
@@ -30,7 +34,7 @@ const ParameterList = ({ drawerOpen, setDrawerOpen }) => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [setDrawerOpen]);
+  }, [broadcasting]);
 
   const addParameter = () => {
     if (parameters.length < 10) {
@@ -63,8 +67,14 @@ const ParameterList = ({ drawerOpen, setDrawerOpen }) => {
   return (
     <>
       <IconButton
-        onClick={() => setDrawerOpen(true)}
+        onClick={() => {
+          if (broadcasting) {
+            setDrawerOpen(false);
+          }
+          setDrawerOpen((prev) => !prev);
+        }}
         color="white"
+        disabled={broadcasting}
         sx={{ zIndex: 1000 }}
       >
         <MenuIcon />

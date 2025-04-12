@@ -14,13 +14,12 @@ import ConnectionStatus from "./ConnectionStatus";
 import ParameterList from "./ParameterList/ParameterList";
 
 import VisualizerSelect from "./VisualizerSelect";
-import useOSCController from "../Hooks/useOSCController";
+
+import CanvasController from "./Visualizers/CanvasController";
 
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const { controlRefs } = useOSCController(broadcasting);
 
   useEffect(() => {
     const handleConnectionChange = (status) => {
@@ -47,7 +46,7 @@ const OSCController = () => {
       }}
     >
       {/* Far Left */}
-      <ParameterList drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
+      <ParameterList broadcasting={broadcasting} connected={connected} />
 
       {/* Center */}
       <Transport
@@ -73,6 +72,10 @@ const OSCController = () => {
           setBroadcasting={setBroadcasting}
         />
         <VisualizerSelect />
+        <CanvasController
+          key={"doodad" + broadcasting}
+          broadcasting={broadcasting}
+        />
       </Box>
     </Box>
   );

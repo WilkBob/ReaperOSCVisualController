@@ -284,7 +284,7 @@ LOOP_END_TIME f/loop/end/time
 
 MASTER_VOLUME n/master/volume s/master/volume/str
 MASTER_PAN n/master/pan s/master/pan/str
-# MASTER_VU n/master/vu
+MASTER_VU n/master/vu
 # MASTER_VU_L n/master/vu/L
 # MASTER_VU_R n/master/vu/R
 
