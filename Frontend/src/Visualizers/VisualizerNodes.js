@@ -5,12 +5,12 @@ const VisualizerNodes = {
     nodes: {
       inputs: {
         glowX: {
-          defaultControl: "mouse-x",
+          defaultControl: "mouseX",
           description: "X position of the star glow",
           label: "Glow X",
         },
         glowY: {
-          defaultControl: "mouse-y",
+          defaultControl: "mouseX",
           description: "Y position of the star glow",
           label: "Glow Y",
         },
@@ -56,12 +56,12 @@ const VisualizerNodes = {
     nodes: {
       inputs: {
         spawnX: {
-          defaultControl: "mouse-x",
+          defaultControl: "mouseX",
           description: "X position of the particle spawn",
           label: "Spawn X",
         },
         spawnY: {
-          defaultControl: "mouse-y",
+          defaultControl: "mouseY",
           description: "Y position of the particle spawn",
           label: "Spawn Y",
         },

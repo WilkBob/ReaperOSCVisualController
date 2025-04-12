@@ -1,0 +1,117 @@
+class BaseNode {
+  constructor({
+    id,
+    type,
+    label,
+    inputDefs,
+    outputDef,
+    evaluate,
+    update,
+    init,
+    destroy,
+  }) {
+    this.id = id;
+    this.type = type;
+    this.label = label;
+
+    this.inputDefs = inputDefs; // array of { name, defaultValue }
+    this.outputDef = outputDef; // { name, label }
+
+    this.inputs = new Array(inputDefs.length).fill(null);
+    this.evaluateFn = evaluate;
+    this.updateFn = update || (() => {}); // default to a no-op function //callback for updating state
+    this.initFn = init || (() => {}); // default to a no-op function //callback for setting initial state
+    this.destroyFn = destroy || (() => {}); // default to a no-op function //callback for tearing down state
+    this.localState = { state: "init" }; // local state for the node, can be used in update and init functions
+    this.output = 0; // default output value
+  }
+
+  connectInput(index, node) {
+    this.inputs[index] = node;
+  }
+
+  setRawInput(index, value) {
+    this.inputs[index] = value;
+  }
+
+  update(globalState) {
+    if (this.updateFn) {
+      this.updateFn(this.inputs, globalState, this.localState);
+    }
+  }
+
+  init(globalState) {
+    if (this.initFn) {
+      this.initFn(globalState, this.localState);
+    }
+  }
+  destroy() {
+    if (this.destroyFn) {
+      this.destroyFn(this.localState);
+    }
+  }
+
+  evaluate(globalState) {
+    const evaluatedInputs = this.inputs.map((input, i) => {
+      if (input instanceof BaseNode) {
+        return input.evaluate();
+      }
+      return input ?? this.inputDefs[i].defaultValue ?? 0; // fallback to default or 0
+    });
+
+    this.output = this.evaluateFn(
+      evaluatedInputs,
+      globalState,
+      this.localState
+    );
+    return this.output;
+  }
+}
+
+export default BaseNode;
+
+function createNode(id, blueprint) {
+  return new BaseNode({
+    id,
+    type: blueprint.type,
+    label: blueprint.label,
+    inputDefs: blueprint.inputDefs,
+    outputDef: blueprint.outputDef,
+    evaluate: blueprint.evaluate,
+    update: blueprint.update,
+    init: blueprint.init,
+    destroy: blueprint.destroy,
+  });
+}
+
+function makeBlueprint({
+  type,
+  label,
+  inputDefs,
+  outputDef = { name: "out", label: "Output" },
+  evaluate = () => {
+    // default evaluate function does nothing
+  },
+  update = () => {
+    // default update function does nothing
+  },
+  init = () => {
+    // default init function does nothing
+  },
+  destroy = () => {
+    // default destroy function does nothing
+  },
+}) {
+  return {
+    type,
+    label,
+    inputDefs,
+    outputDef,
+    evaluate,
+    update,
+    init,
+    destroy,
+  };
+}
+
+export { createNode, makeBlueprint };

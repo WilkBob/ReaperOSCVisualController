@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   isConnected,
   play,
@@ -15,11 +15,13 @@ import ParameterList from "./ParameterList/ParameterList";
 
 import VisualizerSelect from "./VisualizerSelect";
 
-import CanvasController from "./Visualizers/CanvasController";
+import CanvasController from "./CanvasController";
+import ParameterListContext from "../Context/ParameterContext";
 
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
   const [broadcasting, setBroadcasting] = useState(false);
+  const { parameters } = useContext(ParameterListContext);
 
   useEffect(() => {
     const handleConnectionChange = (status) => {
@@ -73,7 +75,7 @@ const OSCController = () => {
         />
         <VisualizerSelect />
         <CanvasController
-          key={"doodad" + broadcasting}
+          key={parameters.length + broadcasting}
           broadcasting={broadcasting}
         />
       </Box>

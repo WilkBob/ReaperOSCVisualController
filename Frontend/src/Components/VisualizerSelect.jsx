@@ -22,12 +22,6 @@ const VisualizerSelect = () => {
       icon: <PublicIcon />,
       threeD: false,
     },
-    {
-      id: "highway",
-      label: "Vaporwave Highway",
-      icon: <DriveEtaIcon />,
-      threeD: true,
-    },
   ];
 
   return (

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ParameterListContext from "./ParameterContext";
 import VisualizerContext from "./VisualizerContext";
+import { ThemeProvider } from "@emotion/react";
+import { spaceTheme, rainbowTheme } from "../Components/Themes";
 
 export const ParameterListProvider = ({ children }) => {
   const [parameters, setParameters] = useState([
@@ -19,9 +21,19 @@ export const ParameterListProvider = ({ children }) => {
     },
   ]);
   const [visualizer, setVisualizer] = useState({
-    id: "circle",
+    id: "space",
     threeD: false,
   });
+  const [theme, setTheme] = useState(spaceTheme);
+  useEffect(() => {
+    if (visualizer.id === "space") {
+      setTheme(spaceTheme);
+    } else if (visualizer.id === "particles") {
+      setTheme(rainbowTheme);
+    } else {
+      console.error("Unknown visualizer ID:", visualizer.id);
+    }
+  }, [visualizer.id]);
 
   const removeParameter = (index) => {
     if (index < 0 || index >= parameters.length) {
@@ -82,7 +94,7 @@ export const ParameterListProvider = ({ children }) => {
           getParameter,
         }}
       >
-        {children}
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </ParameterListContext.Provider>
     </VisualizerContext.Provider>
   );
