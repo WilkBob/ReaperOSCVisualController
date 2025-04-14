@@ -1,6 +1,7 @@
 import { makeBlueprint } from "./BaseNode";
 
 const MinMax = makeBlueprint({
+  type: "transform",
   label: "Min/Max",
   inputDefs: [
     { name: "Switch", defaultValue: 0 },
@@ -16,6 +17,7 @@ const MinMax = makeBlueprint({
   },
 });
 const Avg = makeBlueprint({
+  type: "transform",
   label: "Average",
   inputDefs: [
     { name: "Input 1", defaultValue: 0 },
@@ -39,7 +41,7 @@ const SinOscillator = makeBlueprint({
   evaluate: (inputs, globalState) => {
     const [amplitude, frequency] = inputs;
     const time = globalState.time; // Assuming you have a time variable in your global state
-    return amplitude * Math.sin(frequency * time);
+    return (amplitude * Math.sin(frequency * time) + 1) / 2;
   },
   update: () => {
     // Update logic if needed

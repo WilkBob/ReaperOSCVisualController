@@ -1,8 +1,7 @@
 import { createNode } from "./NodeTypes/BaseNode";
 import createMouseBlueprint from "./NodeTypes/MouseNode";
 import createOSCBlueprint from "./NodeTypes/OSCNode";
-import { Avg } from "./NodeTypes/MathNodes";
-import GlobalState from "./GlobalState";
+import { SinOscillator } from "./NodeTypes/MathNodes";
 
 class NodeManager {
   constructor(mouseRef, outputRefs) {
@@ -10,10 +9,25 @@ class NodeManager {
     this.outputRefs = outputRefs;
 
     this.nodes = [];
-    this.globalState = new GlobalState(); // Use the GlobalState class
+    this.globalState = {
+      time: 0,
+      deltaTime: 0,
+    };
 
     this.createMouseNodes(); //initialize mouse control
     this.createOSCNodes(); //initialize OSC nodes
+    this.nodes.push(
+      createNode("sinOscillator", SinOscillator) // Create a SinOscillator node
+    );
+    this.nodes[this.nodes.length - 2].connectInput(
+      0,
+      this.nodes[this.nodes.length - 1]
+    ); // Connect the first OSC node to the SinOscillator node
+    this.nodes[this.nodes.length - 1].connectInput(0, this.nodes[0]); // Connect the first mouse node to the SinOscillator node
+    this.nodes[this.nodes.length - 1].connectInput(1, this.nodes[1]); // Connect the second mouse node to the SinOscillator node
+    this.nodes.forEach((node) => {
+      node.init(this.globalState); // Initialize each node with the global state
+    }); // Connect the second mouse node to the first OSC node
   }
   // Create mouse nodes based on the keys in mouseRef
 
@@ -39,14 +53,9 @@ class NodeManager {
   }
 
   update(delta) {
-    this.globalState.updateTime(delta); // Update time and deltaTime in global state
+    this.globalState.time += delta;
     this.nodes.forEach((node) => {
-      node.update(this.globalState.state); // Pass the global state object to nodes
-    });
-    this.nodes.forEach((node) => {
-      if (node.type === "output") {
-        node.evaluate(this.globalState.state);
-      }
+      node.update(this.globalState); // Pass the global state object to nodes
     });
   }
 

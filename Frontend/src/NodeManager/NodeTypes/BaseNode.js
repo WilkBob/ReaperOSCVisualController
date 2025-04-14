@@ -54,7 +54,7 @@ class BaseNode {
   evaluate(globalState) {
     const evaluatedInputs = this.inputs.map((input, i) => {
       if (input instanceof BaseNode) {
-        return input.evaluate();
+        return input.evaluate(globalState);
       }
       return input ?? this.inputDefs[i].defaultValue ?? 0; // fallback to default or 0
     });

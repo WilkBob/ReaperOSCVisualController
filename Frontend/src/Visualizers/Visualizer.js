@@ -11,8 +11,7 @@ class InteractiveVisualizer {
     this.width = this.canvas.width;
 
     this.time = 0;
-    this.deltaTime = 0;
-
+    this.deltaTime = 0.16;
     this.rafID = null;
 
     this.resize();
@@ -26,8 +25,9 @@ class InteractiveVisualizer {
     if (!this.ctx) return; // Ensure ctx is not null before proceeding
 
     this.ctx.clearRect(0, 0, this.width, this.height);
-    this.drawNodes();
     this.nodeManager.update(this.deltaTime); // Update the node manager with delta time
+    this.drawNodes();
+
     this.time += this.deltaTime;
     this.rafID = requestAnimationFrame(this.animate.bind(this));
   }
@@ -57,12 +57,20 @@ class InteractiveVisualizer {
     this.ctx.fillStyle = "#fff";
     this.ctx.font = "12px Arial";
     this.ctx.textAlign = "center";
-    this.ctx.fillText(node.label, x + nodeWidth / 2, y + 20);
+    this.ctx.fillText(
+      node.label +
+        " " +
+        " " +
+        node.evaluate(this.nodeManager.globalState).toFixed(2),
+      x + nodeWidth / 2,
+      y + 20
+    );
 
     // Draw input dots
     const inputSpacing = nodeHeight / (node.inputDefs.length + 1);
-    this.ctx.fillStyle = "#0f0";
+
     node.inputDefs.forEach((input, index) => {
+      this.ctx.fillStyle = node.inputs[index] ? "#0f0" : "#fff"; // Green if connected, white if not
       const dotY = y + inputSpacing * (index + 1);
       this.ctx.beginPath();
       this.ctx.arc(x - 5, dotY, 5, 0, Math.PI * 2);
