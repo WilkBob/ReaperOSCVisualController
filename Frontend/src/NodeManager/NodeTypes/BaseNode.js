@@ -22,8 +22,13 @@ class BaseNode {
     this.updateFn = update || (() => {}); // default to a no-op function //callback for updating state
     this.initFn = init || (() => {}); // default to a no-op function //callback for setting initial state
     this.destroyFn = destroy || (() => {}); // default to a no-op function //callback for tearing down state
-    this.localState = { state: "init" }; // local state for the node, can be used in update and init functions
+    this.localState = {
+      state: "init",
+      evaluatedInputs: Array(inputDefs.length).fill(null),
+    }; // local state for the node, can be used in update and init functions
     this.output = 0; // default output value
+
+    this.cache = { cycleId: null, output: null }; // Cache for evaluation output
   }
 
   connectInput(index, node) {
@@ -52,18 +57,28 @@ class BaseNode {
   }
 
   evaluate(globalState) {
+    // Check if the output is already cached for the current cycle
+    const cycleId = globalState.cycleId;
+    if (this.cache.cycleId === cycleId) {
+      return this.cache.output;
+    }
+
     const evaluatedInputs = this.inputs.map((input, i) => {
       if (input instanceof BaseNode) {
-        return input.evaluate(globalState);
+        return input.evaluate(globalState, cycleId);
       }
       return input ?? this.inputDefs[i].defaultValue ?? 0; // fallback to default or 0
     });
-
+    this.localState.evaluatedInputs = evaluatedInputs; // Store evaluated inputs in local state
     this.output = this.evaluateFn(
       evaluatedInputs,
       globalState,
       this.localState
     );
+
+    // Update the cache with the new output and cycleId
+    this.cache = { cycleId, output: this.output };
+
     return this.output;
   }
 }
