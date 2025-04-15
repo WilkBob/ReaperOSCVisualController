@@ -26,6 +26,7 @@ class BaseNode {
       state: "init",
       drawImage: null,
       evaluatedInputs: Array(inputDefs.length).fill(null),
+      ui: { position: { x: 0, y: 0 }, size: { x: 200, y: 200 } }, // UI state for the node
     }; // local state for the node, can be used in update and init functions
     this.output = 0; // default output value
     this.outputNodes = []; // array of output connections
@@ -99,7 +100,7 @@ class BaseNode {
       }
       return input ?? this.inputDefs[i].defaultValue ?? 0; // fallback to default or 0
     });
-    this.localState.evaluatedInputs = evaluatedInputs; // Store evaluated inputs in local state
+    this.localState.evaluatedInputs = [...evaluatedInputs]; // Store evaluated inputs in local state
     this.output = this.evaluateFn(
       evaluatedInputs,
       globalState,

@@ -20,6 +20,15 @@ class NodeManager {
     this.createOSCNodes(); //initialize OSC nodes
     this.nodes.push(createNode("gamepad", GamePadAxisNode));
     this.nodes.push(createNode("sinOscillator", SinOscillator));
+    this.nodes[this.nodes.length - 1].connectInput(0, this.nodes[0]); // Connect the first mouse node to the SinOscillator node
+    this.nodes[this.nodes.length - 1].connectInput(
+      1,
+      this.nodes[this.nodes.length - 2]
+    );
+    this.nodes[this.nodes.length - 3].connectInput(
+      0,
+      this.nodes[this.nodes.length - 1]
+    );
     this.nodes.forEach((node) => {
       node.init(this.globalState); // Initialize each node with the global state
     }); // Connect the second mouse node to the first OSC node

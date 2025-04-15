@@ -58,8 +58,9 @@ const SinOscillator = makeBlueprint({
   outputDef: { name: "Output", label: "Sin" },
   evaluate: (inputs, globalState) => {
     const [amplitude, frequency] = inputs;
-    const { time, deltaTime } = globalState; // Assuming deltaTime is available in globalState
-    return (amplitude * Math.sin(frequency * time * deltaTime) + 1) / 2;
+    const { time } = globalState;
+    const phase = time * frequency * 2 * Math.PI; // Scale frequency to represent Hz
+    return (amplitude * Math.sin(phase) + 1) / 2;
   },
   update: (globalState, localState) => {
     const ctx = localState.ctx;
@@ -78,12 +79,13 @@ const SinOscillator = makeBlueprint({
 
     // Draw the sine wave
     ctx.beginPath();
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)"; // Black with some transparency
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)"; // Black with some transparency
     ctx.lineWidth = 2;
 
     for (let x = 0; x < localState.drawImage.width; x++) {
       const t = (x / localState.drawImage.width) * (2 * Math.PI); // Map x to [0, 2π]
-      const y = amplitude * Math.sin(frequency * (t + time));
+      const phase = (t + time) * frequency * 2 * Math.PI; // Scale frequency to represent Hz
+      const y = amplitude * Math.sin(phase);
       const canvasY =
         localState.drawImage.height / 2 - y * (localState.drawImage.height / 2); // Scale and center
 
