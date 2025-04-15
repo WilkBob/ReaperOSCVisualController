@@ -148,10 +148,10 @@ class VisualNode {
 
     // Draw label
     ctx.fillStyle = "#fff";
-    ctx.font = "20px Arial";
+    ctx.font = "16px Arial";
     ctx.textAlign = "center";
     ctx.fillText(
-      this.outputDef.label + this.node.evaluate(globalState).toFixed(2),
+      this.outputDef.label + " " + this.node.evaluate(globalState).toFixed(2),
       xPos,
       yPos + 15
     );

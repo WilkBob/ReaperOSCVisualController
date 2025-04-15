@@ -40,7 +40,11 @@ class NodeManager {
     mouseKeys.forEach((key) => {
       const node = createNode(
         key,
-        createMouseBlueprint(this.mouseRef, key, key)
+        createMouseBlueprint(
+          this.mouseRef,
+          key,
+          key[0].toLocaleUpperCase() + key.slice(1)
+        )
       );
       this.nodes.push(node);
     });

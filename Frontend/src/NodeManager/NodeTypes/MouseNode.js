@@ -5,9 +5,9 @@ export default function createMouseBlueprint(mouseRef, key, name) {
   // return a blueprint for the mouse node
   return {
     type: "input",
-    label: key,
+    label: name,
     inputDefs: [],
     evaluate: () => mouseRef.current[key],
-    outputDef: { name: name, label: key },
+    outputDef: { name: name, label: name },
   };
 }
