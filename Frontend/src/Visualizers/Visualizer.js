@@ -21,8 +21,15 @@ class InteractiveVisualizer {
     this.width = this.canvas.width = window.innerWidth;
   }
 
-  animate() {
+  animate(timestamp) {
     if (!this.ctx) return; // Ensure ctx is not null before proceeding
+
+    if (!this.lastTimestamp) {
+      this.lastTimestamp = timestamp;
+    }
+
+    this.deltaTime = (timestamp - this.lastTimestamp) / 1000; // Convert to seconds
+    this.lastTimestamp = timestamp;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.nodeManager.update(this.deltaTime); // Update the node manager with delta time
@@ -50,7 +57,7 @@ class InteractiveVisualizer {
     const nodeHeight = 50;
 
     // Draw the node rectangle
-    this.ctx.fillStyle = "#333";
+    this.ctx.fillStyle = "#333333aa";
     this.ctx.fillRect(x, y, nodeWidth, nodeHeight);
 
     // Draw the node label
@@ -65,7 +72,17 @@ class InteractiveVisualizer {
       x + nodeWidth / 2,
       y + 20
     );
+    if (node.localState.drawImage) {
+      // Draw the node's internal canvas if it exists
 
+      this.ctx.drawImage(
+        node.localState.drawImage,
+        x,
+        y,
+        nodeWidth,
+        nodeHeight
+      );
+    }
     // Draw input dots
     const inputSpacing = nodeHeight / (node.inputDefs.length + 1);
 
@@ -93,10 +110,18 @@ class InteractiveVisualizer {
     this.ctx = null;
     this.mouseRef = null;
     this.outputRefs = null;
+    this.nodeManager.destroy();
     this.nodeManager = null;
     this.width = null;
     this.height = null;
     this.app = null;
+
+    this.time = null;
+    this.deltaTime = null;
+
+    this.rafID = null;
+    this.resize = null;
+    this.animate = null;
   }
 }
 export default InteractiveVisualizer;

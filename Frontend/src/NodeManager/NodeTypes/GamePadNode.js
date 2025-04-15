@@ -5,7 +5,7 @@ const GamepadAxisNode = makeBlueprint({
   label: "Gamepad Axis",
   inputDefs: [
     { name: "Gamepad Index", defaultValue: 0 },
-    { name: "Axis Index", defaultValue: 1 },
+    { name: "Axis Index", defaultValue: 0 },
   ],
   outputDef: { name: "Output", label: "Axis Value" },
 
@@ -46,7 +46,7 @@ const GamepadAxisNode = makeBlueprint({
     };
 
     localState.padIndex = 0; // overwritten by inputs at runtime
-    localState.axisIndex = 1;
+    localState.axisIndex = 0;
 
     localState.startPolling();
     localState.onUpdate((pads) => {
@@ -55,8 +55,18 @@ const GamepadAxisNode = makeBlueprint({
   },
 
   evaluate: (inputs, globalState, localState) => {
-    localState.padIndex = inputs[0];
-    localState.axisIndex = inputs[1];
+    const pads = navigator.getGamepads();
+    const totalPads = pads.filter(Boolean).length;
+
+    // Normalize padIndex and axisIndex to 0-1 range relative to their lengths
+    localState.padIndex =
+      Math.min(Math.max(inputs[0] * totalPads, 0), totalPads - 1) | 0;
+
+    const pad = pads[localState.padIndex];
+    const totalAxes = pad ? pad.axes.length : 0;
+    localState.axisIndex =
+      Math.min(Math.max(inputs[1] * totalAxes, 0), totalAxes - 1) | 0;
+
     return localState.axisValue ?? 0;
   },
 

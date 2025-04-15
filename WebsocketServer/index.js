@@ -90,6 +90,7 @@ osc.on("*", (message) => {
 
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
+        console.log("Sending learned parameter to client:", learnedParam);
         client.send(JSON.stringify({ learnedParam }));
       }
     });
@@ -97,7 +98,7 @@ osc.on("*", (message) => {
     resetLearningState();
   }
   count++;
-  if (count > 100) {
+  if (count > 500) {
     console.log("Learning timed out, resetting state.");
     resetLearningState();
   }

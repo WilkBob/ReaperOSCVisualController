@@ -21,9 +21,17 @@ const MinMax = makeBlueprint({
   outputDef: { name: "Output", label: "Min/Max" },
   evaluate: (inputs) => {
     const [switchValue, input1, input2] = inputs;
-    return switchValue === 0
-      ? Math.min(input1, input2)
-      : Math.max(input1, input2);
+    const result =
+      switchValue < 0.5 ? Math.min(input1, input2) : Math.max(input1, input2);
+
+    console.debug("MinMax Node Evaluation:", {
+      switchValue,
+      input1,
+      input2,
+      result,
+    });
+
+    return result;
   },
 });
 const Avg = makeBlueprint({
@@ -53,11 +61,55 @@ const SinOscillator = makeBlueprint({
     const { time, deltaTime } = globalState; // Assuming deltaTime is available in globalState
     return (amplitude * Math.sin(frequency * time * deltaTime) + 1) / 2;
   },
-  update: () => {
-    // Update logic if needed
+  update: (globalState, localState) => {
+    const ctx = localState.ctx;
+
+    // Clear the canvas
+    ctx.clearRect(
+      0,
+      0,
+      localState.drawImage.width,
+      localState.drawImage.height
+    );
+
+    // Extract evaluated inputs
+    const [amplitude, frequency] = localState.evaluatedInputs;
+    const { time } = globalState;
+
+    // Draw the sine wave
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)"; // Black with some transparency
+    ctx.lineWidth = 2;
+
+    for (let x = 0; x < localState.drawImage.width; x++) {
+      const t = (x / localState.drawImage.width) * (2 * Math.PI); // Map x to [0, 2π]
+      const y = amplitude * Math.sin(frequency * (t + time));
+      const canvasY =
+        localState.drawImage.height / 2 - y * (localState.drawImage.height / 2); // Scale and center
+
+      if (x === 0) {
+        ctx.moveTo(x, canvasY);
+      } else {
+        ctx.lineTo(x, canvasY);
+      }
+    }
+
+    ctx.stroke();
   },
-  init: () => {
-    // Initialization logic if needed
+  init: (globalState, localState) => {
+    // Create a canvas and store it in localState
+    localState.drawImage = document.createElement("canvas");
+    localState.drawImage.width = 100;
+    localState.drawImage.height = 200;
+    localState.ctx = localState.drawImage.getContext("2d");
+
+    // Set the canvas background to transparent
+    localState.ctx.clearRect(
+      0,
+      0,
+      localState.drawImage.width,
+      localState.drawImage.height
+    );
   },
 });
 

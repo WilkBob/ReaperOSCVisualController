@@ -11,19 +11,23 @@ const ParameterHeader = ({
   removeParameter,
 }) => {
   const [editName, setEditName] = useState(false);
+  const [localName, setLocalName] = useState(param.name || "");
 
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
       {editName ? (
         <Box display="flex" alignItems="center" gap={1}>
           <TextField
-            value={param.name || ""}
-            onChange={(e) => updateParameter("name", e.target.value)}
+            value={localName}
+            onChange={(e) => setLocalName(e.target.value)}
             variant="outlined"
             size="small"
           />
           <IconButton
-            onClick={() => setEditName(false)}
+            onClick={() => {
+              setEditName(false);
+              updateParameter("name", localName);
+            }}
             sx={{
               color: "rgba(111, 158, 255, 0.8)",
               "&:hover": {
@@ -43,7 +47,12 @@ const ParameterHeader = ({
           >
             {param.name || `Parameter ${index + 1}`}
           </Typography>
-          <IconButton onClick={() => setEditName(true)}>
+          <IconButton
+            onClick={() => {
+              setEditName(true);
+              setLocalName(param.name || "");
+            }}
+          >
             <EditIcon />
           </IconButton>
         </Box>

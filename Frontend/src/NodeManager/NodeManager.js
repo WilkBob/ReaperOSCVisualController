@@ -19,6 +19,7 @@ class NodeManager {
     this.createMouseNodes(); //initialize mouse control
     this.createOSCNodes(); //initialize OSC nodes
     this.nodes.push(createNode("gamepad", GamePadAxisNode));
+    this.nodes.push(createNode("sinOscillator", SinOscillator));
     this.nodes.forEach((node) => {
       node.init(this.globalState); // Initialize each node with the global state
     }); // Connect the second mouse node to the first OSC node

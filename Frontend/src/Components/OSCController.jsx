@@ -75,7 +75,7 @@ const OSCController = () => {
         />
         <VisualizerSelect />
         <CanvasController
-          key={parameters.length + broadcasting}
+          key={JSON.stringify(parameters) + broadcasting}
           broadcasting={broadcasting}
         />
       </Box>

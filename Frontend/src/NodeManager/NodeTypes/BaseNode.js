@@ -24,15 +24,45 @@ class BaseNode {
     this.destroyFn = destroy || (() => {}); // default to a no-op function //callback for tearing down state
     this.localState = {
       state: "init",
+      drawImage: null,
       evaluatedInputs: Array(inputDefs.length).fill(null),
     }; // local state for the node, can be used in update and init functions
     this.output = 0; // default output value
+    this.outputNodes = []; // array of output connections
 
     this.cache = { cycleId: null, output: null }; // Cache for evaluation output
   }
 
   connectInput(index, node) {
     this.inputs[index] = node;
+    // Check if the node is already in the outputNodes array of the connected node
+    if (!node.outputNodes.includes(this)) {
+      node.outputNodes.push(this); // Add this node to the outputNodes of the connected node
+    }
+  }
+
+  disconnectAllInputs() {
+    this.inputs.forEach((input) => {
+      if (input instanceof BaseNode) {
+        input.disconnectOutput(this); // Disconnect this node from the connected node
+      }
+
+      this.inputs = new Array(this.inputDefs.length).fill(null); // Reset inputs to null
+    });
+  }
+
+  disconnectInput(index) {
+    if (this.inputs[index] instanceof BaseNode) {
+      this.inputs[index].disconnectOutput(this); // Disconnect this node from the connected node
+    }
+    this.inputs[index] = null;
+  }
+
+  disconnectOutput(node) {
+    const index = this.outputNodes.indexOf(node);
+    if (index > -1) {
+      this.outputNodes.splice(index, 1); // Remove the node from the outputNodes array
+    }
   }
 
   setRawInput(index, value) {
@@ -41,7 +71,7 @@ class BaseNode {
 
   update(globalState) {
     if (this.updateFn) {
-      this.updateFn(this.inputs, globalState, this.localState);
+      this.updateFn(globalState, this.localState);
     }
   }
 
