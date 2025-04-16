@@ -22,11 +22,10 @@ const ClosedMapper = ({ valueMap, setMapperOpen, updateValueMap }) => {
     );
 
     const resizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
       controller.drawGradient(canvas.width, canvas.height); // Redraw the gradient
     };

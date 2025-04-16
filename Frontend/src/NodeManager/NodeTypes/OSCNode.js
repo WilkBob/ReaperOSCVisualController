@@ -48,7 +48,7 @@ export default function createOSCBlueprint(outputRefs, key) {
         );
 
         // Draw the text below the image
-        localState.ctx.fillStyle = "black";
+        localState.ctx.fillStyle = "#fff";
         localState.ctx.font = "18px Arial";
         localState.ctx.textAlign = "center";
         localState.ctx.fillText(

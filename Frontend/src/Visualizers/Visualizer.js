@@ -58,6 +58,16 @@ class InteractiveVisualizer {
       node.localState.ui.position = { x, y };
     });
   }
+  addNode(node) {
+    console.debug("Adding node:", node);
+    const x = 100 + (this.visualNodes.length % 3) * 250;
+    const y = 100 + Math.floor(this.visualNodes.length / 3) * 250;
+    const visualNode = new VisualNode(node, x, y);
+    this.visualNodes.push(visualNode);
+    this.nodeManager.nodes.push(node); // Add the node to the node manager
+    node.localState.ui.position = { x, y }; // Sync the position to the underlying node
+    node.init(this.nodeManager.globalState); // Initialize the node with the global state
+  }
 
   handleMouseDown(event) {
     const rect = this.canvas.getBoundingClientRect();

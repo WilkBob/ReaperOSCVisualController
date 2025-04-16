@@ -1,65 +1,163 @@
 const connectionListeners = new Set();
+let learnResolve = null;
+let reconnectInterval = null;
+let ws = null; // Initialize as null first
+// Track the connection state separately to ensure consistency
+let connectionState = false;
+// Queue for messages that need to be sent when connection is established
+let messageQueue = [];
+const MAX_QUEUE_SIZE = 100;
 
-export const isConnected = () => ws.readyState === WebSocket.OPEN;
+// Function to notify all listeners of connection state changes
+const notifyListeners = (isConnected) => {
+  connectionState = isConnected;
+  console.log(
+    `Notifying ${connectionListeners.size} listeners of connection state: ${isConnected}`
+  );
+  connectionListeners.forEach((listener) => {
+    try {
+      listener(isConnected);
+    } catch (error) {
+      console.error("Error in connection listener:", error);
+    }
+  });
+
+  // Process queued messages when connection is established
+  if (isConnected && messageQueue.length > 0) {
+    console.log(`Processing ${messageQueue.length} queued messages`);
+    while (messageQueue.length > 0) {
+      const { jsonMessage } = messageQueue.shift();
+      try {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(jsonMessage);
+        }
+      } catch (error) {
+        console.error("Error sending queued message:", error);
+      }
+    }
+  }
+};
+
+// Setup WebSocket with all event handlers
+const setupWebSocket = () => {
+  try {
+    console.log("Setting up new WebSocket connection...");
+    const socket = new WebSocket("ws://localhost:8080");
+
+    socket.onopen = () => {
+      console.log("Connected to WebSocket server");
+      notifyListeners(true);
+      clearInterval(reconnectInterval); // Stop reconnect attempts
+      reconnectInterval = null;
+    };
+
+    socket.onclose = (event) => {
+      console.log(
+        `Disconnected from WebSocket server: ${event.code} - ${event.reason}`
+      );
+      notifyListeners(false);
+      if (!reconnectInterval) {
+        reconnectInterval = setInterval(attemptReconnect, 5000); // Retry every 5 seconds
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      // Don't call notifyListeners here as onclose will be called next
+      // which would result in duplicate notifications
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        const { learnedParam } = message;
+        if (learnResolve && learnedParam) {
+          const { type, trackNum, fxNum, paramNum, name } = learnedParam;
+          learnResolve({ type, trackNum, fxNum, paramNum, name });
+          learnResolve = null;
+        }
+      } catch (error) {
+        console.error("Message parsing error:", error);
+      }
+    };
+
+    return socket;
+  } catch (error) {
+    console.error("Error creating WebSocket:", error);
+    if (!reconnectInterval) {
+      reconnectInterval = setInterval(attemptReconnect, 5000);
+    }
+    return null;
+  }
+};
+
+// Safely send a message, queue it if not connected
+const safeSend = (jsonMessage) => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(jsonMessage);
+    return true;
+  } else {
+    // Queue the message to be sent when connected
+    if (messageQueue.length < MAX_QUEUE_SIZE) {
+      messageQueue.push({ jsonMessage });
+      console.log(`Message queued. Queue size: ${messageQueue.length}`);
+    } else {
+      console.warn("Message queue full, dropping oldest message");
+      messageQueue.shift(); // Remove oldest message
+      messageQueue.push({ jsonMessage });
+    }
+
+    // Try to reconnect if not already trying
+    if (!reconnectInterval) {
+      reconnectInterval = setInterval(attemptReconnect, 5000);
+    }
+    return false;
+  }
+};
+
+// Initialize WebSocket
+try {
+  ws = setupWebSocket();
+} catch (error) {
+  console.error("Error during initial WebSocket setup:", error);
+  // Set up reconnect interval
+  if (!reconnectInterval) {
+    reconnectInterval = setInterval(attemptReconnect, 5000);
+  }
+}
+
+// Returns the actual current connection state
+export const isConnected = () => connectionState;
 
 export const addConnectionListener = (listener) => {
   connectionListeners.add(listener);
-  // Notify the listener of the current connection state
-  listener(ws.readyState === WebSocket.OPEN);
+  // Notify the new listener of the current connection state immediately
+  try {
+    listener(connectionState);
+  } catch (error) {
+    console.error("Error in initial connection listener notification:", error);
+  }
 };
 
 export const removeConnectionListener = (listener) => {
   connectionListeners.delete(listener);
 };
 
-let learnResolve = null;
-let reconnectInterval = null;
-let ws = new WebSocket("ws://localhost:8080");
-
 const attemptReconnect = () => {
   if (
-    ws.readyState === WebSocket.OPEN ||
-    ws.readyState === WebSocket.CONNECTING
+    ws &&
+    (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)
   ) {
-    return; // Skip if already connected or connecting
+    console.log("Already connected or connecting, skipping reconnect attempt");
+    return;
   }
 
   console.log("Attempting to reconnect...");
-  ws = new WebSocket("ws://localhost:8080");
-
-  ws.onopen = () => {
-    console.log("Reconnected to WebSocket server");
-    connectionListeners.forEach((listener) => listener(true));
-    clearInterval(reconnectInterval); // Stop reconnect attempts
-    reconnectInterval = null;
-  };
-
-  ws.onclose = () => {
-    console.log("Disconnected from WebSocket server");
-    connectionListeners.forEach((listener) => listener(false));
-    if (!reconnectInterval) {
-      reconnectInterval = setInterval(attemptReconnect, 5000); // Retry every 5 seconds
-    }
-  };
-
-  ws.onerror = (error) => {
-    console.error("WebSocket error:", error);
-    connectionListeners.forEach((listener) => listener(false));
-  };
-
-  ws.onmessage = (event) => {
-    try {
-      const message = JSON.parse(event.data);
-      const { learnedParam } = message;
-      if (learnResolve) {
-        const { type, trackNum, fxNum, paramNum, name } = learnedParam;
-        learnResolve({ type, trackNum, fxNum, paramNum, name });
-        learnResolve = null;
-      }
-    } catch (error) {
-      console.error("Message parsing error:", error);
-    }
-  };
+  try {
+    ws = setupWebSocket();
+  } catch (error) {
+    console.error("Error during reconnect attempt:", error);
+  }
 };
 
 export const cancelLearn = () => {
@@ -67,7 +165,11 @@ export const cancelLearn = () => {
     learnResolve(null); // Resolve with null to indicate cancellation
     learnResolve = null;
   }
-  ws.send(JSON.stringify({ learnCancel: true })); // Notify backend to stop learning
+
+  // Only send if connected, otherwise just drop this message
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    safeSend(JSON.stringify({ learnCancel: true }));
+  }
 };
 
 export const learnNextParam = (trackHint, fxHint) => {
@@ -75,7 +177,7 @@ export const learnNextParam = (trackHint, fxHint) => {
     learnResolve = resolve;
 
     // Tell backend we're listening for a learn (optionally with a track hint)
-    ws.send(
+    safeSend(
       JSON.stringify({
         learn: true,
         trackHint: trackHint,
@@ -83,14 +185,6 @@ export const learnNextParam = (trackHint, fxHint) => {
       })
     );
   });
-};
-
-ws.onclose = () => {
-  console.log("Disconnected from WebSocket server");
-  connectionListeners.forEach((listener) => listener(false));
-  if (!reconnectInterval) {
-    reconnectInterval = setInterval(attemptReconnect, 5000); // Retry every 5 seconds
-  }
 };
 
 export function createOSCAddress(param) {
@@ -178,8 +272,7 @@ export function extractParametersFromAddress(address) {
 export function sendMessage(address, value) {
   try {
     const message = value !== undefined ? { address, value } : { address };
-
-    ws.send(JSON.stringify(message));
+    safeSend(JSON.stringify(message));
   } catch (error) {
     console.error("Send error:", error);
     throw error; // Propagate error to caller

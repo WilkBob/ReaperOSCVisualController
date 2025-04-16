@@ -83,11 +83,9 @@ const ValueMapper = ({ valueMap, updateValueMap, closeMapper }) => {
     // };
     controllerRef.current = controller; // Store the controller reference
     const resizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      canvas.width = rect.width;
+      canvas.height = rect.height;
 
       controller.onResize(); // Optionally pass new width/height if needed
     };

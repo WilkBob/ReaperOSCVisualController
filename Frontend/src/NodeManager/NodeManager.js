@@ -1,8 +1,6 @@
 import { createNode } from "./NodeTypes/BaseNode";
-import createMouseBlueprint from "./NodeTypes/MouseNode";
+
 import createOSCBlueprint from "./NodeTypes/OSCNode";
-import { SinOscillator } from "./NodeTypes/MathNodes";
-import GamePadAxisNode from "./NodeTypes/GamePadNode";
 
 class NodeManager {
   constructor(mouseRef, outputRefs) {
@@ -16,38 +14,11 @@ class NodeManager {
       cycleId: 0,
     };
 
-    this.createMouseNodes(); //initialize mouse control
     this.createOSCNodes(); //initialize OSC nodes
-    this.nodes.push(createNode("gamepad", GamePadAxisNode));
-    this.nodes.push(createNode("sinOscillator", SinOscillator));
-    this.nodes[this.nodes.length - 1].connectInput(0, this.nodes[0]); // Connect the first mouse node to the SinOscillator node
-    this.nodes[this.nodes.length - 1].connectInput(
-      1,
-      this.nodes[this.nodes.length - 2]
-    );
-    this.nodes[this.nodes.length - 3].connectInput(
-      0,
-      this.nodes[this.nodes.length - 1]
-    );
+
     this.nodes.forEach((node) => {
       node.init(this.globalState); // Initialize each node with the global state
     }); // Connect the second mouse node to the first OSC node
-  }
-  // Create mouse nodes based on the keys in mouseRef
-
-  createMouseNodes() {
-    const mouseKeys = Object.keys(this.mouseRef.current);
-    mouseKeys.forEach((key) => {
-      const node = createNode(
-        key,
-        createMouseBlueprint(
-          this.mouseRef,
-          key,
-          key[0].toLocaleUpperCase() + key.slice(1)
-        )
-      );
-      this.nodes.push(node);
-    });
   }
 
   // Create OSC nodes based on the keys in outputRefs
@@ -70,6 +41,12 @@ class NodeManager {
   }
 
   destroy() {
+    this.nodes.forEach((node) => {
+      node.destroy(); // Call destroy on each node
+    });
+    this.nodes = []; // Clear the nodes array
+    this.globalState = null; // Clear the global state
+    // Clear references to mouse and output refs
     this.mouseRef = null;
     this.outputRefs = null;
   }
