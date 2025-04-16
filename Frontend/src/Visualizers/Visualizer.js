@@ -160,6 +160,9 @@ class InteractiveVisualizer {
     this.isConnecting = false;
     this.connectionStartNode = null;
     this.tempConnectionPoint = null;
+    this.connectionStartType = null;
+    this.connectionStartIndex = null;
+    this.visualNodes.forEach((node) => (node.isConnecting = false)); // Deselect all nodes
   }
 
   animate(timestamp) {
