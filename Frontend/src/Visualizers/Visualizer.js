@@ -39,9 +39,16 @@ class InteractiveVisualizer {
     // Create visual nodes
     this.createVisualNodes();
   }
+
   resize() {
     this.height = this.canvas.height = window.innerHeight;
     this.width = this.canvas.width = window.innerWidth;
+
+    // Update all visual nodes and their base nodes
+    this.visualNodes.forEach((node) => {
+      // The visual node is now responsible for updating the base node
+      node.resize(this.width, this.height);
+    });
   }
 
   createVisualNodes() {
@@ -51,22 +58,25 @@ class InteractiveVisualizer {
       const x = 100 + (index % 3) * 250;
       const y = 100 + Math.floor(index / 3) * 250;
 
+      // Create a VisualNode - it will initialize its own properties from the base node if available
       const visualNode = new VisualNode(node, x, y);
       this.visualNodes.push(visualNode);
-
-      // Sync the position to the underlying node
-      node.localState.ui.position = { x, y };
     });
   }
+
   addNode(node) {
     console.debug("Adding node:", node);
     const x = 100 + (this.visualNodes.length % 3) * 250;
     const y = 100 + Math.floor(this.visualNodes.length / 3) * 250;
+
+    // Initialize the node with the global state
+    node.init(this.nodeManager.globalState);
+
+    // Create visual node - it will handle updating the base node's localState
     const visualNode = new VisualNode(node, x, y);
+
     this.visualNodes.push(visualNode);
     this.nodeManager.nodes.push(node); // Add the node to the node manager
-    node.localState.ui.position = { x, y }; // Sync the position to the underlying node
-    node.init(this.nodeManager.globalState); // Initialize the node with the global state
   }
 
   handleMouseDown(event) {
@@ -110,6 +120,7 @@ class InteractiveVisualizer {
     const my = event.clientY - rect.top;
 
     if (this.isDragging) {
+      // VisualNode will update the base node's localState
       this.selectedNode.handleMouseMove(mx, my);
     }
 
@@ -177,6 +188,7 @@ class InteractiveVisualizer {
 
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.nodeManager.update(this.deltaTime); // Update the node manager with delta time
+
     // Draw connections between nodes
     this.drawConnections();
 
@@ -185,10 +197,11 @@ class InteractiveVisualizer {
       this.drawTempConnection();
     }
 
-    // Draw all nodes
+    // Draw all nodes - VisualNode will handle its own drawing and state management
     this.visualNodes.forEach((node) =>
       node.draw(this.ctx, this.nodeManager.globalState)
     );
+
     this.time += this.deltaTime;
     this.rafID = requestAnimationFrame(this.animate.bind(this));
   }

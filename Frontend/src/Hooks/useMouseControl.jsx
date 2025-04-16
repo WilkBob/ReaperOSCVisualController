@@ -1,8 +1,7 @@
 import { useRef, useEffect } from "react";
 
 const useMouseControl = ({ clickSwell = false, swellRate = 0.02 } = {}) => {
-  const mouseRef = useRef({ x: 0, y: 0, click: 0, wheel: 0.5 });
-  const isMouseDown = useRef(false);
+  const mouseRef = useRef({ x: 0, y: 0, click: 0, wheel: 0.5, isDown: false });
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -11,12 +10,12 @@ const useMouseControl = ({ clickSwell = false, swellRate = 0.02 } = {}) => {
     };
 
     const handleMouseDown = () => {
-      isMouseDown.current = true;
+      mouseRef.current.isDown = true;
       if (!clickSwell) mouseRef.current.click = 1;
     };
 
     const handleMouseUp = () => {
-      isMouseDown.current = false;
+      mouseRef.current.isDown = false;
       if (!clickSwell) mouseRef.current.click = 0;
     };
 
@@ -38,7 +37,7 @@ const useMouseControl = ({ clickSwell = false, swellRate = 0.02 } = {}) => {
     const animateClick = () => {
       if (clickSwell) {
         const clickVal = mouseRef.current.click;
-        const target = isMouseDown.current ? 1 : 0;
+        const target = mouseRef.current.isDown ? 1 : 0;
         const diff = target - clickVal;
         if (Math.abs(diff) > 0.001) {
           mouseRef.current.click += diff * swellRate;

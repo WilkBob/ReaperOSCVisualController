@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { Avg, MinMax, SinOscillator } from "../NodeManager/NodeTypes/MathNodes";
+import {
+  Avg,
+  MinMax,
+  SinOscillator,
+  Constant,
+} from "../NodeManager/NodeTypes/MathNodes";
 import GamepadAxisNode from "../NodeManager/NodeTypes/GamePadNode";
 import createMouseBlueprint from "../NodeManager/NodeTypes/MouseNode";
 import { FormControl, MenuItem, Select, ListSubheader } from "@mui/material";
@@ -10,6 +15,7 @@ const NodeSelect = ({ mouseRef, selectedNodeType, setSelectedNodeType }) => {
       { name: "Average", blueprint: Avg },
       { name: "MinMax", blueprint: MinMax },
       { name: "SinOscillator", blueprint: SinOscillator },
+      { name: "Constant", blueprint: Constant },
     ],
     Mouse: [
       {

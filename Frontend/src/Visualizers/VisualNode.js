@@ -1,10 +1,13 @@
 class VisualNode {
   constructor(node, x = 0, y = 0) {
     this.node = node;
-    this.x = x;
-    this.y = y;
+
+    // Initialize with default values
     this.width = 200;
     this.height = 200;
+    this.x = x;
+    this.y = y;
+
     this.inputDefs = node.inputDefs || [];
     this.outputDef = node.outputDef || null;
 
@@ -12,7 +15,28 @@ class VisualNode {
     this.isDragging = false;
     this.isConnecting = false;
     this.connectingFrom = null;
-    this.syncWithBaseNode();
+
+    // If the BaseNode has UI state, use its position and read initial size once
+    if (this.node.localState?.ui) {
+      // ONLY read size from localState.ui ONCE during initialization
+      if (this.node.localState.ui.size) {
+        this.width = this.node.localState.ui.size.x;
+        this.height = this.node.localState.ui.size.y;
+      }
+    }
+
+    // Update BaseNode's localState with initial values
+    this.updateBaseNodeState();
+  }
+
+  // Update BaseNode's localState with current position and size
+  updateBaseNodeState() {
+    if (this.node.localState?.ui) {
+      this.node.localState.ui.position.x = this.x;
+      this.node.localState.ui.position.y = this.y;
+      this.node.localState.ui.size.x = this.width;
+      this.node.localState.ui.size.y = this.height;
+    }
   }
 
   containsPoint(px, py) {
@@ -25,33 +49,16 @@ class VisualNode {
   }
 
   syncWithBaseNode() {
-    const uiState = this.node.localState.ui;
-    this.x = uiState.position.x;
-    this.y = uiState.position.y;
-    this.width = uiState.size.x;
-    this.height = uiState.size.y;
-
-    // Update BaseNode with current visual position
-    this.updateBaseNodePosition();
-  }
-
-  updateBaseNodePosition() {
-    this.node.localState.ui.position.x = this.x;
-    this.node.localState.ui.position.y = this.y;
-    this.node.localState.ui.size.x = this.width;
-    this.node.localState.ui.size.y = this.height;
+    // Always update BaseNode with current visual properties
+    this.updateBaseNodeState();
   }
 
   draw(ctx, globalState) {
-    // Update dimensions from underlying node's localState if changed
+    // Only sync position from underlying node's localState if changed
     const uiState = this.node.localState.ui;
     if (uiState.position.x !== this.x || uiState.position.y !== this.y) {
       this.x = uiState.position.x;
       this.y = uiState.position.y;
-    }
-    if (uiState.size.x !== this.width || uiState.size.y !== this.height) {
-      this.width = uiState.size.x;
-      this.height = uiState.size.y;
     }
 
     // Draw node background
@@ -215,7 +222,9 @@ class VisualNode {
     if (this.isDragging && !this.isConnecting) {
       this.x = mx - this.width / 2;
       this.y = my - this.height / 2;
-      this.updateBaseNodePosition();
+
+      // Update the BaseNode's localState with new position
+      this.updateBaseNodeState();
       return true;
     }
     return false;
@@ -243,6 +252,15 @@ class VisualNode {
       x: this.x + spacing * (index + 1),
       y: this.y,
     };
+  }
+
+  // Add resize support
+  resize(width, height) {
+    // Optional: implement resize logic here if needed
+    // Example: adjust size based on canvas dimensions
+
+    // Always update the BaseNode's localState after resizing
+    this.updateBaseNodeState();
   }
 }
 

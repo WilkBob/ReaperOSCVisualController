@@ -12,6 +12,11 @@ class NodeManager {
       time: 0,
       deltaTime: 0,
       cycleId: 0,
+      mouse: {
+        x: () => this.mouseRef.current.x,
+        y: () => this.mouseRef.current.y,
+        isDown: () => this.mouseRef.current.isDown,
+      },
     };
 
     this.createOSCNodes(); //initialize OSC nodes
