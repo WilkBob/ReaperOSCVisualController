@@ -26,7 +26,12 @@ class BaseNode {
       state: "init",
       drawImage: null,
       evaluatedInputs: Array(inputDefs.length).fill(null),
-      ui: { position: { x: 0, y: 0 }, size: { x: 200, y: 200 } }, // UI state for the node
+      ui: {
+        position: { x: 0, y: 0 },
+        height: 200,
+        width: 200,
+        selected: false,
+      }, // UI state for the node
     }; // local state for the node, can be used in update and init functions
     this.output = 0; // default output value
     this.outputNodes = []; // array of output connections

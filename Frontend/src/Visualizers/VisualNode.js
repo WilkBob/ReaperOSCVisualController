@@ -13,16 +13,31 @@ class VisualNode {
 
     this.selected = false;
     this.isDragging = false;
+    this.isResizing = false;
     this.isConnecting = false;
     this.connectingFrom = null;
 
+    // Drag and resize handle dimensions
+    this.handleSize = 12;
+
     // If the BaseNode has UI state, use its position and read initial size once
     if (this.node.localState?.ui) {
-      // ONLY read size from localState.ui ONCE during initialization
-      if (this.node.localState.ui.size) {
-        this.width = this.node.localState.ui.size.x;
-        this.height = this.node.localState.ui.size.y;
+      // Ensure UI properties exist
+      if (!this.node.localState.ui.width)
+        this.node.localState.ui.width = this.width;
+      if (!this.node.localState.ui.height)
+        this.node.localState.ui.height = this.height;
+      if (!this.node.localState.ui.position)
+        this.node.localState.ui.position = { x: this.x, y: this.y };
+
+      // Get selection state from base node if available
+      if (this.node.localState.ui.selected !== undefined) {
+        this.selected = this.node.localState.ui.selected;
       }
+
+      // Read values from the node's local state for SIZE ONLY
+      this.width = this.node.localState.ui.width;
+      this.height = this.node.localState.ui.height;
     }
 
     // Update BaseNode's localState with initial values
@@ -34,8 +49,18 @@ class VisualNode {
     if (this.node.localState?.ui) {
       this.node.localState.ui.position.x = this.x;
       this.node.localState.ui.position.y = this.y;
-      this.node.localState.ui.size.x = this.width;
-      this.node.localState.ui.size.y = this.height;
+      this.node.localState.ui.width = this.width;
+      this.node.localState.ui.height = this.height;
+      // Sync selection state
+      this.node.localState.ui.selected = this.selected;
+    }
+  }
+
+  // Mark node as selected and update base node state
+  setSelected(isSelected) {
+    if (this.selected !== isSelected) {
+      this.selected = isSelected;
+      this.updateBaseNodeState();
     }
   }
 
@@ -44,6 +69,26 @@ class VisualNode {
       px >= this.x &&
       px <= this.x + this.width &&
       py >= this.y &&
+      py <= this.y + this.height
+    );
+  }
+
+  // Check if point is over drag handle (top-right corner)
+  isOverDragHandle(px, py) {
+    return (
+      px >= this.x + this.width - this.handleSize &&
+      px <= this.x + this.width &&
+      py >= this.y &&
+      py <= this.y + this.handleSize
+    );
+  }
+
+  // Check if point is over resize handle (bottom-right corner)
+  isOverResizeHandle(px, py) {
+    return (
+      px >= this.x + this.width - this.handleSize &&
+      px <= this.x + this.width &&
+      py >= this.y + this.height - this.handleSize &&
       py <= this.y + this.height
     );
   }
@@ -61,6 +106,28 @@ class VisualNode {
       this.y = uiState.position.y;
     }
 
+    // Draw basic node elements
+    this.drawNodeBackground(ctx);
+
+    // Draw custom image if available, otherwise draw default content
+    if (this.node.localState.drawImage) {
+      this.drawCustomImage(ctx);
+    } else {
+      this.drawDefaultNodeContent(ctx);
+    }
+
+    // Draw input and output ports
+    this.drawInputs(ctx);
+    this.drawOutput(ctx, globalState);
+
+    // Draw drag handle in top-right corner
+    this.drawDragHandle(ctx);
+
+    // Draw resize handle in bottom-right corner
+    this.drawResizeHandle(ctx);
+  }
+
+  drawNodeBackground(ctx) {
     // Draw node background
     ctx.fillStyle = this.selected ? "#ffffff55" : "#ffffff35"; // Light gray with transparency
     ctx.strokeStyle = "#000000";
@@ -68,37 +135,56 @@ class VisualNode {
 
     // Draw rounded rectangle for node body
     this.drawRoundedRect(ctx, this.x, this.y, this.width, this.height, 8);
+  }
 
-    // Draw custom image if available
-    if (this.node.localState.drawImage) {
-      try {
-        ctx.drawImage(
-          this.node.localState.drawImage,
-          this.x,
-          this.y,
-          this.width,
-          this.height
-        );
-      } catch (e) {
-        console.warn("Error drawing node image:", e);
-      }
-    } else {
-      // Draw node label
-      ctx.fillStyle = "#fff";
-      ctx.font = "14px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        this.node.label || this.node.type,
-        this.x + this.width / 2,
-        this.y + 20
+  drawCustomImage(ctx) {
+    try {
+      ctx.drawImage(
+        this.node.localState.drawImage,
+        this.x,
+        this.y,
+        this.width,
+        this.height
       );
+    } catch (e) {
+      console.warn("Error drawing node image:", e);
     }
+  }
 
-    // Draw input ports
-    this.drawInputs(ctx);
+  drawDefaultNodeContent(ctx) {
+    // Draw node label
+    ctx.fillStyle = "#fff";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      this.node.label || this.node.type,
+      this.x + this.width / 2,
+      this.y + 20
+    );
+  }
 
-    // Draw output port
-    this.drawOutput(ctx, globalState);
+  drawDragHandle(ctx) {
+    // Draw drag handle in top-right corner
+    ctx.fillStyle = "#777";
+    ctx.beginPath();
+    ctx.moveTo(this.x + this.width, this.y);
+    ctx.lineTo(this.x + this.width, this.y + this.handleSize);
+    ctx.lineTo(this.x + this.width - this.handleSize, this.y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  drawResizeHandle(ctx) {
+    // Draw resize handle in bottom-right corner
+    ctx.fillStyle = "#777";
+    ctx.beginPath();
+    ctx.moveTo(this.x + this.width, this.y + this.height);
+    ctx.lineTo(this.x + this.width, this.y + this.height - this.handleSize);
+    ctx.lineTo(this.x + this.width - this.handleSize, this.y + this.height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
   }
 
   drawRoundedRect(ctx, x, y, width, height, radius) {
@@ -163,7 +249,22 @@ class VisualNode {
       yPos + 15
     );
   }
+
   handleClick(mx, my) {
+    // Check if clicking on drag handle (top-right corner)
+    if (this.isOverDragHandle(mx, my)) {
+      document.body.style.cursor = "grabbing";
+      this.isDragging = true;
+      return { type: "drag-handle", node: this };
+    }
+
+    // Check if clicking on resize handle (bottom-right corner)
+    if (this.isOverResizeHandle(mx, my)) {
+      document.body.style.cursor = "nwse-resize";
+      this.isResizing = true;
+      return { type: "resize-handle", node: this };
+    }
+
     if (!this.containsPoint(mx, my)) return false;
 
     // Check if clicking on an input port
@@ -181,9 +282,8 @@ class VisualNode {
       return { type: "output", node: this };
     }
 
-    // Regular node selection
-    this.selected = true;
-    this.isDragging = true;
+    // Regular node selection - use the setter to ensure base node is updated
+    this.setSelected(true);
     return { type: "node", node: this };
   }
 
@@ -205,7 +305,6 @@ class VisualNode {
     return -1;
   }
 
-  // Add method to determine if we're over the output port
   isOverOutputPort(mx, my) {
     if (!this.outputDef) return false;
 
@@ -217,27 +316,68 @@ class VisualNode {
     return dist <= portRadius;
   }
 
-  // Add methods for handling mouse movement and release
   handleMouseMove(mx, my) {
-    if (this.isDragging && !this.isConnecting) {
-      this.x = mx - this.width / 2;
-      this.y = my - this.height / 2;
+    // Change cursor based on what we're hovering over
+    if (this.isOverDragHandle(mx, my)) {
+      document.body.style.cursor = "grab";
+      return true;
+    } else if (this.isOverResizeHandle(mx, my)) {
+      document.body.style.cursor = "nwse-resize";
+      return true;
+    } else if (this.containsPoint(mx, my)) {
+      document.body.style.cursor = "default";
+    }
 
-      // Update the BaseNode's localState with new position
+    // Handle dragging by drag handle
+    if (this.isDragging) {
+      document.body.style.cursor = "grabbing";
+      this.x = mx - this.width;
+      this.y = my;
       this.updateBaseNodeState();
       return true;
     }
+
+    // Handle resizing by resize handle
+    if (this.isResizing) {
+      document.body.style.cursor = "nwse-resize";
+      const minWidth = 100;
+      const minHeight = 100;
+      this.width = Math.max(minWidth, mx - this.x);
+      this.height = Math.max(minHeight, my - this.y);
+      this.updateBaseNodeState();
+      return true;
+    }
+
     return false;
   }
 
   handleMouseUp() {
+    // Reset cursor to default
+    document.body.style.cursor = "default";
+
+    // Store previous states
+    const wasDragging = this.isDragging;
+    const wasResizing = this.isResizing;
+
+    // Reset states
     this.isDragging = false;
-    return this.isConnecting
-      ? { connecting: this.isConnecting, from: this.connectingFrom, node: this }
-      : false;
+    this.isResizing = false;
+
+    // Return connection info if we were connecting
+    if (this.isConnecting) {
+      const result = {
+        connecting: this.isConnecting,
+        from: this.connectingFrom,
+        node: this,
+      };
+      this.isConnecting = false;
+      return result;
+    }
+
+    // Return true if we just finished dragging or resizing
+    return wasDragging || wasResizing;
   }
 
-  // Helper method to get output port position (for drawing connections)
   getOutputPortPosition() {
     return {
       x: this.x + this.width / 2,
@@ -245,7 +385,6 @@ class VisualNode {
     };
   }
 
-  // Helper method to get input port position
   getInputPortPosition(index) {
     const spacing = this.width / (this.inputDefs.length + 1);
     return {
@@ -254,12 +393,28 @@ class VisualNode {
     };
   }
 
-  // Add resize support
-  resize(width, height) {
-    // Optional: implement resize logic here if needed
-    // Example: adjust size based on canvas dimensions
+  getDragHandlePosition() {
+    return {
+      x: this.x + this.width - this.handleSize / 2,
+      y: this.y + this.handleSize / 2,
+    };
+  }
 
-    // Always update the BaseNode's localState after resizing
+  getResizeHandlePosition() {
+    return {
+      x: this.x + this.width - this.handleSize / 2,
+      y: this.y + this.height - this.handleSize / 2,
+    };
+  }
+
+  resize(width, height) {
+    const minWidth = 100;
+    const minHeight = 100;
+
+    this.width = Math.max(minWidth, width);
+    this.height = Math.max(minHeight, height);
+
+    // Update the BaseNode's localState after resizing
     this.updateBaseNodeState();
   }
 }

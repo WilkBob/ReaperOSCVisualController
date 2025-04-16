@@ -45,6 +45,8 @@ const OSCController = () => {
         gap: 2,
         alignItems: "center",
         position: "relative", // For absolute positioning of Transport
+        userSelect: "none",
+        draggable: false,
       }}
     >
       {/* Far Left */}

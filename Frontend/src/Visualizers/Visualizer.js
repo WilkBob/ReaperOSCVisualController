@@ -14,6 +14,7 @@ class InteractiveVisualizer {
     this.visualNodes = [];
     this.selectedNode = null;
     this.isDragging = false;
+    this.isResizing = false;
     this.isConnecting = false;
     this.connectionStartNode = null;
     this.connectionStartType = null;
@@ -43,7 +44,7 @@ class InteractiveVisualizer {
   resize() {
     this.height = this.canvas.height = window.innerHeight;
     this.width = this.canvas.width = window.innerWidth;
-
+    this.nodeManager.resize(); // Resize the node manage
     // Update all visual nodes and their base nodes
     this.visualNodes.forEach((node) => {
       // The visual node is now responsible for updating the base node
@@ -79,21 +80,72 @@ class InteractiveVisualizer {
     this.nodeManager.nodes.push(node); // Add the node to the node manager
   }
 
+  // Check for mouse over any node's handles and update the cursor appropriately
+  updateCursorForHandles(mx, my) {
+    let cursorUpdated = false;
+
+    // Check all nodes in reverse order (top-most first)
+    for (let i = this.visualNodes.length - 1; i >= 0; i--) {
+      const node = this.visualNodes[i];
+
+      // Check for hover over drag or resize handles
+      if (node.isOverDragHandle(mx, my)) {
+        document.body.style.cursor = "grab";
+        cursorUpdated = true;
+        break;
+      } else if (node.isOverResizeHandle(mx, my)) {
+        document.body.style.cursor = "nwse-resize";
+        cursorUpdated = true;
+        break;
+      }
+    }
+
+    // Reset cursor if not over any handles
+    if (!cursorUpdated && !this.isDragging && !this.isResizing) {
+      document.body.style.cursor = "default";
+    }
+
+    return cursorUpdated;
+  }
+
   handleMouseDown(event) {
     const rect = this.canvas.getBoundingClientRect();
     const mx = event.clientX - rect.left;
     const my = event.clientY - rect.top;
 
-    // Reset selection
-    this.visualNodes.forEach((node) => (node.selected = false));
+    // Reset selection if we're not clicking a handle
+    let clickedHandle = false;
 
     // Check node interaction in reverse order (top-most first)
+    for (let i = this.visualNodes.length - 1; i >= 0; i--) {
+      const node = this.visualNodes[i];
+      // First check if we're clicking on a handle
+      if (node.isOverDragHandle(mx, my) || node.isOverResizeHandle(mx, my)) {
+        clickedHandle = true;
+      }
+    }
+
+    // Only reset selection if we didn't click a handle
+    if (!clickedHandle) {
+      // Use setSelected method to ensure base node state is updated
+      this.visualNodes.forEach((node) => node.setSelected(false));
+    }
+
+    // Check for interaction with nodes (in reverse order for proper layering)
     for (let i = this.visualNodes.length - 1; i >= 0; i--) {
       const result = this.visualNodes[i].handleClick(mx, my);
       if (result) {
         this.selectedNode = this.visualNodes[i];
 
-        if (result.type === "input" || result.type === "output") {
+        if (result.type === "drag-handle") {
+          this.isDragging = true;
+          // Don't select the node when dragging by handle
+          this.selectedNode.setSelected(false);
+        } else if (result.type === "resize-handle") {
+          this.isResizing = true;
+          // Don't select the node when resizing by handle
+          this.selectedNode.setSelected(false);
+        } else if (result.type === "input" || result.type === "output") {
           this.isConnecting = true;
           this.connectionStartNode = result.node;
           this.connectionStartType = result.type;
@@ -101,7 +153,8 @@ class InteractiveVisualizer {
             this.connectionStartIndex = result.index;
           }
         } else {
-          this.isDragging = true;
+          // Regular node selection
+          this.selectedNode.setSelected(true);
         }
 
         // Bring the selected node to the front
@@ -113,23 +166,31 @@ class InteractiveVisualizer {
   }
 
   handleMouseMove(event) {
-    if (!this.selectedNode) return;
-
     const rect = this.canvas.getBoundingClientRect();
     const mx = event.clientX - rect.left;
     const my = event.clientY - rect.top;
 
-    if (this.isDragging) {
-      // VisualNode will update the base node's localState
-      this.selectedNode.handleMouseMove(mx, my);
-    }
+    // Always update cursor for handles first
+    this.updateCursorForHandles(mx, my);
 
-    this.tempConnectionPoint = { x: mx, y: my };
+    if (this.selectedNode) {
+      // Let the selected node handle the mouse movement
+      this.selectedNode.handleMouseMove(mx, my);
+
+      // Store connection point for temporary connections
+      if (this.isConnecting) {
+        this.tempConnectionPoint = { x: mx, y: my };
+      }
+    }
   }
 
   handleMouseUp(event) {
+    // Reset cursor
+    document.body.style.cursor = "default";
+
     if (!this.selectedNode) {
       this.isDragging = false;
+      this.isResizing = false;
       this.isConnecting = false;
       return;
     }
@@ -137,6 +198,9 @@ class InteractiveVisualizer {
     const rect = this.canvas.getBoundingClientRect();
     const mx = event.clientX - rect.left;
     const my = event.clientY - rect.top;
+
+    // Let the node handle its own mouseup logic
+    this.selectedNode.handleMouseUp();
 
     if (this.isConnecting) {
       // Check if we're over another node's port
@@ -166,14 +230,14 @@ class InteractiveVisualizer {
       }
     }
 
-    // Reset dragging state
+    // Reset all interaction states
     this.isDragging = false;
+    this.isResizing = false;
     this.isConnecting = false;
     this.connectionStartNode = null;
     this.tempConnectionPoint = null;
     this.connectionStartType = null;
     this.connectionStartIndex = null;
-    this.visualNodes.forEach((node) => (node.isConnecting = false)); // Deselect all nodes
   }
 
   animate(timestamp) {
@@ -235,6 +299,7 @@ class InteractiveVisualizer {
     this.outputRefs = null;
     this.selectedNode = null;
     this.isDragging = false;
+    this.isResizing = false;
     this.isConnecting = false;
     this.connectionStartNode = null;
     this.connectionStartType = null;

@@ -6,16 +6,16 @@ export default function createOSCBlueprint(outputRefs, key) {
     init: (globalState, localState) => {
       const image = new Image();
       localState.canvas = document.createElement("canvas");
-      localState.canvas.width = localState.ui.size.x;
-      localState.canvas.height = localState.ui.size.y;
+      localState.canvas.width = localState.ui.width;
+      localState.canvas.height = localState.ui.height;
       localState.ctx = localState.canvas.getContext("2d");
       image.src = "REAPER.png"; // Placeholder image
 
       image.onload = () => {
         // Calculate scaling to fit image within node
         const padding = 20; // Padding around the image
-        const maxWidth = localState.ui.size.x - padding * 2;
-        const maxHeight = localState.ui.size.y - padding * 2 - 30; // Extra space for text
+        const maxWidth = localState.ui.width - padding * 2;
+        const maxHeight = localState.ui.height - padding * 2 - 30; // Extra space for text
 
         // Calculate aspect ratio scaling
         const scale = Math.min(
@@ -27,8 +27,8 @@ export default function createOSCBlueprint(outputRefs, key) {
         const scaledHeight = image.height * scale;
 
         // Center the image
-        const offsetX = (localState.ui.size.x - scaledWidth) / 2;
-        const offsetY = (localState.ui.size.y - scaledHeight - 30) / 2; // Adjust for text
+        const offsetX = (localState.ui.width - scaledWidth) / 2;
+        const offsetY = (localState.ui.height - scaledHeight - 30) / 2; // Adjust for text
 
         // Clear canvas before drawing
         localState.ctx.clearRect(
@@ -53,8 +53,8 @@ export default function createOSCBlueprint(outputRefs, key) {
         localState.ctx.textAlign = "center";
         localState.ctx.fillText(
           key,
-          localState.ui.size.x / 2,
-          localState.ui.size.y - padding
+          localState.ui.width / 2,
+          localState.ui.height - padding
         );
 
         localState.drawImage = localState.canvas;

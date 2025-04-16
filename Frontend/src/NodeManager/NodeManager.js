@@ -13,9 +13,13 @@ class NodeManager {
       deltaTime: 0,
       cycleId: 0,
       mouse: {
-        x: () => this.mouseRef.current.x,
-        y: () => this.mouseRef.current.y,
-        isDown: () => this.mouseRef.current.isDown,
+        x: this.mouseRef.current.x,
+        y: this.mouseRef.current.y,
+        isDown: this.mouseRef.current.isDown,
+      },
+      screenSize: {
+        width: window.innerWidth,
+        height: window.innerHeight,
       },
     };
 
@@ -37,12 +41,21 @@ class NodeManager {
   }
 
   update(delta) {
+    // Update mouse state
+    this.globalState.mouse.x = this.mouseRef.current.x;
+    this.globalState.mouse.y = this.mouseRef.current.y;
+    this.globalState.mouse.isDown = this.mouseRef.current.isDown;
     this.globalState.time += delta;
     this.globalState.deltaTime = delta;
     this.globalState.cycleId += 1; // Increment cycle ID for caching
     this.nodes.forEach((node) => {
       node.update(this.globalState); // Pass the global state object to nodes
     });
+  }
+
+  resize() {
+    this.globalState.screenSize.width = window.innerWidth;
+    this.globalState.screenSize.height = window.innerHeight;
   }
 
   destroy() {

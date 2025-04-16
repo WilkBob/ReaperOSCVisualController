@@ -11,9 +11,10 @@ const Constant = makeBlueprint({
   },
   update: (globalState, localState) => {
     const ctx = localState.ctx;
-    const width = localState.ui.size.x;
-    const height = localState.ui.size.y;
+    const width = localState.ui.width;
+    const height = localState.ui.height;
     const mouse = globalState.mouse;
+    const screenSize = globalState.screenSize;
 
     // Clear the canvas
     ctx.clearRect(0, 0, width, height);
@@ -41,9 +42,15 @@ const Constant = makeBlueprint({
     const handlePos = padding + localState.value * sliderWidth;
 
     // Check for mouse interaction
-    if (mouse.isDown) {
-      const relX = mouse.x - localState.ui.position.x;
-      const relY = mouse.y - localState.ui.position.y;
+
+    if (mouse.isDown && localState.ui.selected) {
+      // IMPORTANT: Denormalize the mouse coordinates from 0-1 to screen pixels
+      const absoluteMouseX = mouse.x * screenSize.width;
+      const absoluteMouseY = mouse.y * screenSize.height;
+
+      // Calculate relative position to the node
+      const relX = absoluteMouseX - localState.ui.position.x;
+      const relY = absoluteMouseY - localState.ui.position.y;
 
       // Check if mouse is within the node's bounds
       if (relX >= 0 && relX <= width && relY >= 0 && relY <= height) {
@@ -58,6 +65,14 @@ const Constant = makeBlueprint({
         // Update evaluated inputs to match
         localState.evaluatedInputs = [newValue];
       }
+    }
+    // Update the drawImage if screen size changed
+    if (
+      width !== localState.drawImage.width ||
+      height !== localState.drawImage.height
+    ) {
+      localState.drawImage.width = width;
+      localState.drawImage.height = height;
     }
 
     // Draw the slider handle
@@ -80,10 +95,24 @@ const Constant = makeBlueprint({
     localState.value = 0.5; // Set the default value
     localState.evaluatedInputs = [localState.value]; // Initialize evaluated inputs
 
+    // Ensure UI object exists
+    if (!localState.ui) {
+      localState.ui = {};
+    }
+
+    // Set default size if not already defined
+    if (!localState.ui.width) localState.ui.width = 200;
+    if (!localState.ui.height) localState.ui.height = 100;
+
+    // Ensure position exists
+    if (!localState.ui.position) {
+      localState.ui.position = { x: 0, y: 0 };
+    }
+
     // Create drawing canvas that matches the node size
     localState.drawImage = document.createElement("canvas");
-    localState.drawImage.width = localState.ui.size.x;
-    localState.drawImage.height = localState.ui.size.y;
+    localState.drawImage.width = localState.ui.width;
+    localState.drawImage.height = localState.ui.height;
     localState.ctx = localState.drawImage.getContext("2d");
   },
 });
@@ -134,30 +163,35 @@ const SinOscillator = makeBlueprint({
   },
   update: (globalState, localState) => {
     const ctx = localState.ctx;
+    const width = localState.ui?.width || localState.drawImage.width;
+    const height = localState.ui?.height || localState.drawImage.height;
+
+    // Update canvas dimensions if they've changed
+    if (
+      width !== localState.drawImage.width ||
+      height !== localState.drawImage.height
+    ) {
+      localState.drawImage.width = width;
+      localState.drawImage.height = height;
+    }
 
     // Clear the canvas
-    ctx.clearRect(
-      0,
-      0,
-      localState.drawImage.width,
-      localState.drawImage.height
-    );
+    ctx.clearRect(0, 0, width, height);
 
     // Extract evaluated inputs
-    const [amplitude, frequency] = localState.evaluatedInputs;
+    const [amplitude, frequency] = localState.evaluatedInputs || [1, 1];
     const { time } = globalState;
 
     // Draw the sine wave
     ctx.beginPath();
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)"; // Black with some transparency
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
     ctx.lineWidth = 2;
 
-    for (let x = 0; x < localState.drawImage.width; x++) {
-      const t = (x / localState.drawImage.width) * (2 * Math.PI); // Map x to [0, 2π]
+    for (let x = 0; x < width; x++) {
+      const t = (x / width) * (2 * Math.PI); // Map x to [0, 2π]
       const phase = (t + time) * frequency * 2 * Math.PI; // Scale frequency to represent Hz
       const y = amplitude * Math.sin(phase);
-      const canvasY =
-        localState.drawImage.height / 2 - y * (localState.drawImage.height / 2); // Scale and center
+      const canvasY = height / 2 - y * (height / 2); // Scale and center
 
       if (x === 0) {
         ctx.moveTo(x, canvasY);
@@ -167,13 +201,22 @@ const SinOscillator = makeBlueprint({
     }
 
     ctx.stroke();
+
+    // Draw node label
+    ctx.fillStyle = "#fff";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Sin Oscillator", width / 2, 20);
   },
   init: (globalState, localState) => {
     // Create a canvas and store it in localState
     localState.drawImage = document.createElement("canvas");
-    localState.drawImage.width = 100;
-    localState.drawImage.height = 200;
+    localState.drawImage.width = localState.ui.width;
+    localState.drawImage.height = localState.ui.height;
     localState.ctx = localState.drawImage.getContext("2d");
+
+    // Initialize evaluated inputs
+    localState.evaluatedInputs = [1, 1];
 
     // Set the canvas background to transparent
     localState.ctx.clearRect(
