@@ -1,4 +1,14 @@
 class BaseNode {
+  // Add a static property to store global state reference
+  static globalState = null;
+
+  // Simple performance tracking at the global level
+  static performanceData = {
+    cycleStats: {},
+    lastCycleId: null,
+    loggedThisCycle: false,
+  };
+
   constructor({
     id,
     type,
@@ -28,15 +38,26 @@ class BaseNode {
       evaluatedInputs: Array(inputDefs.length).fill(null),
       ui: {
         position: { x: 0, y: 0 },
-        height: 200,
-        width: 200,
+        height: 100,
+        width: 100,
         selected: false,
       }, // UI state for the node
     }; // local state for the node, can be used in update and init functions
     this.output = 0; // default output value
     this.outputNodes = []; // array of output connections
+    this.perf = {
+      measurementStart: 0,
+      measurementEnd: 0,
+      measurementDuration: 0,
+      lastCycleId: null,
+      loggedThisCycle: false,
+    };
+    this.cache = { cycleId: null, output: null };
 
-    this.cache = { cycleId: null, output: null }; // Cache for evaluation output
+    // Auto-initialize if global state is available
+    if (BaseNode.globalState) {
+      this.init();
+    }
   }
 
   connectInput(index, node) {
@@ -75,15 +96,15 @@ class BaseNode {
     this.inputs[index] = value;
   }
 
-  update(globalState) {
+  update() {
     if (this.updateFn) {
-      this.updateFn(globalState, this.localState);
+      this.updateFn(BaseNode.globalState, this.localState);
     }
   }
 
-  init(globalState) {
+  init() {
     if (this.initFn) {
-      this.initFn(globalState, this.localState);
+      this.initFn(BaseNode.globalState, this.localState);
     }
   }
   destroy() {
@@ -92,23 +113,23 @@ class BaseNode {
     }
   }
 
-  evaluate(globalState) {
+  evaluate() {
     // Check if the output is already cached for the current cycle
-    const cycleId = globalState.cycleId;
+    const cycleId = BaseNode.globalState.cycleId;
     if (this.cache.cycleId === cycleId) {
       return this.cache.output;
     }
 
     const evaluatedInputs = this.inputs.map((input, i) => {
       if (input instanceof BaseNode) {
-        return input.evaluate(globalState, cycleId);
+        return input.evaluate();
       }
       return input ?? this.inputDefs[i].defaultValue ?? 0; // fallback to default or 0
     });
     this.localState.evaluatedInputs = [...evaluatedInputs]; // Store evaluated inputs in local state
     this.output = this.evaluateFn(
       evaluatedInputs,
-      globalState,
+      BaseNode.globalState,
       this.localState
     );
 

@@ -1,5 +1,5 @@
 import { createNode } from "./NodeTypes/BaseNode";
-
+import BaseNode from "./NodeTypes/BaseNode";
 import createOSCBlueprint from "./NodeTypes/OSCNode";
 
 class NodeManager {
@@ -23,11 +23,10 @@ class NodeManager {
       },
     };
 
-    this.createOSCNodes(); //initialize OSC nodes
+    // Set the global state reference in BaseNode
+    BaseNode.globalState = this.globalState;
 
-    this.nodes.forEach((node) => {
-      node.init(this.globalState); // Initialize each node with the global state
-    }); // Connect the second mouse node to the first OSC node
+    this.createOSCNodes(); //initialize OSC nodes
   }
 
   // Create OSC nodes based on the keys in outputRefs
@@ -49,7 +48,7 @@ class NodeManager {
     this.globalState.deltaTime = delta;
     this.globalState.cycleId += 1; // Increment cycle ID for caching
     this.nodes.forEach((node) => {
-      node.update(this.globalState); // Pass the global state object to nodes
+      node.update();
     });
   }
 

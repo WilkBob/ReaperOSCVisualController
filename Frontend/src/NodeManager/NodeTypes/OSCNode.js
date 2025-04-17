@@ -58,7 +58,6 @@ export default function createOSCBlueprint(outputRefs, key) {
         );
 
         localState.drawImage = localState.canvas;
-        console.debug("Image and text drawn for:", key);
       };
     },
     evaluate: (inputs) => {

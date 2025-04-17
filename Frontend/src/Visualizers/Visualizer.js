@@ -36,6 +36,7 @@ class InteractiveVisualizer {
     this.canvas.addEventListener("mousedown", this.handleMouseDown);
     this.canvas.addEventListener("mousemove", this.handleMouseMove);
     this.canvas.addEventListener("mouseup", this.handleMouseUp);
+    window.addEventListener("keydown", this.handleKeyDown.bind(this));
 
     // Create visual nodes
     this.createVisualNodes();
@@ -70,14 +71,32 @@ class InteractiveVisualizer {
     const x = 100 + (this.visualNodes.length % 3) * 250;
     const y = 100 + Math.floor(this.visualNodes.length / 3) * 250;
 
-    // Initialize the node with the global state
-    node.init(this.nodeManager.globalState);
+    // No need to initialize the node here as it will auto-initialize
+    // during construction if BaseNode.globalState is set
 
     // Create visual node - it will handle updating the base node's localState
     const visualNode = new VisualNode(node, x, y);
 
     this.visualNodes.push(visualNode);
     this.nodeManager.nodes.push(node); // Add the node to the node manager
+  }
+
+  removeNode(node) {
+    // Remove the node from the visual nodes array
+    const index = this.visualNodes.indexOf(node);
+    if (index > -1) {
+      this.visualNodes.splice(index, 1);
+      this.nodeManager.nodes.splice(
+        this.nodeManager.nodes.indexOf(node.node),
+        1
+      ); // Remove from node manager
+    }
+    // Disconnect all inputs and outputs
+    node.node.disconnectAllInputs(); // Disconnect all inputs
+    node.node.outputNodes.forEach((outputNode) => {
+      outputNode.disconnectInput(node.node); // Disconnect this node from all output nodes
+    });
+    node.node.outputNodes = []; // Clear output nodes
   }
 
   // Check for mouse over any node's handles and update the cursor appropriately
@@ -240,6 +259,14 @@ class InteractiveVisualizer {
     this.connectionStartIndex = null;
   }
 
+  handleKeyDown(event) {
+    if (event.key === "Delete" && this.selectedNode) {
+      // Delete the selected node
+      this.removeNode(this.selectedNode);
+      this.selectedNode = null; // Clear selection after deletion
+    }
+  }
+
   animate(timestamp) {
     if (!this.ctx) return; // Ensure ctx is not null before proceeding
 
@@ -262,9 +289,7 @@ class InteractiveVisualizer {
     }
 
     // Draw all nodes - VisualNode will handle its own drawing and state management
-    this.visualNodes.forEach((node) =>
-      node.draw(this.ctx, this.nodeManager.globalState)
-    );
+    this.visualNodes.forEach((node) => node.draw(this.ctx));
 
     this.time += this.deltaTime;
     this.rafID = requestAnimationFrame(this.animate.bind(this));
@@ -282,6 +307,7 @@ class InteractiveVisualizer {
       this.canvas.removeEventListener("mousemove", this.handleMouseMove);
       this.canvas.removeEventListener("mouseup", this.handleMouseUp);
     }
+    window.removeEventListener("keydown", this.handleKeyDown.bind(this));
 
     // Clean up node manager first
     if (this.nodeManager) {

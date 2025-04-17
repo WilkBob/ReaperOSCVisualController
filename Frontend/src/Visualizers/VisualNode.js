@@ -20,25 +20,9 @@ class VisualNode {
     // Drag and resize handle dimensions
     this.handleSize = 12;
 
-    // If the BaseNode has UI state, use its position and read initial size once
-    if (this.node.localState?.ui) {
-      // Ensure UI properties exist
-      if (!this.node.localState.ui.width)
-        this.node.localState.ui.width = this.width;
-      if (!this.node.localState.ui.height)
-        this.node.localState.ui.height = this.height;
-      if (!this.node.localState.ui.position)
-        this.node.localState.ui.position = { x: this.x, y: this.y };
-
-      // Get selection state from base node if available
-      if (this.node.localState.ui.selected !== undefined) {
-        this.selected = this.node.localState.ui.selected;
-      }
-
-      // Read values from the node's local state for SIZE ONLY
-      this.width = this.node.localState.ui.width;
-      this.height = this.node.localState.ui.height;
-    }
+    // Read values from the node's local state for SIZE ONLY
+    this.width = this.node.localState.ui.width;
+    this.height = this.node.localState.ui.height;
 
     // Update BaseNode's localState with initial values
     this.updateBaseNodeState();
@@ -98,7 +82,7 @@ class VisualNode {
     this.updateBaseNodeState();
   }
 
-  draw(ctx, globalState) {
+  draw(ctx) {
     // Only sync position from underlying node's localState if changed
     const uiState = this.node.localState.ui;
     if (uiState.position.x !== this.x || uiState.position.y !== this.y) {
@@ -118,7 +102,7 @@ class VisualNode {
 
     // Draw input and output ports
     this.drawInputs(ctx);
-    this.drawOutput(ctx, globalState);
+    this.drawOutput(ctx);
 
     // Draw drag handle in top-right corner
     this.drawDragHandle(ctx);
@@ -226,9 +210,11 @@ class VisualNode {
     }
   }
 
-  drawOutput(ctx, globalState) {
-    if (!this.outputDef) return;
-
+  drawOutput(ctx) {
+    if (!this.outputDef) {
+      this.node.evaluate(); // Ensure output is evaluated even if not drawn
+      return;
+    }
     const xPos = this.x + this.width / 2;
     const yPos = this.y + this.height;
 
@@ -244,7 +230,7 @@ class VisualNode {
     ctx.font = "16px Arial";
     ctx.textAlign = "center";
     ctx.fillText(
-      this.outputDef.label + " " + this.node.evaluate(globalState).toFixed(2),
+      this.outputDef.label + " " + this.node.evaluate().toFixed(2),
       xPos,
       yPos + 15
     );
