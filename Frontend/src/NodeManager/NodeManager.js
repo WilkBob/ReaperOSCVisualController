@@ -1,6 +1,6 @@
 import { createNode } from "./NodeTypes/BaseNode";
 import BaseNode from "./NodeTypes/BaseNode";
-import createOSCBlueprint from "./NodeTypes/OSCNode";
+import createOSCBlueprint from "./NodeTypes/Outputs/OSCNode";
 
 class NodeManager {
   constructor(mouseRef, outputRefs) {

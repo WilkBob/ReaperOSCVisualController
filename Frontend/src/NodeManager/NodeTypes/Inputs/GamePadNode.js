@@ -1,4 +1,4 @@
-import { makeBlueprint } from "./BaseNode";
+import { makeBlueprint } from "../BaseNode";
 
 const GamepadAxisNode = makeBlueprint({
   type: "transform",
@@ -72,6 +72,16 @@ const GamepadAxisNode = makeBlueprint({
 
   destroy: (localState) => {
     localState.stopPolling();
+    localState.gamepads = null;
+    localState.polling = null;
+    localState.listeners = null;
+    localState.axisValue = null;
+    localState.padIndex = null;
+    localState.axisIndex = null;
+    localState.update = null;
+    localState.startPolling = null;
+    localState.onUpdate = null;
+    localState.stopPolling = null;
   },
 });
 

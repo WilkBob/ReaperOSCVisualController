@@ -1,23 +1,22 @@
 import React, { useEffect } from "react";
-import {
-  Avg,
-  MinMax,
-  SinOscillator,
-  Constant,
-} from "../NodeManager/NodeTypes/MathNodes";
-import GamepadAxisNode from "../NodeManager/NodeTypes/GamePadNode";
-import createMouseBlueprint from "../NodeManager/NodeTypes/MouseNode";
+
 import { FormControl, MenuItem, Select, ListSubheader } from "@mui/material";
+import Average from "../NodeManager/NodeTypes/Math/AverageNode";
+import Constant from "../NodeManager/NodeTypes/Math/ConstantNode";
+import MinMax from "../NodeManager/NodeTypes/Math/MinMaxNode";
+import GamepadAxisNode from "../NodeManager/NodeTypes/Inputs/GamePadNode";
+import createMouseBlueprint from "../NodeManager/NodeTypes/Inputs/MouseNode";
+import SinOscillator from "../NodeManager/NodeTypes/Oscillators/SinNode";
 
 const NodeSelect = ({ mouseRef, selectedNodeType, setSelectedNodeType }) => {
   const nodeTypes = {
     Math: [
-      { name: "Average", blueprint: Avg },
+      { name: "Average", blueprint: Average },
       { name: "MinMax", blueprint: MinMax },
-      { name: "SinOscillator", blueprint: SinOscillator },
+
       { name: "Constant", blueprint: Constant },
     ],
-    Mouse: [
+    Inputs: [
       {
         name: "MouseX",
         blueprint: createMouseBlueprint(mouseRef, "x", "Mouse X"),
@@ -34,8 +33,9 @@ const NodeSelect = ({ mouseRef, selectedNodeType, setSelectedNodeType }) => {
         name: "MouseClick",
         blueprint: createMouseBlueprint(mouseRef, "click", "Click"),
       },
+      { name: "GamePadAxis", blueprint: GamepadAxisNode },
     ],
-    GamePad: [{ name: "GamePadAxis", blueprint: GamepadAxisNode }],
+    Oscillators: [{ name: "Sine", blueprint: SinOscillator }],
   };
 
   // Set default node type on component mount

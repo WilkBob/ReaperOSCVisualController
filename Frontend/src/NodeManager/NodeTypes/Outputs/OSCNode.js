@@ -6,8 +6,9 @@ export default function createOSCBlueprint(outputRefs, key) {
     init: (globalState, localState) => {
       const image = new Image();
       localState.canvas = document.createElement("canvas");
-      localState.canvas.width = localState.ui.width;
-      localState.canvas.height = localState.ui.height;
+      localState.canvas.width = localState.ui.width = 200; // Default width
+      localState.canvas.height = localState.ui.height = 200; // Default height
+
       localState.ctx = localState.canvas.getContext("2d");
       image.src = "REAPER.png"; // Placeholder image
 
@@ -65,6 +66,13 @@ export default function createOSCBlueprint(outputRefs, key) {
 
       outputRefs.current[key].current = value; // set the value to the output ref
       return value; // return the value for the node
+    },
+
+    destroy: (localState) => {
+      if (localState.canvas) {
+        localState.canvas.width = 0; // Clear the canvas width
+        localState.canvas.height = 0; // Clear the canvas height
+      }
     },
   };
 }

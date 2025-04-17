@@ -1,4 +1,5 @@
 import { makeBlueprint } from "../BaseNode";
+import * as THREE from "three";
 
 const SinOscillator = makeBlueprint({
   type: "transform",
@@ -15,69 +16,70 @@ const SinOscillator = makeBlueprint({
     return (amplitude * Math.sin(phase) + 1) / 2;
   },
   update: (globalState, localState) => {
-    const ctx = localState.ctx;
-    const width = localState.ui?.width || localState.drawImage.width;
-    const height = localState.ui?.height || localState.drawImage.height;
-
-    // Update canvas dimensions if they've changed
-    if (
-      width !== localState.drawImage.width ||
-      height !== localState.drawImage.height
-    ) {
-      localState.drawImage.width = width;
-      localState.drawImage.height = height;
-    }
-
-    // Clear the canvas
-    ctx.clearRect(0, 0, width, height);
-
-    // Extract evaluated inputs
+    const { width, height } = localState.ui;
     const [amplitude, frequency] = localState.evaluatedInputs || [1, 1];
     const { time } = globalState;
 
-    // Draw the sine wave
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.lineWidth = 2;
-
-    for (let x = 0; x < width; x++) {
-      const t = (x / width) * (2 * Math.PI); // Map x to [0, 2π]
-      const phase = (t + time) * frequency * 2 * Math.PI; // Scale frequency to represent Hz
-      const y = amplitude * Math.sin(phase);
-      const canvasY = height / 2 - y * (height / 2); // Scale and center
-
-      if (x === 0) {
-        ctx.moveTo(x, canvasY);
-      } else {
-        ctx.lineTo(x, canvasY);
-      }
+    // Update renderer size if needed
+    if (
+      localState.renderer.getSize(new THREE.Vector2()).width !== width ||
+      localState.renderer.getSize(new THREE.Vector2()).height !== height
+    ) {
+      localState.renderer.setSize(width, height, false);
+      localState.camera.aspect = width / height;
+      localState.camera.updateProjectionMatrix();
     }
 
-    ctx.stroke();
+    // Update sine wave geometry
+    const points = [];
+    const segments = 200;
+    for (let i = 0; i <= segments; i++) {
+      const x = (i / segments) * 2 - 1; // [-1, 1]
+      const t = (i / segments) * (2 * Math.PI);
+      const phase = (t + time) * frequency * 2 * Math.PI;
+      const y = amplitude * Math.sin(phase);
+      points.push(new THREE.Vector3(x, y * 0.5, 0));
+    }
+    localState.line.geometry.setFromPoints(points);
 
-    // Draw node label
-    ctx.fillStyle = "#fff";
-    ctx.font = "14px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Sin Oscillator", width / 2, 20);
+    // Render scene
+    localState.renderer.render(localState.scene, localState.camera);
   },
   init: (globalState, localState) => {
-    // Create a canvas and store it in localState
-    localState.drawImage = document.createElement("canvas");
-    localState.drawImage.width = localState.ui.width;
-    localState.drawImage.height = localState.ui.height;
-    localState.ctx = localState.drawImage.getContext("2d");
-
-    // Initialize evaluated inputs
+    const { width, height } = localState.ui;
+    // Three.js setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    camera.position.z = 2;
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(width, height, false);
+    // Create sine wave line
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const line = new THREE.Line(geometry, material);
+    scene.add(line);
+    // Store references
+    localState.scene = scene;
+    localState.camera = camera;
+    localState.renderer = renderer;
+    localState.line = line;
+    localState.drawImage = renderer.domElement;
     localState.evaluatedInputs = [1, 1];
-
-    // Set the canvas background to transparent
-    localState.ctx.clearRect(
-      0,
-      0,
-      localState.drawImage.width,
-      localState.drawImage.height
-    );
+  },
+  destroy: (localState) => {
+    // Dispose Three.js objects
+    if (localState.line) {
+      localState.line.geometry.dispose();
+      localState.line.material.dispose();
+    }
+    if (localState.renderer) {
+      localState.renderer.dispose();
+    }
+    localState.scene = null;
+    localState.camera = null;
+    localState.renderer = null;
+    localState.line = null;
+    localState.drawImage = null;
   },
 });
 

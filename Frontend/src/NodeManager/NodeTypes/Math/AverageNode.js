@@ -1,6 +1,6 @@
 import { makeBlueprint } from "../BaseNode";
 
-const Avg = makeBlueprint({
+const Average = makeBlueprint({
   type: "transform",
   label: "Average",
   inputDefs: [
@@ -14,4 +14,4 @@ const Avg = makeBlueprint({
   },
 });
 
-export default Avg;
+export default Average;
