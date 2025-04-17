@@ -1,12 +1,12 @@
 import { createNode } from "./NodeTypes/BaseNode";
 import BaseNode from "./NodeTypes/BaseNode";
 import createOSCBlueprint from "./NodeTypes/Outputs/OSCNode";
-
+import makeSimBlueprint from "./NodeTypes/Space/SpaceNodes";
 class NodeManager {
-  constructor(mouseRef, outputRefs) {
+  constructor(mouseRef, outputRefs, simVariables) {
     this.mouseRef = mouseRef;
     this.outputRefs = outputRefs;
-
+    this.simVariables = simVariables; // Store simulation variables
     this.nodes = [];
     this.globalState = {
       time: 0,
@@ -26,6 +26,8 @@ class NodeManager {
     // Set the global state reference in BaseNode
     BaseNode.globalState = this.globalState;
 
+    this.createSimNodes(); //initialize simulation nodes
+
     this.createOSCNodes(); //initialize OSC nodes
   }
 
@@ -35,6 +37,23 @@ class NodeManager {
     const oscKeys = Object.keys(this.outputRefs.current);
     oscKeys.forEach((key) => {
       const node = createNode(key, createOSCBlueprint(this.outputRefs, key));
+      this.nodes.push(node);
+    });
+  }
+
+  createSimNodes() {
+    // (property) SpaceControls.simVariables: {
+    //   sunSize: {
+    //       value: number;
+    //       controlled: boolean;
+    //       label: string;
+    //       defaultValue: number;
+    //       type: string;
+    //       description: string;
+    //   };
+
+    Object.keys(this.simVariables).forEach((key) => {
+      const node = createNode(key, makeSimBlueprint(this.simVariables, key));
       this.nodes.push(node);
     });
   }
