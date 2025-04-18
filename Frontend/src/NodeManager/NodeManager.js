@@ -12,6 +12,17 @@ class NodeManager {
         y: 0,
         isDown: false,
       },
+      osc: {
+        broadcasting: false,
+        parameters: {
+          uuid: {
+            name: "Parameter 1",
+            id: "uuid",
+            address: "/example",
+            value: { current: 1, last: 0 },
+          },
+        },
+      },
       screenSize: {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -39,9 +50,9 @@ class NodeManager {
     });
   }
 
-  resize() {
-    this.globalState.screenSize.width = window.innerWidth;
-    this.globalState.screenSize.height = window.innerHeight;
+  resize(width, height) {
+    this.globalState.screenSize.width = width;
+    this.globalState.screenSize.height = height;
   }
 
   destroy() {

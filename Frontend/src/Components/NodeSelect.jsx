@@ -6,17 +6,26 @@ import Constant from "../NodeManager/NodeTypes/Math/ConstantNode";
 import MinMax from "../NodeManager/NodeTypes/Math/MinMaxNode";
 import GamepadAxisNode from "../NodeManager/NodeTypes/Inputs/GamePadNode";
 import SinOscillator from "../NodeManager/NodeTypes/Oscillators/SinNode";
-import { MouseX } from "../NodeManager/NodeTypes/Inputs/MouseNode";
+import {
+  clickGate,
+  clickSwell,
+  mouseWheel,
+  MouseX,
+  MouseY,
+} from "../NodeManager/NodeTypes/Inputs/MouseNode";
 const NodeSelect = ({ selectedNodeType, setSelectedNodeType }) => {
   const nodeTypes = {
     Math: [
       { name: "Average", blueprint: Average },
       { name: "MinMax", blueprint: MinMax },
-
       { name: "Constant", blueprint: Constant },
     ],
     Inputs: [
-      { name: "Mouse", blueprint: MouseX },
+      { name: "Mouse X", blueprint: MouseX },
+      { name: "Mouse Y", blueprint: MouseY },
+      { name: "Mouse Wheel", blueprint: mouseWheel },
+      { name: "Click (Swell)", blueprint: clickSwell },
+      { name: "Click (Gate)", blueprint: clickGate },
       { name: "GamePadAxis", blueprint: GamepadAxisNode },
     ],
     Oscillators: [{ name: "Sine", blueprint: SinOscillator }],

@@ -8,7 +8,6 @@ import {
   Select,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import useOSCController from "../Hooks/useOSCController";
 import useMouseControl from "../Hooks/useMouseControl";
 import NodeVisualizer from "../Visualizers/NodeVisualizer";
 import NodeContext from "../Context/NodeContext";
@@ -16,8 +15,7 @@ import NodeContext from "../Context/NodeContext";
 import { createNode } from "../NodeManager/NodeTypes/BaseNode";
 import NodeSelect from "./NodeSelect";
 
-const CanvasController = ({ broadcasting }) => {
-  const OSCOutputRefs = useOSCController(broadcasting);
+const CanvasController = () => {
   const mouseControl = useMouseControl({ clickSwell: true, swellRate: 0.01 });
   const canvasRef = useRef(null);
   const visualizerRef = useRef(null);
@@ -46,7 +44,6 @@ const CanvasController = ({ broadcasting }) => {
       visualizer.nodeManager &&
       typeof visualizer.nodeManager.resize === "function"
     ) {
-      console.log("Calling initial resize for NodeVisualizer and NodeManager");
       visualizer.resize(); // This will call nodeManager.resize internally
     } else {
       console.error(

@@ -1,4 +1,3 @@
-import SpaceControls from "./Space/Space";
 import VisualNode from "./VisualNode";
 import ConnectionManager from "./ConnectionManager";
 import NodeInteractionManager from "./NodeInteractionManager";
@@ -21,9 +20,8 @@ class NodeVisualizer {
     this.connectionManager = new ConnectionManager(this.ctx);
     this.interactionManager = new NodeInteractionManager();
 
-    this.space = new SpaceControls(this.ctx);
     this.nodeManager = nodeManager.current;
-    console.log("NodeManager initialized:", this.nodeManager);
+
     this.resize();
 
     // Bind event handlers
@@ -45,14 +43,9 @@ class NodeVisualizer {
   resize() {
     this.height = this.canvas.height = window.innerHeight;
     this.width = this.canvas.width = window.innerWidth;
-    this.nodeManager.resize(); // Resize the node manager
+    this.nodeManager.resize(this.width, this.height); // Resize the node manager
 
     // Update all visual nodes and their base nodes
-    this.visualNodes.forEach((node) => {
-      node.resize(this.width, this.height);
-    });
-
-    this.space.onResize(); // Resize the space controls
   }
 
   createVisualNodes() {
@@ -158,8 +151,6 @@ class NodeVisualizer {
     this.lastTimestamp = timestamp;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
-    this.space.update();
-    this.space.draw(); // Draw the space controls
     this.nodeManager.update(this.deltaTime, this.mouseRef); // Update the node manager with delta time
 
     // Draw connections between nodes
@@ -185,9 +176,6 @@ class NodeVisualizer {
       cancelAnimationFrame(this.rafID);
       this.rafID = null;
     }
-    this.nodeManager.destroy(); // Destroy the node manager
-
-    this.nodeManager = null; // Clear the node manager reference
 
     // Remove event listeners to prevent memory leaks
     if (this.canvas) {
@@ -196,7 +184,6 @@ class NodeVisualizer {
       this.canvas.removeEventListener("mouseup", this.handleMouseUp);
     }
     window.removeEventListener("keydown", this.handleKeyDown);
-
     this.resize = null; // Clear the resize method reference
     this.animate = null; // Clear the animate method reference
 

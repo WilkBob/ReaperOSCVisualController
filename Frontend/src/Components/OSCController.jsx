@@ -86,12 +86,3 @@ const OSCController = () => {
 };
 
 export default OSCController;
-// const handleSend = () => {
-//   sendValue({ type: "pan", trackNum: 1, fxNum: 1, paramNum: 2 }, 0.5);
-//   // const { type, trackNum, fxNum, paramNum } = param;
-//   // types - inst - vol - pan - sendvol - fx
-//   // inst requires track, param
-//   // vol requires only track
-//   // pan requires only track
-//   // sendvol requires track, and param value (which send)
-// };

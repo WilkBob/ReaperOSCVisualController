@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -6,8 +6,12 @@ import {
   Switch,
   CircularProgress,
 } from "@mui/material";
+import { useContext } from "react";
+import NodeContext from "../Context/NodeContext";
+const ConnectionStatus = ({ connected }) => {
+  const [broadcasting, setBroadcasting] = useState(false);
+  const NodeManagerRef = useContext(NodeContext);
 
-const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
   useEffect(() => {
     if (connected === false) {
       setBroadcasting(false); // Reset broadcasting state when disconnected
@@ -29,6 +33,12 @@ const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [setBroadcasting, connected]);
+
+  useEffect(() => {
+    if (NodeManagerRef?.current?.globalstate?.osc) {
+      NodeManagerRef.current.globalstate.osc.broadcasting = broadcasting;
+    }
+  }, [broadcasting, NodeManagerRef]);
 
   return (
     <Box

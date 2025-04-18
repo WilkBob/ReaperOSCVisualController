@@ -65,11 +65,12 @@ class BaseNode {
     });
   }
 
-  disconnectInput(index) {
-    if (this.inputs[index] instanceof BaseNode) {
-      this.inputs[index].disconnectOutput(this); // Disconnect this node from the connected node
+  disconnectInput(node) {
+    const index = this.inputs.indexOf(node);
+    if (index > -1) {
+      this.inputs[index] = null; // Set the input to null
+      node.disconnectOutput(this); // Disconnect this node from the connected node
     }
-    this.inputs[index] = null;
   }
 
   disconnectOutput(node) {

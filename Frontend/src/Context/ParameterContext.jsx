@@ -3,6 +3,7 @@ import { createContext } from "react";
 const ParameterListContext = createContext({
   parameters: [
     {
+      id: "1",
       name: "Parameter 1",
       address: "/track/1/pan",
       valueMap: {

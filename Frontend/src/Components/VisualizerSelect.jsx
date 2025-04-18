@@ -5,22 +5,29 @@ import PublicIcon from "@mui/icons-material/Public"; // Icon for SpaceControls
 import DriveEtaIcon from "@mui/icons-material/DriveEta";
 import SettingsIcon from "@mui/icons-material/Settings"; // Icon for settings
 import VisualizerContext from "../Context/VisualizerContext";
+import {
+  getParticleControls,
+  particleControls,
+} from "../Visualizers/Particles/Particles";
+import { getSpaceControls, spaceControls } from "../Visualizers/Space/Space";
 const VisualizerSelect = () => {
   const { visualizer, setVisualizer } = useContext(VisualizerContext); // Assuming you have a context for visualizer state
   // visualizer = {id: '', threeD: bool}
   // Array of visualizer options
   const visualizerOptions = [
     {
-      id: "particles",
+      id: "particle",
       label: "Particle Controls",
       icon: <BubbleChartIcon />,
-      threeD: false,
+      object: particleControls,
+      getController: getParticleControls,
     },
     {
       id: "space",
       label: "Space Controls",
       icon: <PublicIcon />,
-      threeD: false,
+      object: spaceControls,
+      getController: getSpaceControls,
     },
   ];
 

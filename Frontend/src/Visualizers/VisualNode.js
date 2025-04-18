@@ -27,13 +27,12 @@ class VisualNode {
     this.connectingFrom = null;
 
     // Drag and resize handle dimensions
-    this.handleSize = 12;
+    this.handleSize = 15;
 
     // Read values from the node's local state for SIZE ONLY
     this.width = this.node.localState.ui.width;
     this.height = this.node.localState.ui.height;
 
-    // Update BaseNode's localState with initial values
     this.updateBaseNodeState();
   }
 
@@ -87,7 +86,6 @@ class VisualNode {
   }
 
   syncWithBaseNode() {
-    // Always update BaseNode with current visual properties
     this.updateBaseNodeState();
   }
 

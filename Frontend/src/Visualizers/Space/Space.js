@@ -4,9 +4,9 @@ import Planet from "./Planet";
 import ShootingStars from "./ShootingStars";
 
 class SpaceControls {
-  constructor(ctx) {
-    this.canvas = ctx.canvas;
-    this.ctx = ctx;
+  constructor() {
+    this.canvas = null;
+    this.ctx = null;
 
     this.simVariables = {
       sunSize: {
@@ -64,6 +64,17 @@ class SpaceControls {
         description: "Y position of selected planet (output only)",
       },
     };
+  }
+
+  init() {
+    if (!this.canvas || !this.ctx) {
+      console.error(
+        "Canvas or context not set. Cannot initialize SpaceControls."
+      );
+      return;
+    }
+
+    // Initialize components
     this.shootingStars = new ShootingStars(
       this.canvas,
       this.ctx,
@@ -77,7 +88,6 @@ class SpaceControls {
     );
     this.sun = new Sun();
 
-    // Add planets with scaled sizes and distances
     this.planets = [
       new Planet(
         "Planet 1",
@@ -87,7 +97,7 @@ class SpaceControls {
         this.sun,
         this.canvas,
         0.017
-      ), //colors [dark, normal, light, lighter]
+      ),
       new Planet(
         "Planet 2",
         0.02,
@@ -114,6 +124,24 @@ class SpaceControls {
       this.sun,
       this.planets
     );
+  }
+
+  destroy() {
+    // Tear down components
+    if (this.shootingStars) {
+      this.shootingStars = null;
+    }
+    if (this.spaceSky) {
+      this.spaceSky = null;
+    }
+    if (this.sun) {
+      this.sun = null;
+    }
+    if (this.planets) {
+      this.planets = [];
+    }
+
+    console.log("SpaceControls destroyed");
   }
 
   update() {
@@ -165,4 +193,12 @@ class SpaceControls {
   }
 }
 
-export default SpaceControls;
+const spaceControls = new SpaceControls();
+const getSpaceControls = (ctx) => {
+  spaceControls.canvas = ctx.canvas;
+  spaceControls.ctx = ctx;
+  spaceControls.init();
+  return spaceControls;
+};
+
+export { getSpaceControls, spaceControls };
