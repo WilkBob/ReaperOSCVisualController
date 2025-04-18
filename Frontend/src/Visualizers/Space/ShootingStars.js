@@ -174,7 +174,7 @@ class ShootingStars {
 
   updateAndDraw() {
     // Adjust spawn rate based on celestialIntensity.value
-    const spawnRate = this.celestialIntensity.value * 0.1; // Scale spawn rate
+    const spawnRate = this.celestialIntensity.value * 0.3; // Scale spawn rate
     if (Math.random() < spawnRate) {
       this.spawnStar();
     }

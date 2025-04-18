@@ -139,9 +139,9 @@ class SpaceControls {
       planet.active = isActive;
 
       if (isActive) {
-        // Update the ball position reference and call callbacks
-        this.simVariables.selectedPlanetX = planet.xNorm;
-        this.simVariables.selectedPlanetY = planet.yNorm;
+        // Update only the value property of selectedPlanetX and selectedPlanetY
+        this.simVariables.selectedPlanetX.value = planet.xNorm;
+        this.simVariables.selectedPlanetY.value = planet.yNorm;
       }
     });
   }

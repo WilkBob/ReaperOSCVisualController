@@ -26,7 +26,7 @@ class ConnectionManager {
     }
   }
 
-  completeConnection(targetNode, mx, my, visualNodes) {
+  completeConnection(targetNode, mx, my) {
     if (!this.isConnecting || !this.connectionStartNode) return false;
 
     if (targetNode === this.connectionStartNode) return false;
