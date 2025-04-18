@@ -80,11 +80,7 @@ const CanvasController = ({ broadcasting }) => {
         onClick={() => {
           if (selectedNodeType && visualizerRef.current) {
             visualizerRef.current.addNode(
-              createNode(
-                selectedNodeType.name,
-                selectedNodeType.blueprint,
-                selectedNodeType.blueprint
-              ) //need id system
+              createNode(selectedNodeType.blueprint) //need id system
             );
           }
         }}

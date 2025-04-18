@@ -129,7 +129,7 @@ class BaseNode {
 
 export default BaseNode;
 
-function createNode(id, blueprint) {
+function createNode(blueprint) {
   return new BaseNode(
     {
       id: uuidv4(),

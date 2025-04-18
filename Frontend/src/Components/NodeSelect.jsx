@@ -5,10 +5,9 @@ import Average from "../NodeManager/NodeTypes/Math/AverageNode";
 import Constant from "../NodeManager/NodeTypes/Math/ConstantNode";
 import MinMax from "../NodeManager/NodeTypes/Math/MinMaxNode";
 import GamepadAxisNode from "../NodeManager/NodeTypes/Inputs/GamePadNode";
-import createMouseBlueprint from "../NodeManager/NodeTypes/Inputs/MouseNode";
 import SinOscillator from "../NodeManager/NodeTypes/Oscillators/SinNode";
-
-const NodeSelect = ({ mouseRef, selectedNodeType, setSelectedNodeType }) => {
+import { MouseX } from "../NodeManager/NodeTypes/Inputs/MouseNode";
+const NodeSelect = ({ selectedNodeType, setSelectedNodeType }) => {
   const nodeTypes = {
     Math: [
       { name: "Average", blueprint: Average },
@@ -17,22 +16,7 @@ const NodeSelect = ({ mouseRef, selectedNodeType, setSelectedNodeType }) => {
       { name: "Constant", blueprint: Constant },
     ],
     Inputs: [
-      {
-        name: "MouseX",
-        blueprint: createMouseBlueprint(mouseRef, "x", "Mouse X"),
-      },
-      {
-        name: "MouseY",
-        blueprint: createMouseBlueprint(mouseRef, "y", "Mouse Y"),
-      },
-      {
-        name: "MouseWheel",
-        blueprint: createMouseBlueprint(mouseRef, "wheel", "Wheel"),
-      },
-      {
-        name: "MouseClick",
-        blueprint: createMouseBlueprint(mouseRef, "click", "Click"),
-      },
+      { name: "Mouse", blueprint: MouseX },
       { name: "GamePadAxis", blueprint: GamepadAxisNode },
     ],
     Oscillators: [{ name: "Sine", blueprint: SinOscillator }],
