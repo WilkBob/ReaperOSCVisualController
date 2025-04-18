@@ -2,11 +2,20 @@ class VisualNode {
   constructor(node, x = 0, y = 0) {
     this.node = node;
 
-    // Initialize with default values
     this.width = 200;
     this.height = 200;
-    this.x = x;
-    this.y = y;
+    //if node has localstate.ui and x and y are not zero, use them
+    if (
+      node.localState?.ui &&
+      node.localState.ui.position.x !== 0 &&
+      node.localState.ui.position.y !== 0
+    ) {
+      this.x = node.localState.ui.position.x;
+      this.y = node.localState.ui.position.y;
+    } else {
+      this.x = x;
+      this.y = y;
+    }
 
     this.inputDefs = node.inputDefs || [];
     this.outputDef = node.outputDef || null;

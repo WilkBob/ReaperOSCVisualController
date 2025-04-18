@@ -1,15 +1,13 @@
-import NodeManager from "../NodeManager/NodeManager";
 import SpaceControls from "./Space/Space";
 import VisualNode from "./VisualNode";
 import ConnectionManager from "./ConnectionManager";
 import NodeInteractionManager from "./NodeInteractionManager";
 
-class InteractiveVisualizer {
-  constructor(canvas, mouseRef, outputRefs) {
+class NodeVisualizer {
+  constructor(canvas, mouseRef, nodeManager) {
     this.canvas = canvas;
     this.ctx = this.canvas.getContext("2d");
     this.mouseRef = mouseRef;
-    this.outputRefs = outputRefs;
 
     this.height = this.canvas.height;
     this.width = this.canvas.width;
@@ -24,11 +22,8 @@ class InteractiveVisualizer {
     this.interactionManager = new NodeInteractionManager();
 
     this.space = new SpaceControls(this.ctx);
-    this.nodeManager = new NodeManager(
-      mouseRef,
-      outputRefs,
-      this.space.simVariables
-    );
+    this.nodeManager = nodeManager.current;
+    console.log("NodeManager initialized:", this.nodeManager);
     this.resize();
 
     // Bind event handlers
@@ -165,7 +160,7 @@ class InteractiveVisualizer {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.space.update();
     this.space.draw(); // Draw the space controls
-    this.nodeManager.update(this.deltaTime); // Update the node manager with delta time
+    this.nodeManager.update(this.deltaTime, this.mouseRef); // Update the node manager with delta time
 
     // Draw connections between nodes
     this.connectionManager.drawConnections(this.visualNodes);
@@ -190,6 +185,9 @@ class InteractiveVisualizer {
       cancelAnimationFrame(this.rafID);
       this.rafID = null;
     }
+    this.nodeManager.destroy(); // Destroy the node manager
+
+    this.nodeManager = null; // Clear the node manager reference
 
     // Remove event listeners to prevent memory leaks
     if (this.canvas) {
@@ -199,11 +197,8 @@ class InteractiveVisualizer {
     }
     window.removeEventListener("keydown", this.handleKeyDown);
 
-    // Clean up node manager
-    if (this.nodeManager) {
-      this.nodeManager.destroy();
-      this.nodeManager = null;
-    }
+    this.resize = null; // Clear the resize method reference
+    this.animate = null; // Clear the animate method reference
 
     // Clear visual nodes array
     this.visualNodes = [];
@@ -223,4 +218,4 @@ class InteractiveVisualizer {
   }
 }
 
-export default InteractiveVisualizer;
+export default NodeVisualizer;

@@ -5,7 +5,6 @@ class SpaceSky {
     this.ctx = ctx; // Reference to the 2D rendering context
     this.starGlowX = starGlowX; // Reference to the X position of the star glow
     this.starGlowY = starGlowY; // Reference to the Y position of the star glow
-
     this.celestialIntensity = celestialIntensity; // Reference to the celestial intensity object
 
     this.gradientCanvas = document.createElement("canvas"); // Separate canvas for gradient
@@ -18,6 +17,11 @@ class SpaceSky {
     this.activeGradientCanvas.height = this.canvas.height;
     this.activeGradientCtx = this.activeGradientCanvas.getContext("2d");
 
+    this.glowCanvas = document.createElement("canvas"); // Separate canvas for star glow
+    this.glowCanvas.width = this.canvas.width;
+    this.glowCanvas.height = this.canvas.height;
+    this.glowCtx = this.glowCanvas.getContext("2d");
+
     this.generateGradient(this.gradientCtx, ["#000020", "#000040", "#000000"]); // Normal gradient
     this.generateGradient(this.activeGradientCtx, [
       "#400000",
@@ -25,7 +29,7 @@ class SpaceSky {
       "#000000",
     ]); // Active gradient
 
-    this.generateStars(200); // Generate 200 stars
+    this.generateStars(400); // Generate 400 stars for a richer effect
   }
 
   // Generate a spacey gradient background
@@ -55,7 +59,7 @@ class SpaceSky {
         y: Math.random() * this.canvas.height, // Random y position
         size: Math.random() * 2 + 1, // Random size (1-3)
         baseColor: "#999999", // Default star color
-        glowColor: "#d466ff", // Glow color when mouse is near
+        glowColor: `hsl(${Math.random() * 360}, 80%, 70%)`, // Randomized glow color
       });
     }
   }
@@ -73,35 +77,58 @@ class SpaceSky {
 
     this.ctx.globalAlpha = 1; // Reset alpha for subsequent drawing
 
+    // Clear the glow canvas
+    this.glowCtx.clearRect(0, 0, this.glowCanvas.width, this.glowCanvas.height);
+
     // Update and draw the stars
     this.stars.forEach((star) => {
       const dx = star.x - this.starGlowX.value * this.canvas.width;
       const dy = star.y - this.starGlowY.value * this.canvas.height;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      // If the mouse is near the star, illuminate it
-      star.isGlowing = distance < 50; // Glow if within 50px of the mouse
+      // If the glow center is near the star, illuminate it
+      star.isGlowing = distance < 100; // Glow if within 100px of the glow center
 
       // Draw the star
       this.ctx.beginPath();
-      this.ctx.arc(
-        star.x,
-        star.y,
-        star.isGlowing ? star.size * 2 : star.size,
-        0,
-        Math.PI * 2
-      );
-      this.ctx.fillStyle = star.isGlowing ? star.glowColor : star.baseColor;
+      this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      this.ctx.fillStyle = star.baseColor;
       this.ctx.fill();
+
+      // Draw the glow effect on the glow canvas
+      if (star.isGlowing) {
+        const glowRadius = star.size * 6; // Larger radius for the glow
+        const gradient = this.glowCtx.createRadialGradient(
+          star.x,
+          star.y,
+          0,
+          star.x,
+          star.y,
+          glowRadius
+        );
+        gradient.addColorStop(0, star.glowColor);
+        gradient.addColorStop(1, "transparent");
+
+        this.glowCtx.beginPath();
+        this.glowCtx.arc(star.x, star.y, glowRadius, 0, Math.PI * 2);
+        this.glowCtx.fillStyle = gradient;
+        this.glowCtx.fill();
+      }
     });
+
+    // Draw the glow canvas on top of the main canvas
+    this.ctx.drawImage(this.glowCanvas, 0, 0);
   }
 
-  // Resize the gradient canvas when the window is resized
+  // Resize the gradient and glow canvases when the window is resized
   resize() {
     this.gradientCanvas.width = this.canvas.width;
     this.gradientCanvas.height = this.canvas.height;
     this.activeGradientCanvas.width = this.canvas.width;
     this.activeGradientCanvas.height = this.canvas.height;
+    this.glowCanvas.width = this.canvas.width;
+    this.glowCanvas.height = this.canvas.height;
+
     this.generateGradient(this.gradientCtx, ["#000020", "#000040", "#000000"]); // Regenerate normal gradient
     this.generateGradient(this.activeGradientCtx, [
       "#400000",

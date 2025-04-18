@@ -157,6 +157,9 @@ class SpaceControls {
     // Update the sun's position on resize
     this.sun.resize(this.canvas.width, this.canvas.height);
 
+    // Update the space sky's position on resize
+    this.spaceSky.resize(this.canvas.width, this.canvas.height);
+
     // Update planet scaling on resize
     this.planets.forEach((planet) => planet.resize());
   }

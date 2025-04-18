@@ -1,25 +1,12 @@
+import { v4 as uuidv4 } from "uuid"; // Import uuid for unique ID generation
 class BaseNode {
-  // Add a static property to store global state reference
   static globalState = null;
 
-  // Simple performance tracking at the global level
-  static performanceData = {
-    cycleStats: {},
-    lastCycleId: null,
-    loggedThisCycle: false,
-  };
-
-  constructor({
-    id,
-    type,
-    label,
-    inputDefs,
-    outputDef,
-    evaluate,
-    update,
-    init,
-    destroy,
-  }) {
+  constructor(
+    { id, type, label, inputDefs, outputDef, evaluate, update, init, destroy },
+    blueprint
+  ) {
+    this.blueprint = blueprint; // Store the blueprint for reference
     this.id = id;
     this.type = type;
     this.label = label;
@@ -143,17 +130,20 @@ class BaseNode {
 export default BaseNode;
 
 function createNode(id, blueprint) {
-  return new BaseNode({
-    id,
-    type: blueprint.type,
-    label: blueprint.label,
-    inputDefs: blueprint.inputDefs,
-    outputDef: blueprint.outputDef,
-    evaluate: blueprint.evaluate,
-    update: blueprint.update,
-    init: blueprint.init,
-    destroy: blueprint.destroy,
-  });
+  return new BaseNode(
+    {
+      id: uuidv4(),
+      type: blueprint.type,
+      label: blueprint.label,
+      inputDefs: blueprint.inputDefs,
+      outputDef: blueprint.outputDef,
+      evaluate: blueprint.evaluate,
+      update: blueprint.update,
+      init: blueprint.init,
+      destroy: blueprint.destroy,
+    },
+    blueprint
+  );
 }
 
 function makeBlueprint({

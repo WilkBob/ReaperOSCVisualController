@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ParameterListContext from "./ParameterContext";
 import VisualizerContext from "./VisualizerContext";
+import NodeContext from "./NodeContext";
+import nodeManager from "../NodeManager/NodeManager";
 import { ThemeProvider } from "@emotion/react";
 import { spaceTheme, rainbowTheme } from "../Components/Themes";
 
@@ -25,6 +27,8 @@ export const ParameterListProvider = ({ children }) => {
     threeD: false,
   });
   const [theme, setTheme] = useState(spaceTheme);
+
+  const NodeManagerRef = useRef(nodeManager);
   useEffect(() => {
     if (visualizer.id === "space") {
       setTheme(spaceTheme);
@@ -94,7 +98,9 @@ export const ParameterListProvider = ({ children }) => {
           getParameter,
         }}
       >
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        <NodeContext.Provider value={NodeManagerRef}>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </NodeContext.Provider>
       </ParameterListContext.Provider>
     </VisualizerContext.Provider>
   );
