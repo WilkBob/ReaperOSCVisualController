@@ -67,6 +67,35 @@ class NodeManager {
     this.mouseRef = null;
     // Don't nullify globalState.space
   }
+
+  addNode(blueprint, position = { x: 100, y: 100 }) {
+    const newNode = new BaseNode(blueprint, blueprint);
+    newNode.localState.ui.position = position;
+    this.nodes.push(newNode);
+    return newNode;
+  }
+
+  removeNode(nodeId) {
+    const nodeIndex = this.nodes.findIndex((node) => node.id === nodeId);
+    if (nodeIndex > -1) {
+      const nodeToRemove = this.nodes[nodeIndex];
+      // Ensure proper cleanup before removing
+      nodeToRemove.disconnectAllInputs();
+      // Disconnect this node from any nodes it outputs to
+      this.nodes.forEach((node) => {
+        node.inputs.forEach((input, index) => {
+          if (input === nodeToRemove) {
+            node.disconnectInput(index);
+          }
+        });
+      });
+      nodeToRemove.destroy(); // Call node's destroy method
+      this.nodes.splice(nodeIndex, 1);
+      console.log(`Node ${nodeId} removed.`);
+    } else {
+      console.warn(`Node with ID ${nodeId} not found for removal.`);
+    }
+  }
 }
 
 const nodeManager = new NodeManager();

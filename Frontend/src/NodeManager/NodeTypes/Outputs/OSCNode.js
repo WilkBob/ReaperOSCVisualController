@@ -1,5 +1,6 @@
 export default function createOSCBlueprint(key, name) {
   return {
+    paramId: key, // <-- Add this line
     type: "output",
     label: name || key,
     inputDefs: [{ name: "Value", defaultValue: 0 }],

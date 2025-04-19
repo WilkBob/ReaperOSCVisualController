@@ -16,6 +16,7 @@ import {
   MouseY,
 } from "../NodeManager/NodeTypes/Inputs/MouseNode";
 import ParameterListContext from "../Context/ParameterContext";
+import FlappyNode from "../NodeManager/NodeTypes/Games/FlappyNode";
 const NodeSelect = ({ selectedNodeType, setSelectedNodeType }) => {
   const { parameters } = useContext(ParameterListContext);
   const [outputBlueprints, setOutputBlueprints] = React.useState([]);
@@ -51,12 +52,17 @@ const NodeSelect = ({ selectedNodeType, setSelectedNodeType }) => {
       { name: "Click Gate", blueprint: clickGate },
       { name: "Mouse Wheel", blueprint: mouseWheel },
       { name: "GamePadAxis", blueprint: GamepadAxisNode },
+    ],
+    SpaceIn: [
       ...spaceInputNodes, // Add Space input nodes here
     ],
-    Oscillators: [{ name: "Sine", blueprint: SinOscillator }],
-    Outputs: [
-      ...outputBlueprints, // Existing OSC outputs
+    SpaceOut: [
       ...spaceOutputNodes, // Add Space output nodes here
+    ],
+    Oscillators: [{ name: "Sine", blueprint: SinOscillator }],
+    Games: [{ name: "FlappyBird", blueprint: FlappyNode }],
+    OSCOutputs: [
+      ...outputBlueprints, // Existing OSC outputs
     ],
   };
 

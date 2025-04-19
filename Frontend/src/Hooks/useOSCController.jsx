@@ -8,11 +8,11 @@ const useOSCController = (broadcasting = true) => {
   const { parameters } = useContext(ParameterListContext);
   const OSCOutputRefs = useRef({});
 
-  // Sync OSCOutputRefs with current parameters
+  // Sync OSCOutputRefs with current parameters AND remove orphaned OSC nodes
   useEffect(() => {
     const paramIds = parameters.map((p) => p.id);
-    // Add or update refs for all parameters
 
+    // Add or update refs for all parameters
     parameters.forEach(({ id, name }) => {
       if (!OSCOutputRefs.current[id]) {
         OSCOutputRefs.current[id] = { current: 1, last: 0, name };
@@ -21,13 +21,31 @@ const useOSCController = (broadcasting = true) => {
         OSCOutputRefs.current[id].name = name;
       }
     });
+
     // Remove refs for parameters that no longer exist
     Object.keys(OSCOutputRefs.current).forEach((id) => {
       if (!paramIds.includes(id)) {
         delete OSCOutputRefs.current[id];
       }
     });
-    nodeManager.globalState.osc.outputRefs = OSCOutputRefs.current; // Update the global state with the current refs
+
+    // Update the global state with the current refs
+    nodeManager.globalState.osc.outputRefs = OSCOutputRefs.current;
+
+    // --- Remove orphaned OSC nodes from NodeManager ---
+    const oscOutputNodes = nodeManager.nodes.filter(
+      (node) => node.blueprint?.type === "output" && node.blueprint?.paramId
+    );
+
+    oscOutputNodes.forEach((node) => {
+      if (!paramIds.includes(node.blueprint.paramId)) {
+        console.log(
+          `Removing orphaned OSC node ${node.label} (paramId: ${node.blueprint.paramId})`
+        );
+        nodeManager.removeNode(node.id); // Assuming NodeManager has removeNode
+      }
+    });
+    // --------------------------------------------------
   }, [parameters]);
 
   // Broadcast loop
