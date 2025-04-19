@@ -1,9 +1,9 @@
 import { createContext } from "react";
 
 const NodeContext = createContext({
-  NodeManager: null,
-  saveNodes: () => {},
-  loadNodes: () => {},
+  NodeManagerRef: null,
+  broadcasting: false,
+  setBroadcasting: () => {},
 });
 
 export default NodeContext;

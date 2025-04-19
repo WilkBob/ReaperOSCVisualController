@@ -4,9 +4,10 @@ import Planet from "./Planet";
 import ShootingStars from "./ShootingStars";
 
 class SpaceControls {
-  constructor(ctx) {
-    this.canvas = ctx.canvas;
-    this.ctx = ctx;
+  constructor() {
+    this.canvas = null;
+    this.ctx = null;
+    this.initialized = false; // Track initialization state
 
     this.simVariables = {
       sunSize: {
@@ -14,7 +15,7 @@ class SpaceControls {
         controlled: false,
         label: "Sun Size",
         defaultValue: 0.1,
-        type: "output",
+        type: "output", // This will be controlled BY a node
         description: "Controls the sun size relative to maximum",
       },
       selectedPlanet: {
@@ -22,7 +23,7 @@ class SpaceControls {
         controlled: false,
         label: "Selected Planet",
         defaultValue: 0.2,
-        type: "output",
+        type: "output", // Controlled BY a node
         description: "Controls which planet is selected (normalized 0-1)",
       },
       celestialIntensity: {
@@ -30,7 +31,7 @@ class SpaceControls {
         controlled: false,
         label: "Celestial Intensity",
         defaultValue: 0.5,
-        type: "output",
+        type: "output", // Controlled BY a node
         description: "Controls sky hue and shooting star frequency",
       },
       starGlowX: {
@@ -38,7 +39,7 @@ class SpaceControls {
         controlled: false,
         label: "Star Glow X",
         defaultValue: 0.3,
-        type: "output",
+        type: "output", // Controlled BY a node
         description: "X position for star glow effect",
       },
       starGlowY: {
@@ -46,38 +47,55 @@ class SpaceControls {
         controlled: false,
         label: "Star Glow Y",
         defaultValue: 0.4,
-        type: "output",
+        type: "output", // Controlled BY a node
         description: "Y position for star glow effect",
       },
       selectedPlanetX: {
         value: 0.5,
         controlled: false,
         label: "Planet X",
-        type: "input",
+        type: "input", // This will BE an input TO a node
         description: "X position of selected planet (output only)",
       },
       selectedPlanetY: {
         value: 0.5,
         controlled: false,
         label: "Planet Y",
-        type: "input",
+        type: "input", // This will BE an input TO a node
         description: "Y position of selected planet (output only)",
       },
     };
+  }
+
+  // Accept canvas and context, handles re-initialization
+  init(canvas, ctx) {
+    if (!canvas || !ctx) {
+      console.error(
+        "Canvas or context not provided. Cannot initialize SpaceControls."
+      );
+      return;
+    }
+    this.canvas = canvas;
+    this.ctx = ctx;
+
+    // Initialize components only if not already initialized or if canvas/ctx changed
+    // For simplicity, let's re-initialize components every time init is called with a new context.
+    // A more robust solution might check if canvas/ctx actually changed.
+
+    console.log("Initializing SpaceControls components...");
     this.shootingStars = new ShootingStars(
       this.canvas,
       this.ctx,
-      this.simVariables.celestialIntensity
+      this.simVariables.celestialIntensity // Pass the variable object itself
     );
     this.spaceSky = new SpaceSky(
       this.ctx,
-      this.simVariables.starGlowX,
-      this.simVariables.starGlowY,
-      this.simVariables.celestialIntensity
+      this.simVariables.starGlowX, // Pass the variable object
+      this.simVariables.starGlowY, // Pass the variable object
+      this.simVariables.celestialIntensity // Pass the variable object
     );
-    this.sun = new Sun();
+    this.sun = new Sun(); // Sun might need canvas dimensions on init/resize
 
-    // Add planets with scaled sizes and distances
     this.planets = [
       new Planet(
         "Planet 1",
@@ -87,7 +105,7 @@ class SpaceControls {
         this.sun,
         this.canvas,
         0.017
-      ), //colors [dark, normal, light, lighter]
+      ),
       new Planet(
         "Planet 2",
         0.02,
@@ -108,15 +126,38 @@ class SpaceControls {
       ),
     ];
 
-    console.log(
-      "SpaceControls initialized",
-      this.spaceSky,
-      this.sun,
-      this.planets
-    );
+    this.initialized = true;
+    console.log("SpaceControls initialized successfully.");
+    this.onResize(); // Call resize initially to set up dimensions
+  }
+
+  // Optional: Method to update context if needed without full re-init
+  setContext(canvas, ctx) {
+    if (!canvas || !ctx) {
+      console.error("Invalid canvas or context provided to setContext.");
+      return;
+    }
+    this.canvas = canvas;
+    this.ctx = ctx;
+    // Update context for child components that need it
+    if (this.shootingStars) this.shootingStars.ctx = ctx;
+    if (this.spaceSky) this.spaceSky.ctx = ctx;
+    // Planets draw directly using the passed ctx in their draw methods
+    // Sun draws directly using the passed ctx
+    this.onResize(); // Re-apply sizing based on new canvas potentially
+  }
+
+  // Keep destroy minimal as requested, maybe just log or clear refs if necessary
+  destroy() {
+    console.log("SpaceControls destroy called - doing minimal cleanup.");
+    // We are keeping the instance alive, so don't nullify internal components
+    // unless they truly need disposal that can't be handled by re-init.
+    this.initialized = false; // Mark as uninitialized
+    // If components have specific cleanup (e.g., removing listeners), call them here.
   }
 
   update() {
+    if (!this.initialized) return;
     // First update all planets' positions
 
     this.planets.forEach((planet) => {
@@ -140,6 +181,7 @@ class SpaceControls {
 
       if (isActive) {
         // Update only the value property of selectedPlanetX and selectedPlanetY
+        // These are read by input nodes
         this.simVariables.selectedPlanetX.value = planet.xNorm;
         this.simVariables.selectedPlanetY.value = planet.yNorm;
       }
@@ -147,6 +189,7 @@ class SpaceControls {
   }
 
   draw() {
+    if (!this.initialized || !this.ctx) return; // Check context validity
     this.spaceSky.updateAndDraw();
     this.shootingStars.updateAndDraw();
     this.sun.draw(this.ctx, this.simVariables.sunSize.value);
@@ -154,6 +197,7 @@ class SpaceControls {
   }
 
   onResize() {
+    if (!this.initialized || !this.canvas) return; // Check canvas validity
     // Update the sun's position on resize
     this.sun.resize(this.canvas.width, this.canvas.height);
 
@@ -165,4 +209,8 @@ class SpaceControls {
   }
 }
 
-export default SpaceControls;
+// Export a single instance (singleton)
+const spaceControls = new SpaceControls();
+
+// Remove getSpaceControls function
+export { spaceControls }; // Export the singleton instance directly

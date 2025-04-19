@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ParameterListContext from "./ParameterContext";
 import VisualizerContext from "./VisualizerContext";
-import NodeContext from "./NodeContext";
-import nodeManager from "../NodeManager/NodeManager";
+
 import { ThemeProvider } from "@emotion/react";
 import { spaceTheme, rainbowTheme } from "../Components/Themes";
+import { v4 } from "uuid";
 
 export const ParameterListProvider = ({ children }) => {
   const [parameters, setParameters] = useState([
     {
+      id: v4(),
       name: "Parameter 1",
       address: "/track/1/pan",
       valueMap: {
@@ -28,7 +29,6 @@ export const ParameterListProvider = ({ children }) => {
   });
   const [theme, setTheme] = useState(spaceTheme);
 
-  const NodeManagerRef = useRef(nodeManager);
   useEffect(() => {
     if (visualizer.id === "space") {
       setTheme(spaceTheme);
@@ -54,6 +54,7 @@ export const ParameterListProvider = ({ children }) => {
     setParameters((prev) => [
       ...prev,
       {
+        id: v4(),
         name: `Parameter ${prev.length + 1}`,
         address: `/track/${prev.length + 1}/pan`,
         valueMap: {
@@ -98,9 +99,7 @@ export const ParameterListProvider = ({ children }) => {
           getParameter,
         }}
       >
-        <NodeContext.Provider value={NodeManagerRef}>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
-        </NodeContext.Provider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </ParameterListContext.Provider>
     </VisualizerContext.Provider>
   );

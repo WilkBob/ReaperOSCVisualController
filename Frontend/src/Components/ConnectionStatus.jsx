@@ -1,25 +1,27 @@
-import { useEffect } from "react";
-import {
-  Box,
-  FormControlLabel,
-  Typography,
-  Switch,
-  CircularProgress,
-} from "@mui/material";
+import { useContext, useEffect } from "react";
+import { Box, Typography, CircularProgress } from "@mui/material";
+import NodeContext from "../Context/NodeContext";
 
-const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
+const ConnectionStatus = ({ connected }) => {
+  const { NodeManagerRef, broadcasting, setBroadcasting } =
+    useContext(NodeContext);
+
   useEffect(() => {
     if (connected === false) {
       setBroadcasting(false); // Reset broadcasting state when disconnected
+      NodeManagerRef.current.globalState.osc.isBroadcasting = false; // Ensure OSC broadcasting is off
     }
 
     const handleKeyDown = (e) => {
       if (e.key.toLowerCase() === "b") {
         if (!connected) {
           e.preventDefault(); // Prevent toggling if not connected
+          NodeManagerRef.current.globalState.osc.isBroadcasting = false; // Ensure OSC broadcasting is off
           setBroadcasting(false);
           return;
         }
+        e.preventDefault(); // Prevent default action
+        NodeManagerRef.current.globalState.osc.isBroadcasting = !broadcasting; // Toggle OSC broadcasting
         setBroadcasting((prev) => !prev); // Toggle broadcasting
       }
     };
@@ -28,7 +30,7 @@ const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [setBroadcasting, connected]);
+  }, [setBroadcasting, connected, NodeManagerRef, broadcasting]);
 
   return (
     <Box
@@ -68,5 +70,4 @@ const ConnectionStatus = ({ connected, broadcasting, setBroadcasting }) => {
     </Box>
   );
 };
-
 export default ConnectionStatus;

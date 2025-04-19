@@ -13,6 +13,11 @@ const ParameterHeader = ({
   const [editName, setEditName] = useState(false);
   const [localName, setLocalName] = useState(param.name || "");
 
+  // Prevent click events from bubbling up to the Drawer
+  const handleTextFieldClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
       {editName ? (
@@ -20,11 +25,15 @@ const ParameterHeader = ({
           <TextField
             value={localName}
             onChange={(e) => setLocalName(e.target.value)}
+            onClick={handleTextFieldClick}
+            onMouseDown={handleTextFieldClick}
             variant="outlined"
             size="small"
+            autoFocus
           />
           <IconButton
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setEditName(false);
               updateParameter("name", localName);
             }}
@@ -48,7 +57,8 @@ const ParameterHeader = ({
             {param.name || `Parameter ${index + 1}`}
           </Typography>
           <IconButton
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setEditName(true);
               setLocalName(param.name || "");
             }}
@@ -57,7 +67,13 @@ const ParameterHeader = ({
           </IconButton>
         </Box>
       )}
-      <IconButton onClick={() => removeParameter(index)} color="error">
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          removeParameter(index);
+        }}
+        color="error"
+      >
         <DeleteIcon />
       </IconButton>
     </Box>

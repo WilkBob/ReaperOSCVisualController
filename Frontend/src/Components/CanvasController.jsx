@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   FormControl,
@@ -8,7 +8,7 @@ import {
   Select,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import useOSCController from "../Hooks/useOSCController";
+
 import useMouseControl from "../Hooks/useMouseControl";
 import NodeVisualizer from "../Visualizers/NodeVisualizer";
 import NodeContext from "../Context/NodeContext";
@@ -16,28 +16,21 @@ import NodeContext from "../Context/NodeContext";
 import { createNode } from "../NodeManager/NodeTypes/BaseNode";
 import NodeSelect from "./NodeSelect";
 
-const CanvasController = ({ broadcasting }) => {
-  const OSCOutputRefs = useOSCController(broadcasting);
+const CanvasController = () => {
   const mouseControl = useMouseControl({ clickSwell: true, swellRate: 0.01 });
   const canvasRef = useRef(null);
   const visualizerRef = useRef(null);
-  const NodeManagerRef = useContext(NodeContext);
 
   const [selectedNodeType, setSelectedNodeType] = useState(null);
 
   useEffect(() => {
-    if (!canvasRef.current || !NodeManagerRef?.current) {
+    if (!canvasRef.current) {
       // Check .current here
       console.warn("Canvas or NodeManager ref not ready for Visualizer");
       return; // Exit if refs aren't ready
     }
 
-    console.log("Creating NodeVisualizer instance...");
-    const visualizer = new NodeVisualizer(
-      canvasRef.current,
-      mouseControl,
-      NodeManagerRef // Pass the whole ref object
-    );
+    const visualizer = new NodeVisualizer(canvasRef.current, mouseControl);
     visualizerRef.current = visualizer;
 
     // Call resize *after* the instance is created and assigned
@@ -46,7 +39,6 @@ const CanvasController = ({ broadcasting }) => {
       visualizer.nodeManager &&
       typeof visualizer.nodeManager.resize === "function"
     ) {
-      console.log("Calling initial resize for NodeVisualizer and NodeManager");
       visualizer.resize(); // This will call nodeManager.resize internally
     } else {
       console.error(
@@ -66,7 +58,7 @@ const CanvasController = ({ broadcasting }) => {
     };
     // Ensure dependencies are correct - NodeManagerRef itself is stable,
     // but mouseControl might change if its hook dependencies change.
-  }, [mouseControl, NodeManagerRef]); // Removed OSCOutputRefs if not directly used by visualizer setup
+  }, [mouseControl]); // Removed OSCOutputRefs if not directly used by visualizer setup
 
   return (
     <>

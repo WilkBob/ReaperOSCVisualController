@@ -14,11 +14,13 @@ import ParameterItem from "./ParameterItem";
 import ProfileMenu from "./ProfileMenu";
 import { useContext, useEffect, useState } from "react";
 import ParameterListContext from "../../Context/ParameterContext";
+import NodeContext from "../../Context/NodeContext";
 
-const ParameterList = ({ broadcasting }) => {
+const ParameterList = () => {
   const [drawerOpen, setDrawerOpen] = useState(false); // State to control the drawer open/close
-  const { parameters, setParameters } = useContext(ParameterListContext);
-
+  const { parameters, setParameters, addParameter } =
+    useContext(ParameterListContext);
+  const { broadcasting } = useContext(NodeContext); // Assuming broadcasting is part of NodeContext
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "p") {
@@ -35,28 +37,6 @@ const ParameterList = ({ broadcasting }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [broadcasting]);
-
-  const addParameter = () => {
-    if (parameters.length < 10) {
-      setParameters([
-        ...parameters,
-        {
-          name: "New Parameter",
-          address: `/track/${parameters.length + 1}/volume`,
-
-          valueMap: {
-            enabled: true,
-            stops: [
-              { x: 0.0, y: 0.0 },
-              { x: 1.0, y: 1.0 },
-            ],
-            interpolate: true,
-            invert: false,
-          },
-        },
-      ]);
-    }
-  };
 
   const removeParameter = (index) => {
     if (parameters.length > 1) {

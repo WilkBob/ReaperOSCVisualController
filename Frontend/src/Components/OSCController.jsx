@@ -20,7 +20,6 @@ import ParameterListContext from "../Context/ParameterContext";
 
 const OSCController = () => {
   const [connected, setConnected] = useState(isConnected());
-  const [broadcasting, setBroadcasting] = useState(false);
   const { parameters } = useContext(ParameterListContext);
 
   useEffect(() => {
@@ -50,7 +49,7 @@ const OSCController = () => {
       }}
     >
       {/* Far Left */}
-      <ParameterList broadcasting={broadcasting} connected={connected} />
+      <ParameterList connected={connected} />
 
       {/* Center */}
       <Transport
@@ -70,16 +69,9 @@ const OSCController = () => {
           alignItems: "center",
         }}
       >
-        <ConnectionStatus
-          connected={connected}
-          broadcasting={broadcasting}
-          setBroadcasting={setBroadcasting}
-        />
+        <ConnectionStatus connected={connected} />
         <VisualizerSelect />
-        <CanvasController
-          key={JSON.stringify(parameters)}
-          broadcasting={broadcasting}
-        />
+        <CanvasController key={JSON.stringify(parameters)} />
       </Box>
     </Box>
   );

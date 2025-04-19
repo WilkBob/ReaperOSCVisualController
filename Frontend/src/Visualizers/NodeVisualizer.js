@@ -1,10 +1,11 @@
-import SpaceControls from "./Space/Space";
 import VisualNode from "./VisualNode";
 import ConnectionManager from "./ConnectionManager";
 import NodeInteractionManager from "./NodeInteractionManager";
+import nodeManager from "../NodeManager/NodeManager";
+import { spaceControls } from "./Space/Space"; // Import the singleton
 
 class NodeVisualizer {
-  constructor(canvas, mouseRef, nodeManager) {
+  constructor(canvas, mouseRef) {
     this.canvas = canvas;
     this.ctx = this.canvas.getContext("2d");
     this.mouseRef = mouseRef;
@@ -21,9 +22,13 @@ class NodeVisualizer {
     this.connectionManager = new ConnectionManager(this.ctx);
     this.interactionManager = new NodeInteractionManager();
 
-    this.space = new SpaceControls(this.ctx);
-    this.nodeManager = nodeManager.current;
+    this.nodeManager = nodeManager;
     console.log("NodeManager initialized:", this.nodeManager);
+
+    // Initialize SpaceControls singleton with canvas and context
+    this.spaceControls = spaceControls; // Keep a reference
+    this.spaceControls.init(this.canvas, this.ctx);
+
     this.resize();
 
     // Bind event handlers
@@ -45,14 +50,18 @@ class NodeVisualizer {
   resize() {
     this.height = this.canvas.height = window.innerHeight;
     this.width = this.canvas.width = window.innerWidth;
-    this.nodeManager.resize(); // Resize the node manager
+    this.nodeManager.resize(this.width, this.height); // Resize the node manager
 
-    // Update all visual nodes and their base nodes
-    this.visualNodes.forEach((node) => {
-      node.resize(this.width, this.height);
-    });
+    // Update SpaceControls context and trigger its resize
+    if (this.spaceControls && this.spaceControls.initialized) {
+      this.spaceControls.setContext(this.canvas, this.ctx);
+      // spaceControls.onResize() is called within setContext now
+    }
 
-    this.space.onResize(); // Resize the space controls
+    // // Update all visual nodes and their base nodes - Let NodeManager handle base node state
+    // this.visualNodes.forEach((node) => {
+    //   node.resize(this.width, this.height); // This might be redundant if NodeManager updates localState
+    // });
   }
 
   createVisualNodes() {
@@ -158,8 +167,13 @@ class NodeVisualizer {
     this.lastTimestamp = timestamp;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
-    this.space.update();
-    this.space.draw(); // Draw the space controls
+
+    // Update and Draw Space Simulation FIRST (background)
+    if (this.spaceControls && this.spaceControls.initialized) {
+      this.spaceControls.update();
+      this.spaceControls.draw();
+    }
+
     this.nodeManager.update(this.deltaTime, this.mouseRef); // Update the node manager with delta time
 
     // Draw connections between nodes
@@ -173,7 +187,7 @@ class NodeVisualizer {
       this.connectionManager.drawTempConnection();
     }
 
-    // Draw all nodes
+    // Draw all nodes (on top of simulation)
     this.visualNodes.forEach((node) => node.draw(this.ctx));
 
     this.time += this.deltaTime;
@@ -185,7 +199,12 @@ class NodeVisualizer {
       cancelAnimationFrame(this.rafID);
       this.rafID = null;
     }
-    this.nodeManager.destroy(); // Destroy the node manager
+
+    // Call destroy on SpaceControls (minimal cleanup)
+    if (this.spaceControls) {
+      this.spaceControls.destroy();
+      // Don't nullify this.spaceControls as it's a singleton
+    }
 
     this.nodeManager = null; // Clear the node manager reference
 
@@ -207,7 +226,7 @@ class NodeVisualizer {
     this.canvas = null;
     this.ctx = null;
     this.mouseRef = null;
-    this.outputRefs = null;
+
     this.lastTimestamp = null;
     this.time = null;
     this.deltaTime = null;

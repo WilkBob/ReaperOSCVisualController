@@ -2,7 +2,7 @@ import { useEffect, useRef, useContext } from "react";
 import { sendMessage } from "../API/oscService";
 import mapValueThroughStops from "../mapValue";
 import ParameterListContext from "../Context/ParameterContext";
-
+import nodeManager from "../NodeManager/NodeManager";
 // Custom hook to manage control broadcasting and value refs
 const useOSCController = (broadcasting = true) => {
   const { parameters } = useContext(ParameterListContext);
@@ -10,22 +10,24 @@ const useOSCController = (broadcasting = true) => {
 
   // Sync OSCOutputRefs with current parameters
   useEffect(() => {
-    const currentKeys = Object.keys(OSCOutputRefs.current);
-    const activeKeys = parameters.map((p) => p.name);
+    const paramIds = parameters.map((p) => p.id);
+    // Add or update refs for all parameters
 
-    // Add missing refs
-    activeKeys.forEach((name) => {
-      if (!OSCOutputRefs.current[name]) {
-        OSCOutputRefs.current[name] = { current: 1, last: 0, name }; //1 instead of zero to send a message on first render for debug / later 0.5, 0.5
+    parameters.forEach(({ id, name }) => {
+      if (!OSCOutputRefs.current[id]) {
+        OSCOutputRefs.current[id] = { current: 1, last: 0, name };
+      } else {
+        // Always update the name in case it changed
+        OSCOutputRefs.current[id].name = name;
       }
     });
-
-    // Clean up stale refs
-    currentKeys.forEach((key) => {
-      if (!activeKeys.includes(key)) {
-        delete OSCOutputRefs.current[key];
+    // Remove refs for parameters that no longer exist
+    Object.keys(OSCOutputRefs.current).forEach((id) => {
+      if (!paramIds.includes(id)) {
+        delete OSCOutputRefs.current[id];
       }
     });
+    nodeManager.globalState.osc.outputRefs = OSCOutputRefs.current; // Update the global state with the current refs
   }, [parameters]);
 
   // Broadcast loop
@@ -34,8 +36,8 @@ const useOSCController = (broadcasting = true) => {
 
     const loop = () => {
       if (broadcasting) {
-        parameters.forEach(({ name, address, valueMap }) => {
-          const ref = OSCOutputRefs.current[name];
+        parameters.forEach(({ id, name, address, valueMap }) => {
+          const ref = OSCOutputRefs.current[id];
           if (!ref || !address) {
             console.warn(`No ref or address for ${name} - something's F8cked`);
             return;

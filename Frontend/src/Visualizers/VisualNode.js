@@ -29,11 +29,19 @@ class VisualNode {
     // Drag and resize handle dimensions
     this.handleSize = 12;
 
-    // Read values from the node's local state for SIZE ONLY
-    this.width = this.node.localState.ui.width;
-    this.height = this.node.localState.ui.height;
+    // Read values from the node's local state for SIZE ONLY, with fallback
+    const baseNodeWidth = this.node.localState?.ui?.width;
+    const baseNodeHeight = this.node.localState?.ui?.height;
 
-    // Update BaseNode's localState with initial values
+    // Use base node dimensions only if they are valid numbers > 0
+    if (typeof baseNodeWidth === "number" && baseNodeWidth > 0) {
+      this.width = baseNodeWidth;
+    }
+    if (typeof baseNodeHeight === "number" && baseNodeHeight > 0) {
+      this.height = baseNodeHeight;
+    }
+
+    // Update BaseNode's localState with initial (potentially defaulted) values
     this.updateBaseNodeState();
   }
 

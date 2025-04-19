@@ -85,6 +85,7 @@ class BaseNode {
 
   update() {
     if (this.updateFn) {
+      // Pass only globalState and localState
       this.updateFn(BaseNode.globalState, this.localState);
     }
   }

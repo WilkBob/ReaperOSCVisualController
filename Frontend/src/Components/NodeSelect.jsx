@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
 import { FormControl, MenuItem, Select, ListSubheader } from "@mui/material";
 import Average from "../NodeManager/NodeTypes/Math/AverageNode";
@@ -6,20 +6,58 @@ import Constant from "../NodeManager/NodeTypes/Math/ConstantNode";
 import MinMax from "../NodeManager/NodeTypes/Math/MinMaxNode";
 import GamepadAxisNode from "../NodeManager/NodeTypes/Inputs/GamePadNode";
 import SinOscillator from "../NodeManager/NodeTypes/Oscillators/SinNode";
-import { MouseX } from "../NodeManager/NodeTypes/Inputs/MouseNode";
+import createOSCBlueprint from "../NodeManager/NodeTypes/Outputs/OSCNode";
+import SpaceNodeBlueprints from "../NodeManager/NodeTypes/Space/SpaceNodes"; // Import Space blueprints
+import {
+  clickGate,
+  clickSwell,
+  mouseWheel,
+  MouseX,
+  MouseY,
+} from "../NodeManager/NodeTypes/Inputs/MouseNode";
+import ParameterListContext from "../Context/ParameterContext";
 const NodeSelect = ({ selectedNodeType, setSelectedNodeType }) => {
+  const { parameters } = useContext(ParameterListContext);
+  const [outputBlueprints, setOutputBlueprints] = React.useState([]);
+  useEffect(() => {
+    const blueprints = parameters.map((param) => {
+      return {
+        name: param.name,
+        blueprint: createOSCBlueprint(param.id, param.name),
+      };
+    });
+    setOutputBlueprints(blueprints);
+  }, [parameters]);
+
+  // Separate Space nodes based on type (input/output)
+  const spaceInputNodes = Object.entries(SpaceNodeBlueprints)
+    .filter(([key, bp]) => bp.type === "input")
+    .map(([key, bp]) => ({ name: bp.label, blueprint: bp }));
+
+  const spaceOutputNodes = Object.entries(SpaceNodeBlueprints)
+    .filter(([key, bp]) => bp.type === "output")
+    .map(([key, bp]) => ({ name: bp.label, blueprint: bp }));
+
   const nodeTypes = {
     Math: [
       { name: "Average", blueprint: Average },
       { name: "MinMax", blueprint: MinMax },
-
       { name: "Constant", blueprint: Constant },
     ],
     Inputs: [
-      { name: "Mouse", blueprint: MouseX },
+      { name: "Mouse X", blueprint: MouseX },
+      { name: "Mouse Y", blueprint: MouseY },
+      { name: "Click Swell", blueprint: clickSwell },
+      { name: "Click Gate", blueprint: clickGate },
+      { name: "Mouse Wheel", blueprint: mouseWheel },
       { name: "GamePadAxis", blueprint: GamepadAxisNode },
+      ...spaceInputNodes, // Add Space input nodes here
     ],
     Oscillators: [{ name: "Sine", blueprint: SinOscillator }],
+    Outputs: [
+      ...outputBlueprints, // Existing OSC outputs
+      ...spaceOutputNodes, // Add Space output nodes here
+    ],
   };
 
   // Set default node type on component mount
