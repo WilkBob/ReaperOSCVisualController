@@ -40,14 +40,6 @@ class NodeManager {
     this.globalState.deltaTime = delta;
     this.globalState.cycleId += 1; // Increment cycle ID for caching
 
-    // Update space controls if it exists in global state
-    if (
-      this.globalState.space &&
-      typeof this.globalState.space.update === "function"
-    ) {
-      this.globalState.space.update();
-    }
-
     this.nodes.forEach((node) => {
       node.update();
     });
